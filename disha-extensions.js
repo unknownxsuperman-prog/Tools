@@ -91,9 +91,9 @@ if (/\b(open|launch|go to|visit)\s+spotify\b/i.test(lower))
   if (/\b(bye|goodbye|see you)\b/i.test(lower))
     return `Goodbye! 👋 Queries: ${DISHA_STATE.stats.queriesHandled}`;
   if (/\b(who are you|your name|what are you)\b/i.test(lower))
-    return "I'm **Disha**, x0s.link's on-device intelligence. KCET predictions, weather, math, and more — no cloud AI.";
-   if (/\b(power(s|ed|ing)?\s+disha|what\s+(api|model|engine|ai|llm)\s+(run(s|ning)?\s+)?behind|who\s+(run(s|ning)?|power(s|ed|ing)?|made|built|develop(s|ed)?)\s+disha|disha\s+(is\s+)?powered\s+(by|with)|which\s+(api|model|engine|ai|llm)|no\s+api|local\s+model|x-bit|proton)\b/i.test(lower))
-    return "Disha is powered by **x-bit Proton**, a local model developed by **Nikhil**. No external API is used — everything runs on-device.";
+    return "I'm **Proton**, on-device intelligence. KCET predictions, weather, math, and more — no cloud AI.";
+   if (/\b(power(s|ed|ing)?\s+xbitproton|what\s+(api|model|engine|ai|llm)\s+(run(s|ning)?\s+)?behind|who\s+(run(s|ning)?|power(s|ed|ing)?|made|built|develop(s|ed)?)\s+disha|disha\s+(is\s+)?powered\s+(by|with)|which\s+(api|model|engine|ai|llm)|no\s+api|local\s+model|x-bit|proton)\b/i.test(lower))
+    return "Proton is powered by **x-bit 2.0.1**, a local model developed by **Nikhil**. No external API is used — everything runs on-device.";
   if (/\b(what can you|help|commands)\b/i.test(lower))
     return dishaCaps();
   if (/\b(thank|thanks|thx)\b/i.test(lower))
