@@ -143,7 +143,7 @@
         .search-left {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 16px;
             font-weight: 500;
             font-size: 14px;
         }
@@ -302,21 +302,19 @@
             color: var(--text-main);
             cursor: pointer;
             flex-shrink: 0;
-            position: relative;
-            overflow: hidden;
         }
 
         .action-btn.pill-mode {
             background: var(--bg-card);
-            border-radius: 16px;
-            padding: 0 10px;
+            border-radius: 20px;
+            padding: 0 14px;
             width: auto;
-            min-width: 32px;
-            height: 32px;
-            font-size: 11px;
+            min-width: 40px;
+            height: 40px;
+            font-size: 12px;
             font-weight: 500;
             display: flex;
-            gap: 4px;
+            gap: 6px;
             border: 1px solid var(--border-subtle);
         }
 
@@ -440,78 +438,6 @@
         }
 
         :root.light-theme .pill-capsule { transform: translateX(100%); }
-
-        .mic-ring {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            border: 2px solid transparent;
-            opacity: 0;
-            transition: all 0.3s ease;
-        }
-        .mic-recording .mic-ring {
-            opacity: 1;
-            border-color: var(--accent-dot);
-            animation: micPulse 1.2s ease-in-out infinite;
-        }
-        .mic-recording {
-            background: rgba(255, 0, 0, 0.1) !important;
-        }
-        .mic-recording svg {
-            stroke: var(--accent-dot) !important;
-        }
-        @keyframes micPulse {
-            0% { transform: scale(1); opacity: 0.6; }
-            50% { transform: scale(1.4); opacity: 0; }
-            100% { transform: scale(1); opacity: 0.6; }
-        }
-        .mic-wave {
-            position: absolute;
-            bottom: -4px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 2px;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        .mic-recording .mic-wave {
-            opacity: 1;
-        }
-        .mic-bar {
-            width: 3px;
-            height: 8px;
-            background: var(--accent-dot);
-            border-radius: 2px;
-            animation: waveBar 0.6s ease-in-out infinite alternate;
-        }
-        .mic-bar:nth-child(2) { animation-delay: 0.1s; }
-        .mic-bar:nth-child(3) { animation-delay: 0.2s; }
-        .mic-bar:nth-child(4) { animation-delay: 0.3s; }
-        @keyframes waveBar {
-            0% { height: 4px; }
-            100% { height: 12px; }
-        }
-        .typing-dots {
-            display: flex;
-            gap: 4px;
-            align-items: center;
-            height: 20px;
-        }
-        .typing-dots span {
-            width: 6px;
-            height: 6px;
-            background: var(--text-dim);
-            border-radius: 50%;
-            animation: typingBounce 1.4s ease-in-out infinite both;
-        }
-        .typing-dots span:nth-child(1) { animation-delay: -0.32s; }
-        .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
-        @keyframes typingBounce {
-            0%, 80%, 100% { transform: scale(0); opacity: 0.5; }
-            40% { transform: scale(1); opacity: 1; }
-        }
     </style>
 <base target="_blank">
 </head>
@@ -536,7 +462,7 @@
                 <div class="slider-menu-list">
                     <div class="menu-item active">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                        <span>x-bit proton</span>
+                        <span style="padding-left: 4px;">x-bit proton</span>
                     </div>
                     <div class="menu-item">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
@@ -605,7 +531,7 @@
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                         </button>
                         <button class="action-btn pill-mode" aria-label="Inline Search Execution Engine Switch">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line></svg>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line></svg>
                             <span>Search</span>
                         </button>
                         <button class="action-btn" aria-label="Extended Directives">
@@ -613,15 +539,8 @@
                         </button>
                     </div>
                     <div class="action-right" style="display: flex; gap: 4px; align-items: center;">
-                        <button class="action-btn" id="micBtn" aria-label="Audio Translation System Input">
-                            <div class="mic-ring" id="micRing"></div>
+                        <button class="action-btn" aria-label="Audio Translation System Input">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path></svg>
-                            <div class="mic-wave" id="micWave">
-                                <div class="mic-bar"></div>
-                                <div class="mic-bar"></div>
-                                <div class="mic-bar"></div>
-                                <div class="mic-bar"></div>
-                            </div>
                         </button>
                         <button class="action-btn submit" id="es-send" aria-label="Push Vector Instruction Matrix">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
@@ -634,9 +553,16 @@
     </div>
 
     <!-- ========== DATA & BRAIN ========== -->
+    <!-- Required data files for KCET predictor & college matches -->
+    <script src="colleges.js"></script>
+    <script src="Dishabase.js"></script>
+    <!-- Disha AI engine (overrides doEsSearch) -->
+    <script src="disha-extensions.js" defer></script>
 
-        <script>
-        // ====== CORE UTILITIES ======
+    <script>
+        // Setup base UI functions and a fallback search handler.
+        // This stub will be captured by disha-extensions.js as '_orig'
+        // and called only for queries Disha doesn't understand.
         window.scrollEsToBottom = function() {
             const viewport = document.getElementById('es-messages');
             if (viewport) viewport.scrollTop = viewport.scrollHeight;
@@ -645,72 +571,56 @@
         window.appendEsBubbleUser = function(query) {
             const emptyState = document.getElementById('emptyState');
             if (emptyState && emptyState.parentNode) emptyState.remove();
+            
             const viewport = document.getElementById('es-messages');
             const row = document.createElement('div');
             row.className = 'msg-row user-align';
+            
             const capsule = document.createElement('div');
             capsule.className = 'msg-capsule';
             capsule.textContent = query;
+            
             row.appendChild(capsule);
             viewport.appendChild(row);
+            
             setTimeout(() => { capsule.style.transform = 'translateY(0)'; }, 10);
             window.scrollEsToBottom();
         };
 
-        // ====== SMART SEARCH ======
+        // Original search handler – used as fallback for unrecognized queries.
         window.doEsSearch = function(val) {
-            const query = val.trim().toLowerCase();
+            const query = val.trim();
             if (!query) return;
-            window.appendEsBubbleUser(val);
-            let response = '';
-            if (query.includes('help')) {
-                response = 'Here are some things you can ask me:<br><span style="font-size:0.75rem; color:var(--text-dim);">• <strong>weather</strong> — Get current weather info<br>• <strong>calc 2+2</strong> — Quick math<br>• <strong>time</strong> — Current time<br>• <strong>hello</strong> — Just say hi!</span>';
-            } else if (query.includes('weather')) {
-                response = '🌤️ Weather feature coming soon! For now, try asking about <strong>time</strong> or <strong>calc</strong>.';
-            } else if (query.includes('calc') || query.includes('calculate') || /[0-9+\-*/().]/.test(query)) {
-                try {
-                    const expr = query.replace(/[^0-9+\-*/().]/g, '');
-                    const result = eval(expr);
-                    response = '🧮 <strong>' + expr + '</strong> = <strong>' + result + '</strong>';
-                } catch(e) {
-                    response = '❌ I could not calculate that. Try something like <strong>calc 2+2</strong>.';
-                }
-            } else if (query.includes('time') || query.includes('date')) {
-                const now = new Date();
-                response = '🕐 It is <strong>' + now.toLocaleTimeString() + '</strong> on <strong>' + now.toLocaleDateString() + '</strong>.';
-            } else if (query.includes('hello') || query.includes('hi') || query.includes('hey')) {
-                const name = localStorage.getItem('disha_username') || 'there';
-                response = '👋 Hey <strong>' + name + '</strong>! How can I help you today?';
-            } else if (query.includes('name')) {
-                const name = localStorage.getItem('disha_username');
-                response = name ? 'Your name is <strong>' + name + '</strong>.' : 'I do not know your name yet! It should have been asked when you first opened the app.';
-            } else {
-                response = 'I received: <strong>' + val + '</strong><br><span style="font-size:0.75rem; color:var(--text-dim);">Type <strong>help</strong> to see what I can do.</span>';
-            }
+
+            // Show user bubble
+            window.appendEsBubbleUser(query);
+
+            // Show a helpful fallback message
             const viewport = document.getElementById('es-messages');
             const sysRow = document.createElement('div');
             sysRow.className = 'msg-row system-align';
             const sysCapsule = document.createElement('div');
             sysCapsule.className = 'msg-capsule';
-            sysCapsule.innerHTML = '<span class="typing-dots"><span></span><span></span><span></span></span>';
+            sysCapsule.innerHTML = `⚠️ I'm not sure how to help with that.<br><span style="font-size:0.75rem; color:var(--text-dim);">Try: <strong>kcet predict</strong>, <strong>weather in Mumbai</strong>, <strong>calc 2+2</strong>, or <strong>help</strong>.</span>`;
             sysRow.appendChild(sysCapsule);
             viewport.appendChild(sysRow);
             setTimeout(() => { sysCapsule.style.transform = 'translateY(0)'; }, 10);
             window.scrollEsToBottom();
-            setTimeout(() => {
-                sysCapsule.innerHTML = response;
-                window.scrollEsToBottom();
-            }, 600 + Math.random() * 400);
+
+            // Clear input
             const inp = document.getElementById('es-input');
             if (inp) inp.value = '';
         };
 
-        // ====== UI INTERACTIONS ======
+        // UI interactions
         const sidebarOverlay = document.getElementById('sidebarOverlay');
         const openSidebar = document.getElementById('openSidebar');
         const closeSidebar = document.getElementById('closeSidebar');
         const dashboardSearchPill = document.getElementById('dashboardSearchPill');
         const inputDockContainer = document.getElementById('inputDockContainer');
+        
+        const setDark = document.getElementById('setDark');
+        const setLight = document.getElementById('setLight');
         const rootElement = document.documentElement;
 
         openSidebar.addEventListener('click', () => sidebarOverlay.classList.add('active'));
@@ -721,174 +631,12 @@
             dashboardSearchPill.classList.add('pulse-shift');
             inputDockContainer.classList.add('highlight-focus');
             document.getElementById('es-input').focus();
+            
             setTimeout(() => { dashboardSearchPill.classList.remove('pulse-shift'); }, 400);
             setTimeout(() => { inputDockContainer.classList.remove('highlight-focus'); }, 800);
         });
 
-        const matrixField = document.getElementById('es-input');
-        const sendStream = document.getElementById('es-send');
-
-        function executeLocalPipeline() {
-            const val = matrixField.value.trim();
-            if (!val) return;
-            window.doEsSearch(val);
-        }
-
-        sendStream.addEventListener('click', executeLocalPipeline);
-        matrixField.addEventListener('keypress', (e) => { if (e.key === 'Enter') executeLocalPipeline(); });
-
-        // ====== SPEECH TO TEXT ======
-        const micBtn = document.getElementById('micBtn');
-        const micInput = document.getElementById('es-input');
-        let recognition = null;
-        let silenceTimer = null;
-        let isRecording = false;
-        const SILENCE_DELAY = 2000;
-
-        function isFileProtocol() {
-            return window.location.protocol === 'file:';
-        }
-
-        function initSpeechRecognition() {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) return null;
-            const rec = new SpeechRecognition();
-            rec.continuous = false;
-            rec.interimResults = true;
-            rec.lang = 'en-US';
-            return rec;
-        }
-
-        function startRecording() {
-            if (isFileProtocol()) {
-                micInput.placeholder = 'Speech requires HTTPS server';
-                const viewport = document.getElementById('es-messages');
-                const emptyState = document.getElementById('emptyState');
-                if (emptyState) emptyState.remove();
-                const sysRow = document.createElement('div');
-                sysRow.className = 'msg-row system-align';
-                const sysCapsule = document.createElement('div');
-                sysCapsule.className = 'msg-capsule';
-                sysCapsule.innerHTML = '🔒 <strong>Speech Recognition needs HTTPS</strong><br><span style="font-size:0.75rem; color:var(--text-dim);">Open this page via a local server (e.g., <code>python -m http.server</code>) or deploy to a site with HTTPS. Browsers block mic access on file:// URLs.</span>';
-                sysRow.appendChild(sysCapsule);
-                viewport.appendChild(sysRow);
-                setTimeout(() => { sysCapsule.style.transform = 'translateY(0)'; }, 10);
-                window.scrollEsToBottom();
-                setTimeout(() => { micInput.placeholder = 'Message Proton...'; }, 3000);
-                return;
-            }
-            recognition = initSpeechRecognition();
-            if (!recognition) {
-                micInput.placeholder = 'Browser does not support speech';
-                setTimeout(() => { micInput.placeholder = 'Message Proton...'; }, 3000);
-                return;
-            }
-            isRecording = true;
-            micBtn.classList.add('mic-recording');
-            micInput.placeholder = 'Listening...';
-            micInput.value = '';
-            let finalTranscript = '';
-            recognition.onresult = (event) => {
-                let interimTranscript = '';
-                for (let i = event.resultIndex; i < event.results.length; i++) {
-                    const transcript = event.results[i][0].transcript;
-                    if (event.results[i].isFinal) {
-                        finalTranscript += transcript + ' ';
-                    } else {
-                        interimTranscript += transcript;
-                    }
-                }
-                micInput.value = (finalTranscript + interimTranscript).trim();
-                clearTimeout(silenceTimer);
-                silenceTimer = setTimeout(() => {
-                    if (isRecording && micInput.value.trim()) {
-                        stopRecording();
-                        executeLocalPipeline();
-                    }
-                }, SILENCE_DELAY);
-            };
-            recognition.onerror = (event) => {
-                if (event.error === 'not-allowed') micInput.placeholder = 'Mic permission denied';
-                else if (event.error === 'no-speech') micInput.placeholder = 'No speech detected';
-                else micInput.placeholder = 'Speech error: ' + event.error;
-                stopRecording();
-            };
-            recognition.onend = () => { stopRecording(); };
-            try { recognition.start(); }
-            catch(e) { micInput.placeholder = 'Could not start mic'; stopRecording(); }
-        }
-
-        function stopRecording() {
-            isRecording = false;
-            clearTimeout(silenceTimer);
-            micBtn.classList.remove('mic-recording');
-            micInput.placeholder = 'Message Proton...';
-            if (recognition) {
-                try { recognition.stop(); } catch(e) {}
-                try { recognition.abort(); } catch(e) {}
-                recognition = null;
-            }
-        }
-
-        micBtn.addEventListener('click', () => {
-            if (isRecording) stopRecording();
-            else startRecording();
-        });
-
-        // ====== USER NAME & GREETING ======
-        function getTimeGreeting() {
-            const hour = new Date().getHours();
-            if (hour < 12) return 'good morning';
-            if (hour < 17) return 'good afternoon';
-            return 'good evening';
-        }
-
-        function updateGreeting(name) {
-            const greetingEl = document.getElementById('greetingText');
-            if (greetingEl && name) {
-                greetingEl.textContent = 'Hey ' + name + ', ' + getTimeGreeting();
-            }
-        }
-
-        function updateUserProfile(name) {
-            const pfp = document.getElementById('userPfp');
-            const nameDisplay = document.getElementById('userNameDisplay');
-            if (pfp && name) pfp.textContent = name.charAt(0);
-            if (nameDisplay && name) nameDisplay.textContent = name;
-        }
-
-        function askUserName() {
-            const storedName = localStorage.getItem('disha_username');
-            if (storedName) {
-                updateGreeting(storedName);
-                updateUserProfile(storedName);
-                return;
-            }
-            const modal = document.createElement('div');
-            modal.id = 'nameModal';
-            modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); z-index: 1000; display: flex; align-items: center; justify-content: center;';
-            modal.innerHTML = '<div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 24px; padding: 28px 24px; width: 320px; max-width: 90%; box-shadow: var(--shadow-soft); text-align: center;"><div style="margin-bottom: 12px; color: var(--text-main);"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg></div><h3 style="font-size: 18px; font-weight: 600; margin-bottom: 8px; color: var(--text-main);">What is your name?</h3><p style="font-size: 13px; color: var(--text-dim); margin-bottom: 20px;">We will remember it for next time.</p><input type="text" id="nameInput" placeholder="Enter your name" style="width: 100%; padding: 12px 16px; border-radius: 14px; border: 1px solid var(--border-subtle); background: var(--bg-base); color: var(--text-main); font-family: var(--font-sans); font-size: 15px; outline: none; margin-bottom: 16px;" autocomplete="off"><button id="saveNameBtn" style="width: 100%; padding: 12px; border-radius: 14px; border: none; background: var(--text-main); color: var(--bg-base); font-family: var(--font-sans); font-size: 15px; font-weight: 600; cursor: pointer;">Continue</button></div>';
-            document.body.appendChild(modal);
-            const nameInput = document.getElementById('nameInput');
-            const saveBtn = document.getElementById('saveNameBtn');
-            function saveName() {
-                const name = nameInput.value.trim();
-                if (name) {
-                    localStorage.setItem('disha_username', name);
-                    updateGreeting(name);
-                    updateUserProfile(name);
-                    modal.remove();
-                } else {
-                    nameInput.style.borderColor = 'var(--accent-dot)';
-                    nameInput.focus();
-                }
-            }
-            saveBtn.addEventListener('click', saveName);
-            nameInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') saveName(); });
-            nameInput.focus();
-        }
-
-        // ====== DARK MODE TOGGLE ======
+        // Dark Mode Toggle (default: ON)
         const darkModeToggle = document.getElementById('darkModeToggle');
         const darkModeSwitch = document.getElementById('darkModeSwitch');
         const darkModeKnob = document.getElementById('darkModeKnob');
@@ -908,14 +656,116 @@
             localStorage.setItem('disha_darkmode', isOn ? 'on' : 'off');
         }
 
+        // Check saved preference (default ON)
         const savedDarkMode = localStorage.getItem('disha_darkmode');
-        if (savedDarkMode === 'off') setDarkMode(false);
-        else setDarkMode(true);
+        if (savedDarkMode === 'off') {
+            setDarkMode(false);
+        } else {
+            setDarkMode(true);
+        }
 
         darkModeToggle.addEventListener('click', () => {
             const isCurrentlyDark = !rootElement.classList.contains('light-theme');
             setDarkMode(!isCurrentlyDark);
         });
+
+        const matrixField = document.getElementById('es-input');
+        const sendStream = document.getElementById('es-send');
+
+        function executeLocalPipeline() {
+            const val = matrixField.value.trim();
+            if (!val) return;
+            window.doEsSearch(val);
+        }
+
+        sendStream.addEventListener('click', executeLocalPipeline);
+        matrixField.addEventListener('keypress', (e) => { if (e.key === 'Enter') executeLocalPipeline(); });
+
+        // ====== USER NAME & GREETING SYSTEM ======
+        function getTimeGreeting() {
+            const hour = new Date().getHours();
+            if (hour < 12) return 'good morning';
+            if (hour < 17) return 'good afternoon';
+            return 'good evening';
+        }
+
+        function updateGreeting(name) {
+            const greetingEl = document.getElementById('greetingText');
+            if (greetingEl && name) {
+                greetingEl.textContent = `Hey ${name}, ${getTimeGreeting()}`;
+            }
+        }
+
+        function updateUserProfile(name) {
+            const pfp = document.getElementById('userPfp');
+            const nameDisplay = document.getElementById('userNameDisplay');
+            if (pfp && name) {
+                pfp.textContent = name.charAt(0);
+            }
+            if (nameDisplay && name) {
+                nameDisplay.textContent = name;
+            }
+        }
+
+        function askUserName() {
+            const storedName = localStorage.getItem('disha_username');
+            if (storedName) {
+                updateGreeting(storedName);
+                updateUserProfile(storedName);
+                return;
+            }
+            // Create a custom modal for name input
+            const modal = document.createElement('div');
+            modal.id = 'nameModal';
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); z-index: 1000;
+                display: flex; align-items: center; justify-content: center;
+            `;
+            modal.innerHTML = `
+                <div style="
+                    background: var(--bg-card); border: 1px solid var(--border-subtle);
+                    border-radius: 24px; padding: 28px 24px; width: 320px; max-width: 90%;
+                    box-shadow: var(--shadow-soft); text-align: center;
+                ">
+                    <div style="margin-bottom: 12px; color: var(--text-main);">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>
+                        </div>
+                    <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 8px; color: var(--text-main);">What's your name?</h3>
+                    <p style="font-size: 13px; color: var(--text-dim); margin-bottom: 20px;">We'll remember it for next time.</p>
+                    <input type="text" id="nameInput" placeholder="Enter your name" style="
+                        width: 100%; padding: 12px 16px; border-radius: 14px; border: 1px solid var(--border-subtle);
+                        background: var(--bg-base); color: var(--text-main); font-family: var(--font-sans);
+                        font-size: 15px; outline: none; margin-bottom: 16px;
+                    " autocomplete="off">
+                    <button id="saveNameBtn" style="
+                        width: 100%; padding: 12px; border-radius: 14px; border: none;
+                        background: var(--text-main); color: var(--bg-base); font-family: var(--font-sans);
+                        font-size: 15px; font-weight: 600; cursor: pointer;
+                    ">Continue</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            const nameInput = document.getElementById('nameInput');
+            const saveBtn = document.getElementById('saveNameBtn');
+
+            function saveName() {
+                const name = nameInput.value.trim();
+                if (name) {
+                    localStorage.setItem('disha_username', name);
+                    updateGreeting(name);
+                    updateUserProfile(name);
+                    modal.remove();
+                } else {
+                    nameInput.style.borderColor = 'var(--accent-dot)';
+                    nameInput.focus();
+                }
+            }
+
+            saveBtn.addEventListener('click', saveName);
+            nameInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') saveName(); });
+            nameInput.focus();
+        }
 
         // Initialize on page load
         askUserName();
