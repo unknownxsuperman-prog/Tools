@@ -187,15 +187,156 @@
       box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1), 0 0 20px rgba(0, 122, 255, 0.05);
       background: rgba(0, 122, 255, 0.02);
     }
-    select.xos-input {
+    /* ===== CUSTOM DROPDOWN ===== */
+    .xos-dropdown {
+      position: relative;
+      width: 100%;
+    }
+    .xos-dropdown-trigger {
+      width: 100%;
+      background: var(--xos-surface);
+      border: 1px solid var(--xos-border);
+      border-radius: var(--xos-radius-sm);
+      padding: 14px 16px;
+      color: var(--xos-text-primary);
+      font-family: var(--xos-font);
+      font-size: 0.88rem;
+      outline: none;
+      transition: all 0.2s ease;
       cursor: pointer;
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2371767b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 16px center;
-      padding-right: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .xos-dropdown-trigger:hover {
+      border-color: var(--xos-border-hover);
+    }
+    .xos-dropdown-trigger.open {
+      border-color: var(--xos-accent);
+      box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1), 0 0 20px rgba(0, 122, 255, 0.05);
+      background: rgba(0, 122, 255, 0.02);
+    }
+    .xos-dropdown-trigger .dd-text {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .xos-dropdown-trigger .dd-text.placeholder {
+      color: var(--xos-text-tertiary);
+    }
+    .xos-dropdown-trigger .dd-chevron {
+      font-size: 0.55rem;
+      color: var(--xos-text-tertiary);
+      transition: transform 0.25s ease, color 0.2s ease;
+      flex-shrink: 0;
+    }
+    .xos-dropdown-trigger.open .dd-chevron {
+      transform: rotate(180deg);
+      color: var(--xos-accent);
+    }
+    .xos-dropdown-menu {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      background: rgba(12, 12, 12, 0.98);
+      border: 1px solid var(--xos-border);
+      border-radius: var(--xos-radius-sm);
+      z-index: 200;
+      display: none;
+      max-height: 260px;
+      overflow-y: auto;
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255,255,255,0.04);
+      animation: dropIn 0.15s ease;
+    }
+    .xos-dropdown-menu.show {
+      display: block;
+    }
+    .xos-dropdown-menu::-webkit-scrollbar {
+      width: 4px;
+    }
+    .xos-dropdown-menu::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .xos-dropdown-menu::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
+    .xos-dropdown-item {
+      padding: 12px 16px;
+      font-size: 0.78rem;
+      color: var(--xos-text-secondary);
+      cursor: pointer;
+      border-bottom: 1px solid var(--xos-divider);
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .xos-dropdown-item:last-child {
+      border-bottom: none;
+    }
+    .xos-dropdown-item:hover {
+      background: rgba(0, 122, 255, 0.06);
+      color: var(--xos-text-primary);
+    }
+    .xos-dropdown-item.selected {
+      color: var(--xos-accent);
+    }
+    .xos-dropdown-item .dd-item-icon {
+      font-size: 0.5rem;
+      width: 14px;
+      text-align: center;
+      flex-shrink: 0;
+      color: var(--xos-text-tertiary);
+      transition: color 0.15s ease;
+    }
+    .xos-dropdown-item:hover .dd-item-icon {
+      color: var(--xos-accent);
+    }
+    .xos-dropdown-item.selected .dd-item-icon {
+      color: var(--xos-accent);
+    }
+    .xos-dropdown-search {
+      position: sticky;
+      top: 0;
+      background: rgba(12, 12, 12, 0.98);
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--xos-divider);
+      z-index: 1;
+    }
+    .xos-dropdown-search input {
+      width: 100%;
+      background: var(--xos-surface);
+      border: 1px solid var(--xos-border);
+      border-radius: 8px;
+      padding: 8px 12px 8px 30px;
+      color: var(--xos-text-primary);
+      font-family: var(--xos-font);
+      font-size: 0.75rem;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+    .xos-dropdown-search input::placeholder {
+      color: var(--xos-text-tertiary);
+    }
+    .xos-dropdown-search input:focus {
+      border-color: var(--xos-accent);
+    }
+    .xos-dropdown-search i {
+      position: absolute;
+      left: 24px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.55rem;
+      color: var(--xos-text-tertiary);
+      pointer-events: none;
     }
     /* ===== BUTTON ===== */
     .xos-btn {
@@ -601,7 +742,7 @@
       <span class="step-num">1</span>
       <i class="fa-solid fa-code-branch"></i> Core Branch
     </label>
-    <input type="text" id="inputBranch" class="xos-input" placeholder="e.g., COMPUTER SCIENCE AND ENGINEERING" autocomplete="off">
+    <input type="text" id="inputBranch" class="xos-input" placeholder="e.g., COMPUTER SCIENCE AND ENGINEERING" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" name="xos-branch-nonauto" data-form-type="other" data-lpignore="true" aria-autocomplete="list" role="combobox">
     <div id="branchSuggestBox" class="suggest-box"></div>
   </div>
   <div class="form-group">
@@ -609,16 +750,27 @@
       <span class="step-num">2</span>
       <i class="fa-solid fa-tag"></i> Category
     </label>
-    <select id="inputCategory" class="xos-input">
-      <option value="">Loading categories...</option>
-    </select>
+    <div class="xos-dropdown" id="categoryDropdown">
+      <div class="xos-dropdown-trigger" id="categoryTrigger" tabindex="0">
+        <span class="dd-text placeholder">Loading categories...</span>
+        <i class="fa-solid fa-chevron-down dd-chevron"></i>
+      </div>
+      <div class="xos-dropdown-menu" id="categoryMenu">
+        <div class="xos-dropdown-search">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="categorySearchInput" placeholder="Search categories..." autocomplete="off" autocorrect="off" spellcheck="false">
+        </div>
+        <div id="categoryMenuItems"></div>
+      </div>
+    </div>
+    <input type="hidden" id="inputCategory" value="">
   </div>
   <div class="form-group">
     <label class="form-label">
       <span class="step-num">3</span>
       <i class="fa-solid fa-ranking-star"></i> Your Rank
     </label>
-    <input type="number" id="inputRank" class="xos-input" placeholder="Enter CET rank" min="1">
+    <input type="number" id="inputRank" class="xos-input" placeholder="Enter CET rank" min="1" autocomplete="off">
   </div>
   <button class="xos-btn" id="searchBtn">
     SEARCH <i class="fa-solid fa-arrow-right"></i>
@@ -713,9 +865,89 @@
   }
   // ============ POPULATE UI ============
   function populateCategoryDropdown() {
-    const catSelect = document.getElementById('inputCategory');
-    catSelect.innerHTML = '<option value="">Select category...</option>' + 
-      Engine.categories.map(c => `<option value="${c}">${c}</option>`).join('');
+    const hidden = document.getElementById('inputCategory');
+    const trigger = document.getElementById('categoryTrigger');
+    const menu = document.getElementById('categoryMenu');
+    const itemsContainer = document.getElementById('categoryMenuItems');
+    const searchInput = document.getElementById('categorySearchInput');
+    hidden.value = '';
+    function renderItems(filter) {
+      const q = (filter || '').toUpperCase();
+      const filtered = q ? Engine.categories.filter(c => c.toUpperCase().includes(q)) : Engine.categories;
+      
+      if (filtered.length === 0) {
+        itemsContainer.innerHTML = '<div class="xos-dropdown-item" style="color:var(--xos-text-tertiary);pointer-events:none;"><i class="fa-regular fa-circle-xmark dd-item-icon" style="font-size:0.55rem;"></i> No matching categories</div>';
+        return;
+      }
+      itemsContainer.innerHTML = filtered.map(c => {
+        const isSelected = hidden.value === c;
+        return `<div class="xos-dropdown-item${isSelected ? ' selected' : ''}" data-value="${escapeHtml(c)}">
+          <i class="${isSelected ? 'fa-solid fa-circle-check' : 'fa-regular fa-circle'} dd-item-icon"></i>
+          ${escapeHtml(c)}
+        </div>`;
+      }).join('');
+      itemsContainer.querySelectorAll('.xos-dropdown-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const val = item.getAttribute('data-value');
+          hidden.value = val;
+          trigger.querySelector('.dd-text').textContent = val;
+          trigger.querySelector('.dd-text').classList.remove('placeholder');
+          closeDropdown();
+        });
+      });
+    }
+    function openDropdown() {
+      menu.classList.add('show');
+      trigger.classList.add('open');
+      searchInput.value = '';
+      renderItems('');
+      setTimeout(() => searchInput.focus(), 50);
+    }
+    function closeDropdown() {
+      menu.classList.remove('show');
+      trigger.classList.remove('open');
+    }
+    function toggleDropdown() {
+      if (menu.classList.contains('show')) {
+        closeDropdown();
+      } else {
+        openDropdown();
+      }
+    }
+    trigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleDropdown();
+    });
+    trigger.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggleDropdown();
+      } else if (e.key === 'Escape') {
+        closeDropdown();
+      }
+    });
+    searchInput.addEventListener('input', (e) => {
+      renderItems(e.target.value);
+    });
+    searchInput.addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeDropdown();
+        trigger.focus();
+      }
+    });
+    // Close on outside click
+    document.addEventListener('click', (e) => {
+      if (!document.getElementById('categoryDropdown').contains(e.target)) {
+        closeDropdown();
+      }
+    });
+    // Set initial state
+    trigger.querySelector('.dd-text').textContent = 'Select category...';
+    trigger.querySelector('.dd-text').classList.add('placeholder');
+    renderItems('');
   }
   function setupAutocomplete() {
     const input = document.getElementById('inputBranch');
@@ -915,7 +1147,11 @@
       if (e.key === 'Enter') searchColleges();
     });
   } else {
-    document.getElementById('inputCategory').innerHTML = '<option><i class="fa-solid fa-xmark"></i> Error loading data</option>';
+    const trigger = document.getElementById('categoryTrigger');
+    if (trigger) {
+      trigger.querySelector('.dd-text').textContent = 'Error loading data';
+      trigger.querySelector('.dd-text').classList.add('placeholder');
+    }
   }
 </script>
 </body>
