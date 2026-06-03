@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>XOS Auto-Hierarchical Compiler</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --xos-bg: #000000;
+      --xos-accent: #007aff;
+      --xos-card: #0a0a0a;
+      --xos-border: #1a1a1a;
+      --xos-font: 'Space Grotesk', sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 30px;
+      background: var(--xos-bg);
+      color: #ffffff;
+      font-family: var(--xos-font);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
+
+    .xos-header {
+      width: 100%;
+      max-width: 1200px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .xos-badge {
+      font-size: 8px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--xos-accent);
+      background: rgba(0, 122, 255, 0.1);
+      border: 1px solid rgba(0, 122, 255, 0.2);
+      padding: 4px 10px;
+      border-radius: 4px;
+    }
+
+    .compiler-grid {
+      display: grid;
+      grid-template-columns: 1fr 60px 1fr;
+      gap: 20px;
+      width: 100%;
+      max-width: 1200px;
+      height: 75vh;
+    }
+
+    .editor-pane {
+      background: var(--xos-card);
+      border: 1px solid var(--xos-border);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .editor-header {
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--xos-border);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #666;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    textarea {
+      flex: 1;
+      width: 100%;
+      background: transparent;
+      border: none;
+      padding: 20px;
+      color: #ddd;
+      font-family: monospace;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      resize: none;
+      outline: none;
+      box-sizing: border-box;
+      white-space: pre;
+    }
+
+    .controls {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .xos-action-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: var(--xos-accent);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.15s;
+    }
+
+    .xos-action-btn:active {
+      transform: scale(0.92);
+    }
+
+    .xos-copy-btn {
+      background: transparent;
+      border: 1px solid var(--xos-border);
+      color: #fff;
+      font-family: var(--xos-font);
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="xos-header">
+    <div>
+      <h1 style="margin: 0; font-size: 1.4rem; letter-spacing: -0.02em;">XOS Relational Data Compiler</h1>
+      <div style="font-size: 0.7rem; color: #666; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.1em;">Strict Taxonomy: Isolated Computer Science Logic</div>
+    </div>
+    <span class="xos-badge">HYBRID COMPRESSION</span>
+  </div>
+
+  <div class="compiler-grid">
+    <div class="editor-pane">
+      <div class="editor-header">Raw Input Array</div>
+      <textarea id="rawInput" placeholder="Paste your raw window.XOS_CUTOFF array here..."></textarea>
+    </div>
+
+    <div class="controls">
+      <button class="xos-action-btn" onclick="compileData()" title="Compile and Format">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+      </button>
+    </div>
+
+    <div class="editor-pane">
+      <div class="editor-header">
+        Formatted Output
+        <button class="xos-copy-btn" onclick="copyOutput()">Copy Code</button>
+      </div>
+      <textarea id="output" readonly placeholder="Formatted JS array will appear here..."></textarea>
+    </div>
+  </div>
+
+  <script>
+    // 1. Core Sanitizer
+    function cleanBranch(name) {
+      let c = name.toUpperCase()
+        .replace(/^(B\s*TECH\s*IN\s*|BTECH\s*IN\s*|B\.\s*TECH\s*IN\s*|B\s*TECH\s*)/, '') 
+        .replace(/^[^A-Z]+/, '') 
+        .replace(/\s*&\s*/g, ' AND ')
+        .replace(/DAT A SCIENCE/g, 'DATA SCIENCE')
+        .replace(/CYB ER SECURITY/g, 'CYBER SECURITY')
+        .replace(/ARTI FICAL/g, 'ARTIFICIAL')
+        .replace(/ARTIFICAL/g, 'ARTIFICIAL')
+        .replace(/SOF TWARE/g, 'SOFTWARE')
+        .replace(/VIRUTAL/g, 'VIRTUAL')
+        .replace(/TELECOMMUNICAT ION/g, 'TELECOMMUNICATION')
+        .replace(/\bENGG\b/g, 'ENGINEERING')
+        .replace(/\bTECH\b/g, 'TECHNOLOGY')
+        .replace(/\bMGMT\b/g, 'MANAGEMENT')
+        .replace(/\(/g, ' (').replace(/\s+/g, ' ').replace(/\(\s+/g, '(').replace(/\s+\)/g, ')')
+        .trim();
+        
+      if (c === 'COMPUTER SCIENCE' || c === 'COMPUTER ENGINEERING') c = 'COMPUTER SCIENCE AND ENGINEERING';
+      return c;
+    }
+
+    // 2. Strict Hierarchical Grouping Logic
+    function getFamily(name) {
+      // C1: STRICTLY "Computer Science" or pure "Computer Engineering"
+      if (name.includes('COMPUTER SCIENCE') || name === 'COMPUTER SCIENCE AND ENGINEERING') {
+        return { g: 'C1', core: name === 'COMPUTER SCIENCE AND ENGINEERING' };
+      }
+      
+      // C2: Electronics / Telecom / VLSI (Now safely catches "Electronics and Computer Engg")
+      if ((/ELECTRONIC|TELECOMMUNICAT|VLSI/.test(name)) && !/ELECTRICAL/.test(name)) {
+        return { g: 'C2', core: name === 'ELECTRONICS AND COMMUNICATION ENGINEERING' };
+      }
+      
+      // C3: Electrical
+      if (/ELECTRICAL/.test(name)) {
+        return { g: 'C3', core: name === 'ELECTRICAL AND ELECTRONICS ENGINEERING' };
+      }
+      
+      // C4: Mechanical Family
+      if (/MECHANICAL|AUTOMOBILE|INDUSTRIAL|MANUFACTURING|MECHATRONIC/.test(name)) {
+        return { g: 'C4', core: name === 'MECHANICAL ENGINEERING' };
+      }
+      
+      // C5: Civil Family
+      if (/CIVIL|CONSTRUCTION|ENVIRONMENT/.test(name)) {
+        return { g: 'C5', core: name === 'CIVIL ENGINEERING' };
+      }
+      
+      // C6: Info Science
+      if (/INFORMATION/.test(name)) {
+        return { g: 'C6', core: name === 'INFORMATION SCIENCE AND ENGINEERING' || name === 'INFORMATION TECHNOLOGY' };
+      }
+      
+      // C7: STANDALONE AI / ML / DATA SCIENCE 
+      if (/ARTIFICIAL|MACHINE LEARNING|DATA SCIENCE/.test(name)) {
+        return { g: 'C7', core: true }; 
+      }
+      
+      // C8: Standalone Robotics / Automation / Cyber
+      if (/ROBOTIC|AUTOMATION|CYBER/.test(name)) {
+        return { g: 'C8', core: true };
+      }
+      
+      // C9: Rest (Aero, Bio, Chem, Marine)
+      return { g: 'C9', core: true };
+    }
+
+    function compileData() {
+      try {
+        const rawText = document.getElementById('rawInput').value.replace(/^[^{[]*/, '').replace(/;?\s*$/, '');
+        if (!rawText.trim()) return alert("Input empty");
+
+        const rawData = new Function('return ' + rawText)();
+        if (!Array.isArray(rawData)) return alert("Input must be an array");
+
+        const dict = {}; const revDict = {};
+        const counters = { C1:1, C2:1, C3:1, C4:1, C5:1, C6:1, C7:1, C8:1, C9:1 };
+        
+        let finalOutput = 'window.XOS_CUTOFF = [\n';
+
+        rawData.forEach((college, index) => {
+          finalOutput += `  {\n    id: '${college.id}',\n    name: '${college.name.replace(/'/g, "\\'")}',\n    location: '${college.location.replace(/'/g, "\\'")}',\n    branches: {\n`;
+          
+          if (college.branches) {
+            Object.keys(college.branches).forEach(raw => {
+              const clean = cleanBranch(raw);
+              
+              // Generate or fetch Relational ID
+              if (!revDict[clean]) {
+                const fam = getFamily(clean);
+                const id = `${fam.g}_${fam.core ? 'CORE' : 'SUB'}_${counters[fam.g]++}`;
+                revDict[clean] = id;
+                dict[id] = clean;
+              }
+              const bId = revDict[clean];
+
+              // Build the single-line string for the category cutoffs
+              const catData = college.branches[raw];
+              let catString = '{';
+              const catKeys = Object.keys(catData);
+              catKeys.forEach((ck, ci) => {
+                const val = catData[ck];
+                catString += `'${ck}':${val === null ? 'null' : val}`;
+                if (ci < catKeys.length - 1) catString += ',';
+              });
+              catString += '}';
+
+              finalOutput += `      '${bId}': ${catString},\n`;
+            });
+          }
+          finalOutput += `    }\n  }${index < rawData.length - 1 ? ',' : ''}\n`;
+        });
+
+        finalOutput += '];\n\n';
+        finalOutput += `window.XOS_DICT = ${JSON.stringify(dict, null, 2)};`;
+
+        document.getElementById('output').value = finalOutput;
+      } catch (e) {
+        alert("Compilation failed. Check console or format. Error: " + e.message);
+      }
+    }
+
+    function copyOutput() {
+      const output = document.getElementById('output');
+      output.select();
+      document.execCommand('copy');
+      const btn = document.querySelector('.xos-copy-btn');
+      btn.textContent = 'COPIED!';
+      setTimeout(() => btn.textContent = 'COPY CODE', 2000);
+    }
+  </script>
+</body>
+</html>
