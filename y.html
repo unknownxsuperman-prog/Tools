@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>x0s · Disha Match | Core + Specializations</title>
+  <meta name="description" content="Disha Match Engine — find colleges matching your CET rank across core branches and specializations.">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    :root {
+      --xos-bg: #000000;
+      --xos-accent: #007aff;
+      --xos-accent-glow: rgba(0, 122, 255, 0.15);
+      --xos-card: rgba(10, 10, 10, 0.85);
+      --xos-border: rgba(255, 255, 255, 0.08);
+      --xos-border-hover: rgba(255, 255, 255, 0.14);
+      --xos-font: 'Space Grotesk', sans-serif;
+      --xos-surface: rgba(255, 255, 255, 0.03);
+      --xos-text-primary: #e7e9ea;
+      --xos-text-secondary: #71767b;
+      --xos-text-tertiary: #536471;
+      --xos-divider: rgba(255, 255, 255, 0.06);
+      --xos-success: #00ba7c;
+      --xos-danger: #f4212e;
+      --xos-radius: 16px;
+      --xos-radius-sm: 12px;
+    }
+    body {
+      margin: 0;
+      padding: 20px;
+      background: var(--xos-bg);
+      color: var(--xos-text-primary);
+      font-family: var(--xos-font);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    /* Subtle ambient glow behind the panel */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -40%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(0, 122, 255, 0.06) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .xos-panel {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 520px;
+      background: var(--xos-card);
+      border: 1px solid var(--xos-border);
+      border-radius: 24px;
+      padding: 32px 28px;
+      backdrop-filter: blur(40px);
+      -webkit-backdrop-filter: blur(40px);
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.04),
+        0 24px 80px rgba(0, 0, 0, 0.7),
+        0 8px 32px rgba(0, 0, 0, 0.4);
+      animation: panelIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes panelIn {
+      from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    /* ===== HEADER ===== */
+    .xos-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--xos-divider);
+    }
+    .xos-header-left h2 {
+      margin: 0;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--xos-text-primary);
+      letter-spacing: -0.01em;
+    }
+    .xos-header-sub {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.65rem;
+      color: var(--xos-text-tertiary);
+      margin-top: 6px;
+    }
+    .xos-header-sub i {
+      font-size: 0.55rem;
+      color: var(--xos-accent);
+    }
+    .xos-badge {
+      font-size: 0.6rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--xos-accent);
+      background: var(--xos-accent-glow);
+      border: 1px solid rgba(0, 122, 255, 0.15);
+      padding: 4px 12px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .xos-badge i {
+      font-size: 0.5rem;
+    }
+    /* ===== FORM ===== */
+    .form-group {
+      margin-bottom: 20px;
+      position: relative;
+    }
+    .form-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: var(--xos-text-secondary);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .form-label i {
+      font-size: 0.6rem;
+      color: var(--xos-accent);
+      width: 14px;
+      text-align: center;
+    }
+    .form-label .step-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 6px;
+      background: var(--xos-accent-glow);
+      border: 1px solid rgba(0, 122, 255, 0.12);
+      font-size: 0.55rem;
+      font-weight: 700;
+      color: var(--xos-accent);
+    }
+    .xos-input {
+      width: 100%;
+      background: var(--xos-surface);
+      border: 1px solid var(--xos-border);
+      border-radius: var(--xos-radius-sm);
+      padding: 14px 16px;
+      color: var(--xos-text-primary);
+      font-family: var(--xos-font);
+      font-size: 0.88rem;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+    .xos-input::placeholder {
+      color: var(--xos-text-tertiary);
+    }
+    .xos-input:hover {
+      border-color: var(--xos-border-hover);
+    }
+    .xos-input:focus {
+      border-color: var(--xos-accent);
+      box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1), 0 0 20px rgba(0, 122, 255, 0.05);
+      background: rgba(0, 122, 255, 0.02);
+    }
+    select.xos-input {
+      cursor: pointer;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2371767b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      padding-right: 40px;
+    }
+    /* ===== BUTTON ===== */
+    .xos-btn {
+      width: 100%;
+      background: #ffffff;
+      color: #000000;
+      border: none;
+      border-radius: var(--xos-radius-sm);
+      padding: 15px;
+      font-family: var(--xos-font);
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+    .xos-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 100%);
+      transform: translateX(-100%);
+      transition: transform 0.5s ease;
+    }
+    .xos-btn:hover::before {
+      transform: translateX(100%);
+    }
+    .xos-btn:hover {
+      box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+      transform: translateY(-1px);
+    }
+    .xos-btn:active {
+      transform: scale(0.98) translateY(0);
+    }
+    .xos-btn i {
+      font-size: 0.7rem;
+      transition: transform 0.2s ease;
+    }
+    .xos-btn:hover i {
+      transform: translateX(3px);
+    }
+    /* ===== SUGGEST BOX ===== */
+    .suggest-box {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      background: rgba(12, 12, 12, 0.98);
+      border: 1px solid var(--xos-border);
+      border-radius: var(--xos-radius-sm);
+      z-index: 100;
+      display: none;
+      max-height: 240px;
+      overflow-y: auto;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6);
+      animation: dropIn 0.15s ease;
+    }
+    @keyframes dropIn {
+      from {
+        opacity: 0;
+        transform: translateY(-4px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .suggest-box::-webkit-scrollbar {
+      width: 4px;
+    }
+    .suggest-box::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .suggest-box::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
+    .suggest-item {
+      padding: 12px 16px;
+      font-size: 0.78rem;
+      color: var(--xos-text-secondary);
+      cursor: pointer;
+      border-bottom: 1px solid var(--xos-divider);
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .suggest-item::before {
+      content: '\f054';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+      font-size: 0.45rem;
+      color: var(--xos-text-tertiary);
+      transition: color 0.15s ease;
+    }
+    .suggest-item:last-child {
+      border-bottom: none;
+    }
+    .suggest-item:hover {
+      background: rgba(0, 122, 255, 0.06);
+      color: var(--xos-text-primary);
+    }
+    .suggest-item:hover::before {
+      color: var(--xos-accent);
+    }
+    /* ===== RESULTS ===== */
+    .results-container {
+      margin-top: 28px;
+      display: none;
+      border-top: 1px solid var(--xos-divider);
+      padding-top: 24px;
+      animation: fadeUp 0.35s ease;
+    }
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .result-card {
+      background: var(--xos-surface);
+      border: 1px solid var(--xos-border);
+      border-radius: var(--xos-radius);
+      padding: 18px;
+      margin-bottom: 12px;
+      transition: all 0.25s ease;
+      position: relative;
+    }
+    .result-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0, 122, 255, 0.15), transparent);
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+    .result-card:hover {
+      border-color: var(--xos-border-hover);
+      background: rgba(255, 255, 255, 0.04);
+    }
+    .result-card:hover::before {
+      opacity: 1;
+    }
+    .result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+    .college-id {
+      font-size: 0.55rem;
+      font-weight: 700;
+      color: var(--xos-text-tertiary);
+      letter-spacing: 0.1em;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--xos-surface);
+      padding: 3px 8px;
+      border-radius: 6px;
+      border: 1px solid var(--xos-divider);
+    }
+    .college-id i {
+      font-size: 0.5rem;
+      color: var(--xos-text-tertiary);
+    }
+    .college-name {
+      font-size: 0.9rem;
+      font-weight: 600;
+      line-height: 1.35;
+      margin-bottom: 6px;
+      padding-right: 40px;
+      color: var(--xos-text-primary);
+    }
+    .college-loc {
+      font-size: 0.68rem;
+      color: var(--xos-accent);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .college-loc i {
+      font-size: 0.6rem;
+      opacity: 0.8;
+    }
+    .branch-name {
+      font-size: 0.7rem;
+      color: var(--xos-text-secondary);
+      margin-bottom: 14px;
+      padding: 6px 10px;
+      background: var(--xos-surface);
+      border-radius: 8px;
+      border: 1px solid var(--xos-divider);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .branch-name i {
+      font-size: 0.6rem;
+      color: var(--xos-accent);
+    }
+    .cutoff-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--xos-divider);
+      padding-top: 14px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .cutoff-block {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .cutoff-label {
+      font-size: 0.55rem;
+      color: var(--xos-text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .cutoff-label i {
+      font-size: 0.5rem;
+    }
+    .cutoff-value {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--xos-text-primary);
+      letter-spacing: -0.01em;
+    }
+    .variance {
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+    .variance-positive {
+      color: var(--xos-text-tertiary);
+    }
+    .variance-negative {
+      color: var(--xos-text-secondary);
+    }
+    .expand-btn {
+      background: transparent;
+      border: 1px solid var(--xos-border);
+      border-radius: 20px;
+      padding: 7px 14px;
+      font-size: 0.6rem;
+      color: var(--xos-accent);
+      cursor: pointer;
+      font-family: var(--xos-font);
+      font-weight: 600;
+      width: auto;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      letter-spacing: 0.02em;
+    }
+    .expand-btn i {
+      font-size: 0.5rem;
+      transition: transform 0.25s ease;
+    }
+    .expand-btn:hover {
+      background: var(--xos-accent-glow);
+      border-color: rgba(0, 122, 255, 0.2);
+    }
+    .expand-btn.active i {
+      transform: rotate(180deg);
+    }
+    .subs-list {
+      display: none;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--xos-divider);
+      flex-wrap: wrap;
+      gap: 8px;
+      animation: fadeUp 0.25s ease;
+    }
+    .subs-list.show {
+      display: flex;
+    }
+    .sub-chip {
+      background: var(--xos-surface);
+      border: 1px solid var(--xos-border);
+      border-radius: 20px;
+      padding: 7px 14px;
+      font-size: 0.65rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: var(--xos-text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .sub-chip:hover {
+      background: rgba(0, 122, 255, 0.06);
+      border-color: rgba(0, 122, 255, 0.2);
+      color: var(--xos-text-primary);
+    }
+    .sub-chip-cutoff {
+      font-size: 0.6rem;
+      color: var(--xos-accent);
+      margin-left: 4px;
+      font-weight: 600;
+    }
+    .no-results {
+      text-align: center;
+      color: var(--xos-text-tertiary);
+      font-size: 0.8rem;
+      padding: 40px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    .no-results i {
+      font-size: 1.4rem;
+      color: var(--xos-text-tertiary);
+      opacity: 0.5;
+    }
+    .result-stats {
+      font-size: 0.62rem;
+      color: var(--xos-text-tertiary);
+      margin-bottom: 16px;
+      letter-spacing: 0.08em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: var(--xos-surface);
+      border-radius: 10px;
+      border: 1px solid var(--xos-divider);
+    }
+    .result-stats i {
+      color: var(--xos-accent);
+      font-size: 0.6rem;
+    }
+    /* ===== SCROLLBAR ===== */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.14);
+    }
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 560px) {
+      body {
+        padding: 12px;
+      }
+      .xos-panel {
+        padding: 24px 18px;
+        border-radius: 20px;
+      }
+      .cutoff-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="xos-panel">
+  <div class="xos-header">
+    <div class="xos-header-left">
+      <h2>Disha Match Engine</h2>
+      <div class="xos-header-sub">
+        <i class="fa-solid fa-layer-group"></i>
+        Core + Specializations · ±2000 range
+      </div>
+    </div>
+    <span class="xos-badge"><i class="fa-solid fa-bolt"></i> v3.0</span>
+  </div>
+  <div class="form-group">
+    <label class="form-label">
+      <span class="step-num">1</span>
+      <i class="fa-solid fa-code-branch"></i> Core Branch
+    </label>
+    <input type="text" id="inputBranch" class="xos-input" placeholder="e.g., COMPUTER SCIENCE AND ENGINEERING" autocomplete="off">
+    <div id="branchSuggestBox" class="suggest-box"></div>
+  </div>
+  <div class="form-group">
+    <label class="form-label">
+      <span class="step-num">2</span>
+      <i class="fa-solid fa-tag"></i> Category
+    </label>
+    <select id="inputCategory" class="xos-input">
+      <option value="">Loading categories...</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label class="form-label">
+      <span class="step-num">3</span>
+      <i class="fa-solid fa-ranking-star"></i> Your Rank
+    </label>
+    <input type="number" id="inputRank" class="xos-input" placeholder="Enter CET rank" min="1">
+  </div>
+  <button class="xos-btn" id="searchBtn">
+    SEARCH <i class="fa-solid fa-arrow-right"></i>
+  </button>
+  <div id="resultsArea" class="results-container"></div>
+</div>
+<script src="./college-data.js"></script>
+<script>
+  // ============ GLOBAL STATE ============
+  let Engine = { branches: [], categories: [], branchToCode: new Map(), codeToBranch: new Map(), specializationMap: new Map() };
+  // ============ CLEAN BRANCH NAME ============
+  function cleanBranchName(name) {
+    if (!name) return '';
+    let clean = name.toUpperCase()
+      .replace(/^(B\s*TECH\s*IN\s*|BTECH\s*IN\s*|B\.\s*TECH\s*IN\s*|B\s*TECH\s*)/, '')
+      .replace(/^[^A-Z]+/, '')
+      .replace(/\s*&\s*/g, ' AND ')
+      .replace(/DAT A SCIENCE/g, 'DATA SCIENCE')
+      .replace(/CYB ER SECURITY/g, 'CYBER SECURITY')
+      .replace(/ARTI FICAL/g, 'ARTIFICIAL')
+      .replace(/ARTIFICAL/g, 'ARTIFICIAL')
+      .replace(/VIRUTAL/g, 'VIRTUAL')
+      .replace(/TELECOMMUNICAT ION/g, 'TELECOMMUNICATION')
+      .replace(/IND USTRIAL/g, 'INDUSTRIAL')
+      .replace(/INTEGTATED/g, 'INTEGRATED')
+      .replace(/EXC LUSIVELY/g, 'EXCLUSIVELY')
+      .replace(/BLO CK CHAIN/g, 'BLOCK CHAIN')
+      .replace(/\bENGG\b/g, 'ENGINEERING')
+      .replace(/\bTECH\b/g, 'TECHNOLOGY')
+      .replace(/\(/g, ' (')
+      .replace(/\s+/g, ' ')
+      .replace(/\(\s+/g, '(')
+      .replace(/\s+\)/g, ')')
+      .trim();
+    if (clean === 'COMPUTER SCIENCE' || clean === 'COMPUTER ENGINEERING') {
+      clean = 'COMPUTER SCIENCE AND ENGINEERING';
+    }
+    return clean;
+  }
+  // ============ BUILD MASTER DATA FROM COLLEGE-DATA.JS ============
+  function buildMasterData() {
+    if (!window.XOS_CUTOFF || !window.XOS_DICT) {
+      console.error("Missing college-data.js");
+      return false;
+    }
+    const branchSet = new Set();
+    const categorySet = new Set();
+    // Build branch mapping from XOS_DICT
+    for (const [code, rawName] of Object.entries(window.XOS_DICT)) {
+      const clean = cleanBranchName(rawName);
+      branchSet.add(clean);
+      Engine.branchToCode.set(clean, code);
+      Engine.codeToBranch.set(code, clean);
+    }
+    // Get categories from cutoff data
+    for (const college of window.XOS_CUTOFF) {
+      if (college.branches) {
+        for (const branchData of Object.values(college.branches)) {
+          for (const cat in branchData) {
+            if (branchData[cat] !== null && branchData[cat] !== undefined) {
+              categorySet.add(cat);
+            }
+          }
+        }
+      }
+    }
+    Engine.branches = Array.from(branchSet).sort();
+    Engine.categories = Array.from(categorySet).sort();
+    // Build specialization map: core branch -> list of specialization branches
+    for (const [code, rawName] of Object.entries(window.XOS_DICT)) {
+      const clean = cleanBranchName(rawName);
+      
+      // Check if this is a specialization (has parentheses after core name)
+      const parenMatch = clean.match(/^(.*?)\s*\((.*)\)$/);
+      if (parenMatch) {
+        const coreName = parenMatch[1].trim();
+        const specName = clean;
+        
+        if (!Engine.specializationMap.has(coreName)) {
+          Engine.specializationMap.set(coreName, []);
+        }
+        if (!Engine.specializationMap.get(coreName).includes(specName)) {
+          Engine.specializationMap.get(coreName).push(specName);
+        }
+      }
+    }
+    // Sort specializations for each core
+    for (const [core, specs] of Engine.specializationMap) {
+      Engine.specializationMap.set(core, specs.sort());
+    }
+    return true;
+  }
+  // ============ POPULATE UI ============
+  function populateCategoryDropdown() {
+    const catSelect = document.getElementById('inputCategory');
+    catSelect.innerHTML = '<option value="">Select category...</option>' + 
+      Engine.categories.map(c => `<option value="${c}">${c}</option>`).join('');
+  }
+  function setupAutocomplete() {
+    const input = document.getElementById('inputBranch');
+    const suggestBox = document.getElementById('branchSuggestBox');
+    input.addEventListener('input', (e) => {
+      const query = e.target.value.trim().toUpperCase();
+      if (!query) {
+        suggestBox.style.display = 'none';
+        return;
+      }
+      
+      const matches = Engine.branches.filter(b => b.includes(query)).slice(0, 6);
+      if (matches.length === 0) {
+        suggestBox.innerHTML = '<div class="suggest-item" style="color:var(--xos-text-tertiary);pointer-events:none;"><i class="fa-regular fa-circle-xmark" style="font-size:0.55rem;"></i> No matching branches</div>';
+      } else {
+        suggestBox.innerHTML = matches.map(m => `
+          <div class="suggest-item" onclick="selectBranch('${m.replace(/'/g, "\\'")}')">${m}</div>
+        `).join('');
+      }
+      suggestBox.style.display = 'block';
+    });
+    input.addEventListener('blur', () => {
+      setTimeout(() => suggestBox.style.display = 'none', 200);
+    });
+  }
+  window.selectBranch = function(val) {
+    document.getElementById('inputBranch').value = val;
+    document.getElementById('branchSuggestBox').style.display = 'none';
+  };
+  // ============ SEARCH ENGINE ============
+  function searchColleges() {
+    const targetBranch = document.getElementById('inputBranch').value.trim().toUpperCase();
+    const targetCat = document.getElementById('inputCategory').value;
+    const userRank = parseInt(document.getElementById('inputRank').value, 10);
+    const resultsArea = document.getElementById('resultsArea');
+    if (!targetBranch || !targetCat || isNaN(userRank)) {
+      resultsArea.innerHTML = `<div class="no-results"><i class="fa-solid fa-triangle-exclamation"></i> Please fill all fields</div>`;
+      resultsArea.style.display = 'block';
+      return;
+    }
+    if (!window.XOS_CUTOFF) return;
+    // Find the exact core branch and its specializations
+    let matchingCore = null;
+    for (const branch of Engine.branches) {
+      if (branch === targetBranch || branch.includes(targetBranch)) {
+        matchingCore = branch;
+        break;
+      }
+    }
+    if (!matchingCore) {
+      resultsArea.innerHTML = `<div class="no-results"><i class="fa-solid fa-triangle-exclamation"></i> Branch "${targetBranch}" not found</div>`;
+      resultsArea.style.display = 'block';
+      return;
+    }
+    // Get all branch codes to search (core + its specializations)
+    const branchesToSearch = [matchingCore];
+    const specializations = Engine.specializationMap.get(matchingCore) || [];
+    branchesToSearch.push(...specializations);
+    // Get codes for all these branches
+    const codesToSearch = new Set();
+    for (const branch of branchesToSearch) {
+      const code = Engine.branchToCode.get(branch);
+      if (code) codesToSearch.add(code);
+    }
+    const RANGE = 2000;
+    const matches = [];
+    for (const college of window.XOS_CUTOFF) {
+      if (!college.branches) continue;
+      
+      for (const [branchCode, cutoffData] of Object.entries(college.branches)) {
+        if (!codesToSearch.has(branchCode)) continue;
+        
+        const cutoff = cutoffData[targetCat];
+        if (cutoff === null || cutoff === undefined) continue;
+        
+        const diff = cutoff - userRank;
+        if (Math.abs(diff) <= RANGE) {
+          const branchName = Engine.codeToBranch.get(branchCode) || branchCode;
+          const isSpec = branchName !== matchingCore;
+          
+          matches.push({
+            id: college.id,
+            name: college.name,
+            location: college.location || 'Karnataka',
+            branch: branchName,
+            cutoff: cutoff,
+            diff: diff,
+            isSpecialization: isSpec,
+            coreBranch: matchingCore
+          });
+        }
+      }
+    }
+    // Group matches by college
+    const collegeMap = new Map();
+    for (const match of matches) {
+      if (!collegeMap.has(match.id)) {
+        collegeMap.set(match.id, {
+          id: match.id,
+          name: match.name,
+          location: match.location,
+          coreMatch: null,
+          specializations: []
+        });
+      }
+      
+      const collegeData = collegeMap.get(match.id);
+      if (!match.isSpecialization) {
+        collegeData.coreMatch = match;
+      } else {
+        collegeData.specializations.push(match);
+      }
+    }
+    // Build results array
+    const finalResults = [];
+    for (const [_, collegeData] of collegeMap) {
+      if (collegeData.coreMatch) {
+        finalResults.push(collegeData);
+      }
+    }
+    
+    // Sort by variance of core branch
+    finalResults.sort((a, b) => Math.abs(a.coreMatch.diff) - Math.abs(b.coreMatch.diff));
+    // Render
+    resultsArea.style.display = 'block';
+    if (finalResults.length === 0) {
+      resultsArea.innerHTML = `<div class="no-results"><i class="fa-regular fa-folder-open"></i> No colleges found for "${matchingCore}" within ±${RANGE} rank range</div>`;
+      return;
+    }
+    let html = `<div class="result-stats"><i class="fa-solid fa-crosshairs"></i> ${finalResults.length} college(s) · ${branchesToSearch.length} branch(es) searched (core + ${specializations.length} specs)</div>`;
+    
+    finalResults.forEach((college, idx) => {
+      const core = college.coreMatch;
+      const specs = college.specializations;
+      
+      html += `
+        <div class="result-card" id="result_${idx}">
+          <div class="result-header">
+            <div class="college-id"><i class="fa-solid fa-hashtag"></i> ${college.id}</div>
+          </div>
+          <div class="college-name">${escapeHtml(college.name)}</div>
+          <div class="college-loc"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(college.location)}</div>
+          <div class="branch-name"><i class="fa-solid fa-book"></i> ${core.branch}</div>
+          <div class="cutoff-row">
+            <div class="cutoff-block">
+              <div class="cutoff-label"><i class="fa-solid fa-chart-line"></i> Cutoff (${targetCat})</div>
+              <div class="cutoff-value">${core.cutoff.toLocaleString('en-IN')}</div>
+            </div>
+            <div class="cutoff-block">
+              <div class="cutoff-label"><i class="fa-solid fa-arrow-up-right-dots"></i> Variance</div>
+              <div class="variance ${core.diff >= 0 ? 'variance-positive' : 'variance-negative'}">
+                ${core.diff >= 0 ? '+' : ''}${core.diff}
+              </div>
+            </div>
+            ${specs.length > 0 ? `<button class="expand-btn" onclick="toggleSpecs(${idx}, this)"><i class="fa-solid fa-chevron-down"></i> ${specs.length} spec${specs.length > 1 ? 's' : ''}</button>` : ''}
+          </div>
+          <div class="subs-list" id="specs_${idx}">
+            ${specs.map(spec => `
+              <span class="sub-chip" onclick="searchSpecialization('${escapeHtml(spec.branch).replace(/'/g, "\\'")}')">
+                ${escapeHtml(spec.branch)} 
+                <span class="sub-chip-cutoff">${spec.cutoff.toLocaleString('en-IN')}</span>
+              </span>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    });
+    
+    resultsArea.innerHTML = html;
+  }
+  window.toggleSpecs = function(idx, btn) {
+    const subsDiv = document.getElementById(`specs_${idx}`);
+    if (subsDiv) {
+      subsDiv.classList.toggle('show');
+      if (btn) btn.classList.toggle('active');
+    }
+  };
+  window.searchSpecialization = function(branchName) {
+    document.getElementById('inputBranch').value = branchName;
+    searchColleges();
+  };
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+  // ============ INITIALIZE ============
+  if (buildMasterData()) {
+    populateCategoryDropdown();
+    setupAutocomplete();
+    document.getElementById('searchBtn').addEventListener('click', searchColleges);
+    document.getElementById('inputRank').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') searchColleges();
+    });
+  } else {
+    document.getElementById('inputCategory').innerHTML = '<option><i class="fa-solid fa-xmark"></i> Error loading data</option>';
+  }
+</script>
+</body>
+</html>
