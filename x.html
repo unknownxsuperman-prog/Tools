@@ -2,723 +2,412 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>x0s · Disha Match | Core + Specializations Explorer</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>x0s · Disha Match | Core + Specializations</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    :root {
-      --bg: #000000;
-      --surface: rgba(10, 10, 12, 0.94);
-      --accent: #007aff;
-      --accent-soft: rgba(0, 122, 255, 0.12);
-      --border: #1e1e24;
-      --text-primary: #ffffff;
-      --text-secondary: #a1a1aa;
-      --text-muted: #5e5e6a;
-      --card-radius: 22px;
-    }
-
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      background: var(--bg);
+      background: #000000;
       font-family: 'Inter', sans-serif;
-      padding: 20px 16px;
+      padding: 24px 16px;
       display: flex;
       justify-content: center;
-      align-items: center;
-      min-height: 100vh;
     }
-
-    .xos-container {
-      max-width: 620px;
-      width: 100%;
-      margin: 0 auto;
-    }
-
-    .glass-panel {
-      background: var(--surface);
+    .container { max-width: 600px; width: 100%; }
+    .panel {
+      background: rgba(10, 10, 12, 0.94);
       backdrop-filter: blur(28px);
-      -webkit-backdrop-filter: blur(28px);
-      border: 1px solid var(--border);
-      border-radius: var(--card-radius);
+      border: 1px solid #1e1e24;
+      border-radius: 28px;
       padding: 28px 24px;
-      box-shadow: 0 25px 45px -12px rgba(0,0,0,0.9);
     }
-
-    .badge-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 28px;
-    }
-    .title-section h2 {
-      font-size: 1.55rem;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-      background: linear-gradient(135deg, #fff, #cbd5e1);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
-    .title-section p {
-      font-size: 0.7rem;
-      color: var(--text-muted);
-      font-weight: 500;
-      margin-top: 4px;
-    }
-    .version-badge {
-      font-size: 0.65rem;
-      font-weight: 600;
-      background: var(--accent-soft);
-      color: var(--accent);
-      padding: 4px 12px;
-      border-radius: 40px;
-      border: 0.5px solid rgba(0,122,255,0.3);
-    }
-
-    .field {
-      margin-bottom: 24px;
-      position: relative;
-    }
-    .field-label {
-      font-size: 0.7rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--text-muted);
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .field-label span {
-      background: #1c1c22;
-      padding: 2px 8px;
-      border-radius: 30px;
-      font-size: 0.6rem;
-    }
-    .xos-input, select.xos-input {
+    .header { display: flex; justify-content: space-between; margin-bottom: 28px; }
+    .header h2 { font-size: 1.5rem; font-weight: 700; color: white; }
+    .badge { font-size: 0.65rem; color: #007aff; background: rgba(0,122,255,0.1); padding: 4px 12px; border-radius: 40px; }
+    .field { margin-bottom: 24px; }
+    .label { font-size: 0.7rem; color: #6a6a78; text-transform: uppercase; margin-bottom: 8px; display: block; }
+    input, select {
       width: 100%;
       background: #0c0c0e;
-      border: 1px solid var(--border);
+      border: 1px solid #2a2a30;
       border-radius: 16px;
       padding: 14px 16px;
       color: white;
-      font-family: 'Inter', monospace;
       font-size: 0.9rem;
       outline: none;
-      transition: all 0.2s;
     }
-    .xos-input:focus, select.xos-input:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 2px rgba(0,122,255,0.2);
-    }
-
-    /* autocomplete */
-    .autocomplete-list {
-      position: absolute;
-      top: calc(100% + 6px);
-      left: 0;
-      right: 0;
-      background: #0f0f14;
-      border: 1px solid #2a2a30;
-      border-radius: 18px;
-      z-index: 200;
-      max-height: 240px;
-      overflow-y: auto;
-      backdrop-filter: blur(8px);
-      display: none;
-      box-shadow: 0 12px 28px rgba(0,0,0,0.7);
-    }
-    .autocomplete-item {
-      padding: 12px 16px;
-      font-size: 0.85rem;
-      color: #dddddd;
-      cursor: pointer;
-      transition: 0.1s;
-      border-bottom: 1px solid #1f1f26;
-    }
-    .autocomplete-item:hover {
-      background: #1c1c24;
-      color: white;
-    }
-
-    /* core + subs hierarchy (from college-data) */
-    .core-group {
-      margin-top: 12px;
-      border-radius: 18px;
-      background: rgba(0,0,0,0.3);
-      overflow: hidden;
-    }
-    .core-header {
-      background: rgba(255,255,255,0.02);
-      border-radius: 14px;
-      padding: 12px 14px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      cursor: pointer;
-      transition: background 0.15s;
-      border: 0.5px solid transparent;
-    }
-    .core-header:hover {
-      background: rgba(255,255,255,0.05);
-      border-color: #2a2a32;
-    }
-    .chevron {
-      font-size: 1rem;
-      transition: transform 0.2s;
-      color: var(--accent);
-      font-weight: 600;
-    }
-    .chevron.open {
-      transform: rotate(90deg);
-    }
-    .core-name {
-      font-weight: 650;
-      font-size: 0.85rem;
-      letter-spacing: -0.2px;
-      flex: 1;
-    }
-    .sub-branch-container {
-      padding-left: 32px;
-      padding-bottom: 12px;
-      display: none;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 6px;
-    }
-    .sub-branch-container.show {
-      display: flex;
-    }
-    .sub-chip {
-      background: #050507;
-      border: 0.5px solid #2c2c34;
-      border-radius: 40px;
-      padding: 6px 14px;
-      font-size: 0.7rem;
-      color: #bcbcc6;
-      cursor: pointer;
-      transition: all 0.1s;
-    }
-    .sub-chip:hover {
-      background: #1c1c24;
-      color: white;
-      border-color: #4a4a58;
-    }
-
-    .xos-btn {
+    input:focus, select:focus { border-color: #007aff; }
+    button {
       width: 100%;
       background: white;
       color: black;
       border: none;
+      border-radius: 40px;
       padding: 15px;
-      border-radius: 44px;
       font-weight: 700;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.85rem;
-      letter-spacing: 0.4px;
-      margin-top: 12px;
       cursor: pointer;
-      transition: transform 0.1s, opacity 0.2s;
+      margin-top: 8px;
     }
-    .xos-btn:active {
-      transform: scale(0.97);
+    button:active { transform: scale(0.97); }
+    
+    /* Core branch groups */
+    .core-group {
+      margin-top: 12px;
+      border: 1px solid #1e1e24;
+      border-radius: 16px;
+      overflow: hidden;
     }
-
-    .results-panel {
-      margin-top: 32px;
-      border-top: 1px solid var(--border);
-      padding-top: 24px;
-      display: none;
-    }
-    .result-stats {
-      font-size: 0.7rem;
-      color: var(--text-muted);
-      margin-bottom: 16px;
-      letter-spacing: 0.3px;
-    }
-    .college-card {
-      background: #08080c;
-      border: 1px solid #202026;
-      border-radius: 20px;
-      padding: 18px;
-      margin-bottom: 12px;
-      position: relative;
-      transition: all 0.1s;
-    }
-    .college-id-bg {
-      position: absolute;
-      top: 12px;
-      right: 18px;
-      font-size: 2.6rem;
-      font-weight: 800;
-      color: rgba(255,255,255,0.018);
-      pointer-events: none;
-      font-family: monospace;
-    }
-    .college-name {
-      font-weight: 650;
-      font-size: 0.95rem;
-      line-height: 1.3;
-      padding-right: 50px;
-      margin-bottom: 6px;
-    }
-    .college-loc {
-      font-size: 0.65rem;
-      color: var(--accent);
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-      margin-bottom: 8px;
-    }
-    .branch-badge {
-      font-size: 0.68rem;
-      background: #101014;
-      padding: 4px 12px;
-      border-radius: 30px;
-      display: inline-block;
-      margin: 8px 0 12px 0;
-      border: 0.5px solid #2a2a32;
-    }
-    .cutoff-row {
+    .core-header {
       display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      border-top: 1px solid #1a1a20;
-      padding-top: 12px;
-      margin-top: 4px;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      background: rgba(255,255,255,0.02);
+      cursor: pointer;
     }
-    .cutoff-value {
-      font-size: 1.2rem;
-      font-weight: 700;
+    .arrow {
+      font-size: 14px;
+      transition: transform 0.2s;
+      color: #007aff;
     }
-    .variance {
-      font-size: 0.8rem;
-      font-weight: 500;
-      color: #a0a0ae;
+    .arrow.open { transform: rotate(90deg); }
+    .core-name { font-weight: 600; flex: 1; }
+    .spec-count { font-size: 0.65rem; color: #6a6a78; }
+    .sub-list {
+      display: none;
+      padding: 12px 16px;
+      flex-wrap: wrap;
+      gap: 8px;
+      border-top: 1px solid #1e1e24;
     }
-    .no-results {
-      text-align: center;
-      padding: 40px 20px;
-      color: #5e5e6c;
-      font-size: 0.8rem;
+    .sub-list.show { display: flex; }
+    .sub-chip {
+      background: #0c0c0e;
+      border: 1px solid #2a2a30;
+      border-radius: 40px;
+      padding: 6px 14px;
+      font-size: 0.7rem;
+      cursor: pointer;
     }
+    .sub-chip:hover { background: #1c1c24; border-color: #007aff; }
+    
+    .result-card {
+      background: #0c0c0e;
+      border: 1px solid #1e1e24;
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+    .result-name { font-weight: 600; margin-bottom: 4px; }
+    .result-loc { font-size: 0.65rem; color: #007aff; margin-bottom: 8px; }
+    .result-branch { font-size: 0.7rem; color: #aaa; margin-bottom: 12px; }
+    .result-stats { display: flex; justify-content: space-between; border-top: 1px solid #1e1e24; padding-top: 12px; }
+    .cutoff { font-size: 1.2rem; font-weight: 700; }
+    .variance { font-size: 0.8rem; color: #8a8a9a; }
+    .no-results { text-align: center; padding: 40px; color: #6a6a78; }
+    .results-panel { margin-top: 24px; display: none; }
   </style>
 </head>
 <body>
-<div class="xos-container">
-  <div class="glass-panel">
-    <div class="badge-row">
-      <div class="title-section">
-        <h2>disha · match engine</h2>
-        <p>live from college-data.js · core + specializations</p>
-      </div>
-      <div class="version-badge">v2.3 · KEA style</div>
+<div class="container">
+  <div class="panel">
+    <div class="header">
+      <h2>disha · match</h2>
+      <div class="badge">v2.0 · core + specs</div>
     </div>
 
-    <!-- branch input with autocomplete -->
     <div class="field">
-      <div class="field-label"><span>①</span> target branch / specialization</div>
-      <input type="text" id="branchInput" class="xos-input" placeholder="e.g., Computer Science, AI & ML, Cyber Security, Data Science ..." autocomplete="off">
-      <div id="branchSuggestBox" class="autocomplete-list"></div>
-      
-      <!-- dynamic core + sub hierarchy (built from college-data) -->
-      <div id="hierarchyArea" style="margin-top: 14px;"></div>
+      <label class="label">① select branch (core or specialization)</label>
+      <input type="text" id="branchInput" placeholder="Type or click a branch below...">
     </div>
 
-    <!-- category selector -->
+    <!-- Core + Specializations hierarchy (built from college-data.js) -->
+    <div id="branchHierarchy"></div>
+
     <div class="field">
-      <div class="field-label"><span>②</span> reservation category</div>
-      <select id="categorySelect" class="xos-input">
-        <option value="">loading categories...</option>
-      </select>
+      <label class="label">② reservation category</label>
+      <select id="categorySelect"><option>Loading categories...</option></select>
     </div>
 
-    <!-- rank input -->
     <div class="field">
-      <div class="field-label"><span>③</span> predicted CET rank</div>
-      <input type="number" id="rankInput" class="xos-input" placeholder="Enter your rank" min="1">
+      <label class="label">③ your CET rank</label>
+      <input type="number" id="rankInput" placeholder="Enter rank">
     </div>
 
-    <button class="xos-btn" id="searchTrigger">⟳  search matches  →</button>
+    <button id="searchBtn">🔍 find colleges →</button>
 
-    <!-- results container -->
-    <div id="resultsPanel" class="results-panel"></div>
+    <div id="results" class="results-panel"></div>
   </div>
 </div>
 
 <script src="./college-data.js"></script>
 <script>
-  (function() {
-    // ---------- SAFETY GUARD ----------
-    if (!window.XOS_CUTOFF || !window.XOS_DICT) {
-      const errDiv = document.createElement('div');
-      errDiv.style.background = '#220000';
-      errDiv.style.padding = '16px';
-      errDiv.style.borderRadius = '16px';
-      errDiv.style.marginTop = '20px';
-      errDiv.style.color = '#ff8080';
-      errDiv.innerText = '⚠️ college-data.js not loaded. Make sure "college-data.js" exists and exports window.XOS_CUTOFF + window.XOS_DICT.';
-      document.querySelector('.glass-panel').appendChild(errDiv);
-      console.error('missing dataset');
-      return;
-    }
+  // Wait for college-data.js to load
+  if (!window.XOS_CUTOFF || !window.XOS_DICT) {
+    document.body.innerHTML = '<div style="color:red; padding:40px;">❌ college-data.js not found! Make sure the file is in the same folder.</div>';
+  } else {
+    initApp();
+  }
 
-    // ---------- GLOBAL MAPS (built from college-data) ----------
-    let rawBranchCodes = [];                 // list of all branch codes from XOS_DICT
-    let sanitizedToCode = new Map();         // sanitized branch name -> original branch code
-    let allSanitizedNames = [];              // list of sanitized names for autocomplete
-    let allCategoriesSet = new Set();         // all category keys (1H, GMKH, 2AH, etc)
+  function initApp() {
+    // ---- STEP 1: Parse all branches from XOS_DICT ----
+    // Structure: Map<coreName, Array<{code, fullName, isSpecialization?}]>
+    const cores = new Map(); // core name -> { specs: [], codes: [] }
+    const allBranchNames = []; // for autocomplete
     
-    // structure for hierarchy: coreName -> array of specialization strings (sanitized)
-    let coreToSpecs = new Map();
-    
-    // helper: aggressive clean + normalization (mirrors college-data cleaning)
-    function sanitizeBranch(raw) {
-      if (!raw) return '';
-      let s = raw.toUpperCase().trim();
-      s = s.replace(/^(B\.?\s*TECH\s+IN\s+|BTECH\s+IN\s+|B\s*TECH\s+|B\.?E\.?\s+IN\s+)/i, '');
-      s = s.replace(/DAT A SCIENCE/g, 'DATA SCIENCE')
-           .replace(/CYB ER SECURITY/g, 'CYBER SECURITY')
-           .replace(/ARTI FICAL/g, 'ARTIFICIAL')
-           .replace(/ARTIFICAL/g, 'ARTIFICIAL')
-           .replace(/VIRUTAL/g, 'VIRTUAL')
-           .replace(/TELECOMMUNICAT ION/g, 'TELECOMMUNICATION')
-           .replace(/IND USTRIAL/g, 'INDUSTRIAL')
-           .replace(/INTEGTATED/g, 'INTEGRATED')
-           .replace(/EXC LUSIVELY/g, 'EXCLUSIVELY')
-           .replace(/BLO CK CHAIN/g, 'BLOCK CHAIN')
-           .replace(/MATHAMATICS/g, 'MATHEMATICS')
-           .replace(/\s*&\s*/g, ' AND ')
-           .replace(/\bENGG\b/g, 'ENGINEERING')
-           .replace(/\bMGMT\b/g, 'MANAGEMENT')
-           .replace(/\(/g, ' (')
-           .replace(/\s+/g, ' ')
-           .trim();
-      // core normalization
-      if (s === 'COMPUTER SCIENCE') s = 'COMPUTER SCIENCE AND ENGINEERING';
-      if (s === 'COMPUTER ENGINEERING') s = 'COMPUTER SCIENCE AND ENGINEERING';
-      if (s === 'COMPUTER SCIENCE & ENGINEERING') s = 'COMPUTER SCIENCE AND ENGINEERING';
-      if (s === 'ELECTRONICS AND COMMUNICATION') s = 'ELECTRONICS AND COMMUNICATION ENGINEERING';
-      if (s === 'ELECTRICAL AND ELECTRONICS') s = 'ELECTRICAL AND ELECTRONICS ENGINEERING';
-      return s;
-    }
-    
-    // 1) build initial data from window.XOS_DICT
-    function buildMasterData() {
-      const codes = Object.keys(window.XOS_DICT);
-      for (let code of codes) {
-        const originalName = window.XOS_DICT[code];
-        if (!originalName) continue;
-        const sanitized = sanitizeBranch(originalName);
-        sanitizedToCode.set(sanitized, code);
-        allSanitizedNames.push(sanitized);
-      }
-      // deduplicate sanitized names
-      allSanitizedNames = [...new Set(allSanitizedNames)].sort();
+    for (const [code, fullName] of Object.entries(window.XOS_DICT)) {
+      let name = fullName.toUpperCase().trim();
       
-      // also collect categories from XOS_CUTOFF
-      for (let college of window.XOS_CUTOFF) {
-        if (!college.branches) continue;
-        for (let branchCode in college.branches) {
-          const cutoffObj = college.branches[branchCode];
-          for (let cat in cutoffObj) {
-            if (cutoffObj[cat] !== null && cutoffObj[cat] !== undefined) allCategoriesSet.add(cat);
-          }
-        }
+      // Check if it's a specialization (has parentheses or dash)
+      let isSpec = false;
+      let coreName = name;
+      let specName = null;
+      
+      // Pattern: "COMPUTER SCIENCE AND ENGINEERING (ARTIFICIAL INTELLIGENCE AND MACHINE LEARNING)"
+      const parenMatch = name.match(/^(.*?)\s*\((.*)\)$/);
+      if (parenMatch) {
+        coreName = parenMatch[1].trim();
+        specName = parenMatch[2].trim();
+        isSpec = true;
       }
       
-      // build core <-> specs hierarchy (detect parentheses and dash specs)
-      const specMap = new Map(); // core -> Set of specs
-      for (let sanitized of allSanitizedNames) {
-        let core = sanitized;
-        let spec = null;
-        const parenMatch = sanitized.match(/^(.*?)\s*\((.*)\)$/);
-        if (parenMatch) {
-          core = parenMatch[1].trim();
-          spec = parenMatch[2].trim();
-        } else {
-          const dashSplit = sanitized.split(' - ');
-          if (dashSplit.length === 2 && !sanitized.includes('AND')) {
-            core = dashSplit[0].trim();
-            spec = dashSplit[1].trim();
-          }
-        }
-        if (spec && core) {
-          if (!specMap.has(core)) specMap.set(core, new Set());
-          specMap.get(core).add(spec);
-        }
+      // Pattern with dash: "COMPUTER SCIENCE AND ENGINEERING - DATA SCIENCE"
+      const dashMatch = name.match(/^(.*?)\s*-\s*(.*)$/);
+      if (!isSpec && dashMatch) {
+        coreName = dashMatch[1].trim();
+        specName = dashMatch[2].trim();
+        isSpec = true;
       }
-      // also ensure every core exists even without spec for display
-      for (let sanitized of allSanitizedNames) {
-        if (!specMap.has(sanitized)) {
-          specMap.set(sanitized, new Set());
-        }
-      }
-      // convert to array for display
-      coreToSpecs.clear();
-      for (let [core, specSet] of specMap.entries()) {
-        if (specSet.size === 0) {
-          coreToSpecs.set(core, []);
-        } else {
-          coreToSpecs.set(core, Array.from(specSet).sort());
-        }
-      }
-    }
-    
-    // render hierarchy UI (core groups with chevron + sub-chips)
-    function renderHierarchy() {
-      const container = document.getElementById('hierarchyArea');
-      if (!container) return;
-      const sortedCores = Array.from(coreToSpecs.keys()).sort();
-      if (sortedCores.length === 0) {
-        container.innerHTML = '<div style="font-size:0.7rem; color:#4a4a58; padding:8px 0;">loading branches from college-data...</div>';
-        return;
-      }
-      let html = '';
-      for (let core of sortedCores) {
-        const subs = coreToSpecs.get(core) || [];
-        const hasSubs = subs.length > 0;
-        const uniqueId = `core-${core.replace(/[^a-z0-9]/gi, '-')}`;
-        html += `
-          <div class="core-group" data-core="${escapeHtml(core)}">
-            <div class="core-header" data-core-id="${uniqueId}">
-              <span class="chevron" id="chevron-${uniqueId}">▶</span>
-              <span class="core-name">${escapeHtml(core)}</span>
-              ${hasSubs ? `<span style="font-size:0.6rem; color:#6c6c7a;">${subs.length} spec</span>` : ''}
-            </div>
-            <div class="sub-branch-container" id="subs-${uniqueId}">
-              ${hasSubs ? subs.map(sub => `<span class="sub-chip" data-branch="${escapeHtml(core)} (${escapeHtml(sub)})">${escapeHtml(sub)}</span>`).join('') : '<span style="font-size:0.65rem; color:#4a4a58; padding:4px 0;">no specializations listed</span>'}
-            </div>
-          </div>
-        `;
-      }
-      container.innerHTML = html;
       
-      // attach toggle events
-      for (let core of sortedCores) {
-        const uniqueId = `core-${core.replace(/[^a-z0-9]/gi, '-')}`;
-        const header = document.querySelector(`.core-header[data-core-id="${uniqueId}"]`);
-        const subsDiv = document.getElementById(`subs-${uniqueId}`);
-        const chevronSpan = document.getElementById(`chevron-${uniqueId}`);
-        if (header && subsDiv) {
-          header.addEventListener('click', (e) => {
-            e.stopPropagation();
-            subsDiv.classList.toggle('show');
-            if (chevronSpan) chevronSpan.classList.toggle('open');
-          });
-        }
+      // Normalize core names
+      if (coreName === 'COMPUTER SCIENCE') coreName = 'COMPUTER SCIENCE AND ENGINEERING';
+      if (coreName === 'COMPUTER ENGINEERING') coreName = 'COMPUTER SCIENCE AND ENGINEERING';
+      
+      if (!cores.has(coreName)) {
+        cores.set(coreName, { specs: [], codes: [], fullNames: [] });
       }
-      // attach sub-chip click to populate input field
-      document.querySelectorAll('.sub-chip').forEach(chip => {
-        chip.addEventListener('click', (e) => {
-          const fullBranch = chip.getAttribute('data-branch');
-          if (fullBranch) {
-            document.getElementById('branchInput').value = fullBranch;
-            document.getElementById('branchSuggestBox').style.display = 'none';
-            // optionally trigger search? we just fill.
-          }
-        });
-      });
-      // also allow core-header double functionality: clicking core itself fills the core name
-      document.querySelectorAll('.core-header').forEach(header => {
-        header.addEventListener('click', (e) => {
-          const coreElem = header.querySelector('.core-name');
-          if (coreElem && coreElem.innerText) {
-            const coreVal = coreElem.innerText;
-            document.getElementById('branchInput').value = coreVal;
-            document.getElementById('branchSuggestBox').style.display = 'none';
-          }
-        });
-      });
-    }
-    
-    function escapeHtml(str) {
-      if (!str) return '';
-      return str.replace(/[&<>]/g, function(m) {
-        if (m === '&') return '&amp;';
-        if (m === '<') return '&lt;';
-        if (m === '>') return '&gt;';
-        return m;
-      });
-    }
-    
-    // populate category dropdown
-    function populateCategories() {
-      const catSelect = document.getElementById('categorySelect');
-      const sortedCats = Array.from(allCategoriesSet).sort();
-      if (sortedCats.length === 0) {
-        catSelect.innerHTML = '<option value="">no categories found</option>';
-        return;
-      }
-      let options = '<option value="">select category (GMH, 1H, 2AH, SCH ...)</option>';
-      for (let cat of sortedCats) {
-        options += `<option value="${cat}">${cat}</option>`;
-      }
-      catSelect.innerHTML = options;
-    }
-    
-    // Autocomplete logic
-    const branchInput = document.getElementById('branchInput');
-    const suggestBox = document.getElementById('branchSuggestBox');
-    
-    function updateAutocomplete() {
-      const query = branchInput.value.trim().toUpperCase();
-      if (!query) {
-        suggestBox.style.display = 'none';
-        return;
-      }
-      const matches = allSanitizedNames.filter(name => name.toUpperCase().includes(query)).slice(0, 8);
-      if (matches.length === 0) {
-        suggestBox.innerHTML = '<div class="autocomplete-item" style="color:#5e5e6a; cursor:default;">no matching branches</div>';
+      
+      const coreData = cores.get(coreName);
+      coreData.codes.push(code);
+      coreData.fullNames.push(name);
+      
+      if (isSpec && specName) {
+        coreData.specs.push({ name: specName, code: code, fullName: name });
       } else {
-        suggestBox.innerHTML = matches.map(m => `<div class="autocomplete-item" data-val="${escapeHtml(m)}">${escapeHtml(m)}</div>`).join('');
-        // attach event listeners
-        document.querySelectorAll('#branchSuggestBox .autocomplete-item[data-val]').forEach(el => {
-          el.addEventListener('click', () => {
-            branchInput.value = el.getAttribute('data-val');
-            suggestBox.style.display = 'none';
-          });
-        });
+        // This is the core branch itself
+        coreData.coreCode = code;
+        coreData.coreFullName = name;
       }
-      suggestBox.style.display = 'block';
+      
+      allBranchNames.push({ name: name, code: code, isSpec: isSpec });
     }
     
-    branchInput.addEventListener('input', updateAutocomplete);
-    branchInput.addEventListener('blur', () => {
-      setTimeout(() => { suggestBox.style.display = 'none'; }, 180);
-    });
-    document.addEventListener('click', (e) => {
-      if (!branchInput.contains(e.target) && !suggestBox.contains(e.target)) suggestBox.style.display = 'none';
+    // Sort cores alphabetically
+    const sortedCores = Array.from(cores.keys()).sort();
+    
+    // ---- STEP 2: Render branch hierarchy (core + expandable specs) ----
+    const hierarchyDiv = document.getElementById('branchHierarchy');
+    let hierarchyHtml = '';
+    
+    for (const coreName of sortedCores) {
+      const data = cores.get(coreName);
+      const hasSpecs = data.specs && data.specs.length > 0;
+      const coreId = coreName.replace(/[^a-z0-9]/gi, '_');
+      
+      hierarchyHtml += `
+        <div class="core-group">
+          <div class="core-header" data-core="${coreName}" data-code="${data.coreCode || ''}">
+            <span class="arrow" id="arrow_${coreId}">▶</span>
+            <span class="core-name">${coreName}</span>
+            ${hasSpecs ? `<span class="spec-count">${data.specs.length} specializations</span>` : ''}
+          </div>
+          <div class="sub-list" id="subs_${coreId}">
+            ${hasSpecs ? data.specs.map(s => `
+              <span class="sub-chip" data-branch="${s.fullName}" data-code="${s.code}">${s.name}</span>
+            `).join('') : '<span style="font-size:0.7rem; color:#6a6a78;">No specializations listed</span>'}
+          </div>
+        </div>
+      `;
+    }
+    hierarchyDiv.innerHTML = hierarchyHtml;
+    
+    // Attach click handlers for core headers (toggle specs)
+    document.querySelectorAll('.core-header').forEach(header => {
+      const coreName = header.getAttribute('data-core');
+      const coreCode = header.getAttribute('data-code');
+      const coreId = coreName.replace(/[^a-z0-9]/gi, '_');
+      const arrow = document.getElementById(`arrow_${coreId}`);
+      const subsDiv = document.getElementById(`subs_${coreId}`);
+      
+      header.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (subsDiv) {
+          subsDiv.classList.toggle('show');
+          if (arrow) arrow.classList.toggle('open');
+        }
+      });
+      
+      // Also allow clicking core name to select it
+      const coreNameSpan = header.querySelector('.core-name');
+      if (coreNameSpan) {
+        coreNameSpan.style.cursor = 'pointer';
+        coreNameSpan.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (coreCode) {
+            const fullBranchName = cores.get(coreName)?.coreFullName || coreName;
+            document.getElementById('branchInput').value = fullBranchName;
+          }
+        });
+      }
     });
     
-    // ---------- SEARCH ENGINE ----------
+    // Attach click handlers for sub-chips (specializations)
+    document.querySelectorAll('.sub-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const branchName = chip.getAttribute('data-branch');
+        if (branchName) {
+          document.getElementById('branchInput').value = branchName;
+        }
+      });
+    });
+    
+    // ---- STEP 3: Extract all categories from cutoff data ----
+    const categories = new Set();
+    for (const college of window.XOS_CUTOFF) {
+      if (college.branches) {
+        for (const branchData of Object.values(college.branches)) {
+          for (const cat in branchData) {
+            if (branchData[cat] !== null && branchData[cat] !== undefined) {
+              categories.add(cat);
+            }
+          }
+        }
+      }
+    }
+    
+    const catSelect = document.getElementById('categorySelect');
+    catSelect.innerHTML = '<option value="">Select category...</option>' + 
+      Array.from(categories).sort().map(c => `<option value="${c}">${c}</option>`).join('');
+    
+    // ---- STEP 4: Search function (matches branch code to cutoff) ----
+    function findBranchCode(branchName) {
+      if (!branchName) return null;
+      const upperName = branchName.toUpperCase().trim();
+      
+      // Find matching code from XOS_DICT
+      for (const [code, name] of Object.entries(window.XOS_DICT)) {
+        if (name.toUpperCase() === upperName) return code;
+        if (name.toUpperCase().includes(upperName)) return code;
+      }
+      return null;
+    }
+    
     function searchColleges() {
-      const targetRaw = branchInput.value.trim();
-      if (!targetRaw) {
-        showResultsMessage('⚠️ Please select or type a branch name.', false);
+      const branchInput = document.getElementById('branchInput').value.trim();
+      const category = document.getElementById('categorySelect').value;
+      const rank = parseInt(document.getElementById('rankInput').value, 10);
+      const resultsDiv = document.getElementById('results');
+      
+      if (!branchInput) {
+        resultsDiv.innerHTML = '<div class="no-results">⚠️ Select a branch first</div>';
+        resultsDiv.style.display = 'block';
         return;
       }
-      const targetCat = document.getElementById('categorySelect').value;
-      const userRank = parseInt(document.getElementById('rankInput').value, 10);
-      if (!targetCat) {
-        showResultsMessage('❌ Select a reservation category (e.g., GMH, 2AH, SCH).', false);
+      if (!category) {
+        resultsDiv.innerHTML = '<div class="no-results">⚠️ Select a category</div>';
+        resultsDiv.style.display = 'block';
         return;
       }
-      if (isNaN(userRank) || userRank <= 0) {
-        showResultsMessage('📊 Enter a valid CET rank (positive integer).', false);
+      if (isNaN(rank) || rank <= 0) {
+        resultsDiv.innerHTML = '<div class="no-results">⚠️ Enter a valid rank</div>';
+        resultsDiv.style.display = 'block';
         return;
       }
       
-      // match branch: first try exact sanitized match, then fallback to partial inclusion
-      let targetSanitized = sanitizeBranch(targetRaw);
-      let matchedCodes = new Set();
-      // also try partial matching with all branch names (user might type "computer science" & match core and specs)
-      for (let [sanName, code] of sanitizedToCode.entries()) {
-        if (sanName === targetSanitized || sanName.toUpperCase().includes(targetRaw.toUpperCase()) || targetRaw.toUpperCase().includes(sanName.toUpperCase())) {
+      // Find branch code(s) - support partial matches
+      const matchedCodes = new Set();
+      for (const [code, name] of Object.entries(window.XOS_DICT)) {
+        if (name.toUpperCase().includes(branchInput.toUpperCase())) {
           matchedCodes.add(code);
         }
       }
-      // also check if the user typed "computer science and engineering" and also need to match its spec codes
-      // we already cover via includes. if still empty, fallback to direct match
-      if (matchedCodes.size === 0) {
-        if (sanitizedToCode.has(targetSanitized)) matchedCodes.add(sanitizedToCode.get(targetSanitized));
-      }
       
       if (matchedCodes.size === 0) {
-        showResultsMessage(`No branch matching "${targetRaw}" found in college database. Try "Computer Science" or "AI & ML".`, false);
+        resultsDiv.innerHTML = `<div class="no-results">No branch matching "${branchInput}" found in database</div>`;
+        resultsDiv.style.display = 'block';
         return;
       }
       
-      const RANGE = 2000;
+      // Search colleges
       const matches = [];
+      const RANGE = 2000;
       
-      for (let college of window.XOS_CUTOFF) {
+      for (const college of window.XOS_CUTOFF) {
         if (!college.branches) continue;
-        for (let [branchCode, cutoffData] of Object.entries(college.branches)) {
+        
+        for (const [branchCode, cutoffData] of Object.entries(college.branches)) {
           if (!matchedCodes.has(branchCode)) continue;
-          const cutoffValue = cutoffData[targetCat];
-          if (cutoffValue === null || cutoffValue === undefined) continue;
-          const diff = cutoffValue - userRank;
+          
+          const cutoff = cutoffData[category];
+          if (cutoff === null || cutoff === undefined) continue;
+          
+          const diff = cutoff - rank;
           if (Math.abs(diff) <= RANGE) {
-            const rawBranchNameFromDict = window.XOS_DICT[branchCode] || branchCode;
-            const displayBranch = sanitizeBranch(rawBranchNameFromDict);
+            const branchFullName = window.XOS_DICT[branchCode] || branchCode;
             matches.push({
               id: college.id,
               name: college.name,
-              location: college.location || 'Karnataka',
-              branch: displayBranch,
-              cutoff: cutoffValue,
+              location: college.location,
+              branch: branchFullName,
+              cutoff: cutoff,
               diff: diff
             });
           }
         }
       }
       
-      matches.sort((a,b) => Math.abs(a.diff) - Math.abs(b.diff));
-      displayResults(matches, targetCat, userRank);
-    }
-    
-    function showResultsMessage(msg, isError = true) {
-      const panel = document.getElementById('resultsPanel');
-      panel.style.display = 'block';
-      panel.innerHTML = `<div class="no-results" style="color:${isError ? '#ff8a7a' : '#8a8a9a'}">${msg}</div>`;
-    }
-    
-    function displayResults(matches, category, userRank) {
-      const panel = document.getElementById('resultsPanel');
+      matches.sort((a, b) => Math.abs(a.diff) - Math.abs(b.diff));
+      
+      // Display results
+      resultsDiv.style.display = 'block';
       if (matches.length === 0) {
-        panel.innerHTML = `<div class="no-results">✖ No colleges found within ±2000 rank range for this branch + category.</div>`;
-        panel.style.display = 'block';
+        resultsDiv.innerHTML = `<div class="no-results">No colleges found within ±${RANGE} rank range</div>`;
         return;
       }
-      let html = `<div class="result-stats">🎯 ${matches.length} matching college(s) | category: ${category} | rank: ${userRank.toLocaleString()}</div>`;
-      for (let m of matches.slice(0, 25)) {
-        const varianceClass = m.diff >= 0 ? 'positive' : 'negative';
-        const varianceSign = m.diff >= 0 ? `+${m.diff}` : `${m.diff}`;
-        html += `
-          <div class="college-card">
-            <div class="college-id-bg">${m.id}</div>
-            <div class="college-name">${escapeHtml(m.name)}</div>
-            <div class="college-loc">📍 ${escapeHtml(m.location)}</div>
-            <div class="branch-badge">${escapeHtml(m.branch)}</div>
-            <div class="cutoff-row">
-              <div>
-                <div style="font-size:0.65rem; color:#6a6a78;">cutoff rank (${category})</div>
-                <div class="cutoff-value">${m.cutoff.toLocaleString('en-IN')}</div>
-              </div>
-              <div style="text-align:right;">
-                <div style="font-size:0.65rem; color:#6a6a78;">variance</div>
-                <div class="variance ${varianceClass}">${varianceSign}</div>
-              </div>
+      
+      resultsDiv.innerHTML = `
+        <div style="font-size:0.7rem; color:#6a6a78; margin-bottom:12px;">🎯 ${matches.length} matching college(s)</div>
+        ${matches.slice(0, 20).map(m => `
+          <div class="result-card">
+            <div class="result-name">${m.name}</div>
+            <div class="result-loc">📍 ${m.location || 'Karnataka'}</div>
+            <div class="result-branch">📘 ${m.branch}</div>
+            <div class="result-stats">
+              <div><span style="font-size:0.65rem;">cutoff (${category})</span><br><span class="cutoff">${m.cutoff.toLocaleString()}</span></div>
+              <div><span style="font-size:0.65rem;">variance</span><br><span class="variance">${m.diff >= 0 ? '+' : ''}${m.diff}</span></div>
             </div>
           </div>
-        `;
-      }
-      if (matches.length > 25) html += `<div class="no-results" style="padding:10px;">+ ${matches.length-25} more results · refine rank to narrow</div>`;
-      panel.innerHTML = html;
-      panel.style.display = 'block';
+        `).join('')}
+        ${matches.length > 20 ? `<div class="no-results" style="padding:12px;">+ ${matches.length - 20} more results</div>` : ''}
+      `;
     }
     
-    // initialize everything
-    buildMasterData();
-    renderHierarchy();
-    populateCategories();
-    
-    // attach search event
-    const searchBtn = document.getElementById('searchTrigger');
-    if (searchBtn) searchBtn.addEventListener('click', searchColleges);
-    
-    // optional: enter key in rank input triggers search
-    document.getElementById('rankInput')?.addEventListener('keypress', (e) => {
+    document.getElementById('searchBtn').addEventListener('click', searchColleges);
+    document.getElementById('rankInput').addEventListener('keypress', (e) => {
       if (e.key === 'Enter') searchColleges();
     });
-  })();
+    
+    // Autocomplete on input field (show suggestions)
+    const inputField = document.getElementById('branchInput');
+    inputField.addEventListener('input', function() {
+      const val = this.value.toLowerCase();
+      if (!val) return;
+      
+      const suggestions = allBranchNames.filter(b => b.name.toLowerCase().includes(val)).slice(0, 5);
+      // Simple datalist style - we'll just let user type, but they can click hierarchy
+    });
+  }
 </script>
 </body>
 </html>
