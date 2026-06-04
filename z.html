@@ -3,538 +3,990 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>x0s · Disha Match | Core + Specializations</title>
-  <meta name="description" content="Disha Match Engine — find colleges matching your CET rank across core branches and specializations.">
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <title>Disha · Match Engine</title>
+  <meta name="description" content="Disha Match Engine — find colleges matching your CET rank.">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
     :root {
-      --xos-bg: #000000;
-      --xos-accent: #007aff;
-      --xos-accent-glow: rgba(0, 122, 255, 0.15);
-      --xos-card: rgba(10, 10, 10, 0.85);
-      --xos-border: rgba(255, 255, 255, 0.08);
-      --xos-border-hover: rgba(255, 255, 255, 0.14);
-      --xos-font: 'Space Grotesk', sans-serif;
-      --xos-surface: rgba(255, 255, 255, 0.03);
-      --xos-text-primary: #e7e9ea;
-      --xos-text-secondary: #71767b;
-      --xos-text-tertiary: #536471;
-      --xos-divider: rgba(255, 255, 255, 0.06);
-      --xos-success: #00ba7c;
-      --xos-danger: #f4212e;
-      --xos-radius: 16px;
-      --xos-radius-sm: 12px;
+      --bg: #000;
+      --surface: #0a0a0a;
+      --surface-2: #111;
+      --surface-3: #161616;
+      --border: rgba(255,255,255,0.07);
+      --border-strong: rgba(255,255,255,0.14);
+      --border-focus: rgba(255,255,255,0.5);
+      --text-0: #fff;
+      --text-1: #e8e8e8;
+      --text-2: #888;
+      --text-3: #444;
+      --danger: #ff3b3b;
+      --success: #00cc66;
+      --font-display: 'Syne', sans-serif;
+      --font-mono: 'DM Mono', monospace;
+      --r: 14px;
+      --r-sm: 10px;
+      --r-xs: 6px;
     }
+
     body {
-      margin: 0; padding: 20px; background: var(--xos-bg); color: var(--xos-text-primary);
-      font-family: var(--xos-font); display: flex; justify-content: center; align-items: flex-start;
-      min-height: 100vh; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+      background: var(--bg);
+      color: var(--text-1);
+      font-family: var(--font-display);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 24px 16px 60px;
+      -webkit-font-smoothing: antialiased;
       overflow-x: hidden;
     }
-    body::before {
-      content: ''; position: fixed; top: -40%; left: 50%; transform: translateX(-50%);
-      width: 600px; height: 600px; background: radial-gradient(circle, rgba(0, 122, 255, 0.06) 0%, transparent 70%);
-      pointer-events: none; z-index: 0;
+
+    /* ─── NOISE TEXTURE ─── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.4;
     }
-    .xos-panel {
-      position: relative; z-index: 1; width: 100%; max-width: 520px; background: var(--xos-card);
-      border: 1px solid var(--xos-border); border-radius: 24px; padding: 32px 28px;
-      backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px);
-      box-shadow: 0 0 0 1px rgba(255,255,255,0.04), 0 24px 80px rgba(0,0,0,0.7), 0 8px 32px rgba(0,0,0,0.4);
-      animation: panelIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+    /* ─── PANEL ─── */
+    .panel {
+      width: 100%;
+      max-width: 500px;
+      position: relative;
+      z-index: 1;
+      animation: panelIn 0.5s cubic-bezier(0.16,1,0.3,1) both;
     }
-    @keyframes panelIn { from { opacity:0; transform:translateY(12px) scale(0.98); } to { opacity:1; transform:translateY(0) scale(1); } }
-    /* ===== ONBOARDING MODAL ===== */
+    @keyframes panelIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+
+    /* ─── ONBOARDING ─── */
     .onboard-overlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 9999;
-      display: flex; align-items: center; justify-content: center;
-      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-      animation: fadeIn 0.3s ease;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.97);
+      z-index: 9000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.25s ease;
     }
     .onboard-overlay.hidden { display: none; }
     @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
     .onboard-card {
-      background: var(--xos-card); border: 1px solid var(--xos-border); border-radius: 24px;
-      padding: 40px 32px; width: 90%; max-width: 380px; text-align: center;
-      backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px);
-      box-shadow: 0 24px 80px rgba(0,0,0,0.6);
-      animation: scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      width: 90%;
+      max-width: 360px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--r);
+      background: var(--surface);
+      padding: 44px 32px;
+      animation: scaleIn 0.35s cubic-bezier(0.16,1,0.3,1) both;
     }
-    @keyframes scaleIn { from { opacity:0; transform:scale(0.9); } to { opacity:1; transform:scale(1); } }
-    .onboard-icon {
-      width: 64px; height: 64px; border-radius: 20px; background: var(--xos-accent-glow);
-      border: 1px solid rgba(0,122,255,0.15); display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 20px; font-size: 1.5rem; color: var(--xos-accent);
+    @keyframes scaleIn { from { opacity:0; transform:scale(0.94); } to { opacity:1; transform:scale(1); } }
+
+    .onboard-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      color: var(--text-3);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
     }
-    .onboard-card h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
-    .onboard-card p { font-size: 0.7rem; color: var(--xos-text-tertiary); margin-bottom: 24px; }
+    .onboard-card h2 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--text-0);
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 32px;
+    }
+    .onboard-card h2 span { color: var(--text-3); }
     .onboard-input {
-      width: 100%; background: var(--xos-surface); border: 1px solid var(--xos-border);
-      border-radius: var(--xos-radius-sm); padding: 14px 16px; color: var(--xos-text-primary);
-      font-family: var(--xos-font); font-size: 0.88rem; outline: none; transition: all 0.2s ease;
-      text-align: center; margin-bottom: 16px;
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--border-strong);
+      padding: 12px 0;
+      color: var(--text-0);
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 500;
+      outline: none;
+      transition: border-color 0.2s;
+      margin-bottom: 32px;
     }
-    .onboard-input::placeholder { color: var(--xos-text-tertiary); }
-    .onboard-input:focus { border-color: var(--xos-accent); box-shadow: 0 0 0 3px rgba(0,122,255,0.1); }
+    .onboard-input::placeholder { color: var(--text-3); }
+    .onboard-input:focus { border-color: var(--text-0); }
     .onboard-btn {
-      width: 100%; background: #fff; color: #000; border: none; border-radius: var(--xos-radius-sm);
-      padding: 14px; font-family: var(--xos-font); font-size: 0.8rem; font-weight: 700;
-      letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; transition: all 0.2s ease;
+      background: var(--text-0);
+      color: var(--bg);
+      border: none;
+      border-radius: var(--r-sm);
+      padding: 14px 28px;
+      font-family: var(--font-display);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s;
     }
-    .onboard-btn:hover { box-shadow: 0 0 30px rgba(255,255,255,0.1); transform: translateY(-1px); }
-    .onboard-btn:active { transform: scale(0.98); }
-    .onboard-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none; box-shadow: none; }
-    /* ===== HEADER ===== */
-    .xos-header {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 32px; padding-bottom: 20px; border-bottom: 1px solid var(--xos-divider);
+    .onboard-btn:hover { opacity: 0.88; }
+    .onboard-btn:active { transform: scale(0.97); }
+    .onboard-btn:disabled { opacity: 0.2; cursor: not-allowed; transform: none; }
+
+    /* ─── HEADER ─── */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 0 0 24px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 32px;
     }
-    .xos-header-left h2 { margin: 0; font-size: 1.15rem; font-weight: 700; color: var(--xos-text-primary); letter-spacing: -0.01em; }
-    .xos-header-sub { display: flex; align-items: center; gap: 6px; font-size: 0.65rem; color: var(--xos-text-tertiary); margin-top: 6px; }
-    .xos-header-sub i { font-size: 0.55rem; color: var(--xos-accent); }
-    .hamburger-btn {
-      width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--xos-border);
-      background: var(--xos-surface); color: var(--xos-text-primary); font-size: 1rem;
-      cursor: pointer; display: flex; align-items: center; justify-content: center;
-      transition: all 0.2s ease;
+    .header-wordmark {
+      font-family: var(--font-mono);
+      font-size: 0.55rem;
+      color: var(--text-3);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
     }
-    .hamburger-btn:hover { border-color: var(--xos-border-hover); background: rgba(255,255,255,0.06); }
-    /* ===== SIDEBAR DRAWER ===== */
+    .header h1 {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--text-0);
+      letter-spacing: -0.03em;
+      line-height: 1;
+    }
+    .header-sub {
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      color: var(--text-3);
+      margin-top: 8px;
+      letter-spacing: 0.05em;
+    }
+    .menu-btn {
+      width: 38px;
+      height: 38px;
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      background: transparent;
+      color: var(--text-2);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      transition: border-color 0.2s, color 0.2s;
+      flex-shrink: 0;
+    }
+    .menu-btn:hover { border-color: var(--border-strong); color: var(--text-0); }
+
+    /* ─── SIDEBAR ─── */
     .sidebar-backdrop {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 5000;
-      opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
-      backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 4000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
     }
     .sidebar-backdrop.open { opacity: 1; pointer-events: all; }
+
     .sidebar {
-      position: fixed; top: 0; right: -300px; width: 280px; height: 100vh;
-      background: rgba(8,8,8,0.98); border-left: 1px solid var(--xos-border);
-      z-index: 5001; transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-      display: flex; flex-direction: column; padding: 0;
-      backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px);
-      box-shadow: -16px 0 48px rgba(0,0,0,0.5);
+      position: fixed;
+      top: 0;
+      right: -290px;
+      width: 270px;
+      height: 100vh;
+      background: var(--surface);
+      border-left: 1px solid var(--border);
+      z-index: 4001;
+      transition: right 0.35s cubic-bezier(0.16,1,0.3,1);
+      display: flex;
+      flex-direction: column;
     }
     .sidebar.open { right: 0; }
-    .sidebar-profile {
-      padding: 32px 24px 24px; border-bottom: 1px solid var(--xos-divider);
-      display: flex; align-items: center; gap: 14px;
+
+    .sidebar-top {
+      padding: 28px 24px 24px;
+      border-bottom: 1px solid var(--border);
     }
-    .sidebar-pfp {
-      width: 44px; height: 44px; border-radius: 50%; background: var(--xos-accent);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.1rem; font-weight: 700; color: #fff; flex-shrink: 0;
-      box-shadow: 0 0 20px rgba(0,122,255,0.3);
+    .sidebar-monogram {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--text-0);
+      color: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-weight: 800;
+      margin-bottom: 12px;
     }
-    .sidebar-username { font-size: 0.9rem; font-weight: 600; color: var(--xos-text-primary); }
-    .sidebar-usertag { font-size: 0.6rem; color: var(--xos-text-tertiary); margin-top: 2px; }
-    .sidebar-nav { flex: 1; padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; }
-    .sidebar-item {
-      display: flex; align-items: center; gap: 14px; padding: 14px 16px;
-      border-radius: var(--xos-radius-sm); cursor: pointer; transition: all 0.15s ease;
-      color: var(--xos-text-secondary); font-size: 0.82rem; font-weight: 500;
-      border: 1px solid transparent;
+    .sidebar-name { font-size: 0.9rem; font-weight: 700; color: var(--text-0); }
+    .sidebar-role { font-family: var(--font-mono); font-size: 0.55rem; color: var(--text-3); margin-top: 3px; letter-spacing: 0.1em; }
+
+    .sidebar-nav { flex: 1; padding: 16px 16px; display: flex; flex-direction: column; gap: 2px; }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      border-radius: var(--r-sm);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      color: var(--text-2);
+      font-size: 0.78rem;
+      font-weight: 500;
     }
-    .sidebar-item:hover { background: rgba(255,255,255,0.04); color: var(--xos-text-primary); }
-    .sidebar-item.active {
-      background: var(--xos-accent-glow); color: var(--xos-accent);
-      border-color: rgba(0,122,255,0.12);
+    .nav-item:hover { background: var(--surface-2); color: var(--text-1); }
+    .nav-item.active { background: var(--text-0); color: var(--bg); }
+    .nav-item .nav-label { display: flex; align-items: center; gap: 10px; }
+    .nav-item .nav-label i { font-size: 0.65rem; width: 14px; text-align: center; }
+    .nav-badge {
+      font-family: var(--font-mono);
+      font-size: 0.52rem;
+      font-weight: 500;
+      background: var(--text-0);
+      color: var(--bg);
+      padding: 2px 7px;
+      border-radius: 20px;
+      display: none;
     }
-    .sidebar-item i { width: 20px; text-align: center; font-size: 0.85rem; }
-    .sidebar-item .nav-count {
-      margin-left: auto; font-size: 0.6rem; font-weight: 700; background: var(--xos-accent);
-      color: #fff; padding: 2px 7px; border-radius: 10px; min-width: 20px; text-align: center;
+    .nav-item.active .nav-badge { background: var(--bg); color: var(--text-0); }
+
+    .sidebar-footer { padding: 20px 24px; border-top: 1px solid var(--border); }
+    .sidebar-footer-text { font-family: var(--font-mono); font-size: 0.5rem; color: var(--text-3); letter-spacing: 0.15em; text-transform: uppercase; }
+
+    /* ─── VIEWS ─── */
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* ─── VIEW HEADER ─── */
+    .view-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
     }
-    .sidebar-footer {
-      padding: 16px 24px; border-top: 1px solid var(--xos-divider);
-      font-size: 0.55rem; color: var(--xos-text-tertiary); letter-spacing: 0.1em;
+    .view-header h3 { font-size: 1rem; font-weight: 700; color: var(--text-0); letter-spacing: -0.02em; }
+    .view-count { font-family: var(--font-mono); font-size: 0.55rem; color: var(--text-3); letter-spacing: 0.08em; }
+
+    /* ─── FORM ─── */
+    .field { margin-bottom: 24px; }
+    .field-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .field-step {
+      width: 20px;
+      height: 20px;
+      border: 1px solid var(--border-strong);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 0.52rem;
+      color: var(--text-2);
+      flex-shrink: 0;
+    }
+    .field-label-text {
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      color: var(--text-2);
+      letter-spacing: 0.12em;
       text-transform: uppercase;
     }
-    /* ===== VIEWS ===== */
-    .app-view { display: none; }
-    .app-view.active { display: block; }
-    /* ===== VIEW HEADER (for sub-pages) ===== */
-    .view-title {
-      display: flex; align-items: center; gap: 10px; margin-bottom: 20px;
-      padding-bottom: 16px; border-bottom: 1px solid var(--xos-divider);
+
+    .xos-input {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      padding: 14px 16px;
+      color: var(--text-0);
+      font-family: var(--font-display);
+      font-size: 0.88rem;
+      font-weight: 500;
+      outline: none;
+      transition: border-color 0.2s;
+      position: relative;
     }
-    .view-title i { color: var(--xos-accent); font-size: 0.9rem; }
-    .view-title h3 { font-size: 1rem; font-weight: 700; }
-    .view-title .view-count { font-size: 0.6rem; color: var(--xos-text-tertiary); margin-left: auto; }
-    /* ===== COLLEGES LIST (WhatsApp style) ===== */
-    .college-list { display: flex; flex-direction: column; }
-    .college-list-item {
-      display: flex; align-items: center; gap: 14px; padding: 14px 4px;
-      border-bottom: 1px solid var(--xos-divider); opacity: 0.5;
-      cursor: default; transition: opacity 0.2s ease;
+    .xos-input::placeholder { color: var(--text-3); }
+    .xos-input:hover { border-color: var(--border-strong); }
+    .xos-input:focus { border-color: var(--border-focus); }
+
+    /* ─── DROPDOWN ─── */
+    .xos-dropdown { position: relative; }
+    .dd-trigger {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      padding: 14px 16px;
+      color: var(--text-0);
+      font-family: var(--font-display);
+      font-size: 0.88rem;
+      font-weight: 500;
+      outline: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      transition: border-color 0.2s;
+      user-select: none;
     }
-    .college-list-pfp {
-      width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.85rem; font-weight: 700; color: #fff;
-      background: linear-gradient(135deg, #1a1a2e, #16213e);
-      border: 1px solid var(--xos-border);
+    .dd-trigger:hover { border-color: var(--border-strong); }
+    .dd-trigger.open { border-color: var(--border-focus); }
+    .dd-trigger .dd-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .dd-trigger .dd-text.placeholder { color: var(--text-3); }
+    .dd-chevron { font-size: 0.5rem; color: var(--text-3); transition: transform 0.2s; }
+    .dd-trigger.open .dd-chevron { transform: rotate(180deg); color: var(--text-2); }
+
+    .dd-menu {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0; right: 0;
+      background: var(--surface-2);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--r-sm);
+      z-index: 200;
+      display: none;
+      max-height: 260px;
+      overflow-y: auto;
+      animation: dropIn 0.15s ease;
     }
-    .college-list-info { flex: 1; min-width: 0; }
-    .college-list-name {
-      font-size: 0.8rem; font-weight: 600; color: var(--xos-text-primary);
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    .college-list-loc {
-      font-size: 0.65rem; color: var(--xos-text-tertiary); margin-top: 3px;
-      display: flex; align-items: center; gap: 4px;
-    }
-    .college-list-loc i { font-size: 0.5rem; color: var(--xos-accent); }
-    /* ===== BRANCHES LIST ===== */
-    .branch-group { margin-bottom: 8px; }
-    .branch-core-item {
-      display: flex; align-items: center; gap: 12px; padding: 14px 12px;
-      background: var(--xos-surface); border: 1px solid var(--xos-border);
-      border-radius: var(--xos-radius-sm); cursor: pointer; transition: all 0.2s ease;
-      margin-bottom: 4px;
-    }
-    .branch-core-item:hover { border-color: var(--xos-border-hover); background: rgba(255,255,255,0.04); }
-    .branch-core-item i.core-icon { color: var(--xos-accent); font-size: 0.75rem; width: 18px; text-align: center; }
-    .branch-core-item .core-name { flex: 1; font-size: 0.78rem; font-weight: 600; }
-    .branch-core-item .core-count {
-      font-size: 0.55rem; color: var(--xos-text-tertiary); background: var(--xos-surface);
-      border: 1px solid var(--xos-divider); padding: 2px 8px; border-radius: 10px;
-    }
-    .branch-core-item .core-chevron {
-      font-size: 0.5rem; color: var(--xos-text-tertiary); transition: transform 0.25s ease;
-    }
-    .branch-core-item.expanded .core-chevron { transform: rotate(180deg); color: var(--xos-accent); }
-    .branch-subs { display: none; padding: 0 0 8px 30px; }
-    .branch-subs.show { display: block; }
-    .branch-sub-item {
-      padding: 10px 12px; font-size: 0.7rem; color: var(--xos-text-secondary);
-      border-left: 2px solid var(--xos-divider); margin-bottom: 2px;
-      display: flex; align-items: center; gap: 8px; transition: all 0.15s ease;
-    }
-    .branch-sub-item i { font-size: 0.5rem; color: var(--xos-text-tertiary); }
-    /* ===== PRIORITY LIST ===== */
-    .priority-empty {
-      text-align: center; padding: 60px 20px; color: var(--xos-text-tertiary);
-    }
-    .priority-empty i { font-size: 2rem; opacity: 0.3; margin-bottom: 12px; display: block; }
-    .priority-empty p { font-size: 0.78rem; }
-    .priority-empty .hint { font-size: 0.65rem; margin-top: 6px; color: var(--xos-text-tertiary); opacity: 0.7; }
-    .priority-card {
-      background: var(--xos-surface); border: 1px solid var(--xos-border);
-      border-radius: var(--xos-radius); margin-bottom: 10px; overflow: hidden;
-      transition: all 0.25s ease;
-    }
-    .priority-card:hover { border-color: var(--xos-border-hover); }
-    .priority-card-header {
-      display: flex; align-items: center; gap: 12px; padding: 14px 16px;
-      cursor: pointer; transition: background 0.15s ease;
-    }
-    .priority-card-header:hover { background: rgba(255,255,255,0.03); }
-    .priority-card-pfp {
-      width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.75rem; font-weight: 700; color: #fff;
-      background: linear-gradient(135deg, #1a1a2e, #16213e);
-      border: 1px solid var(--xos-border);
-    }
-    .priority-card-info { flex: 1; min-width: 0; overflow: hidden; }
-    .priority-card-name {
-      font-size: 0.78rem; font-weight: 600; color: var(--xos-text-primary);
-      white-space: nowrap; overflow: hidden;
-    }
-    .priority-card-name .marquee-inner {
-      display: inline-block; animation: marqueeScroll 12s linear infinite;
-      padding-right: 60px;
-    }
-    @keyframes marqueeScroll {
-      0% { transform: translateX(100%); }
-      100% { transform: translateX(-100%); }
-    }
-    .priority-card-branch {
-      font-size: 0.65rem; color: var(--xos-text-tertiary); margin-top: 3px;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    .priority-card-chevron {
-      font-size: 0.5rem; color: var(--xos-text-tertiary); transition: transform 0.25s ease; flex-shrink: 0;
-    }
-    .priority-card.expanded .priority-card-chevron { transform: rotate(180deg); color: var(--xos-accent); }
-    .priority-card-details {
-      display: none; padding: 0 16px 16px; border-top: 1px solid var(--xos-divider);
-      animation: fadeUp 0.25s ease;
-    }
-    .priority-card.expanded .priority-card-details { display: block; }
-    .priority-detail-row {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 10px 0; border-bottom: 1px solid var(--xos-divider);
-    }
-    .priority-detail-row:last-child { border-bottom: none; }
-    .priority-detail-label { font-size: 0.6rem; color: var(--xos-text-tertiary); text-transform: uppercase; letter-spacing: 0.08em; display: flex; align-items: center; gap: 5px; }
-    .priority-detail-label i { font-size: 0.5rem; }
-    .priority-detail-value { font-size: 0.82rem; font-weight: 600; }
-    .priority-remove-btn {
-      width: 100%; margin-top: 10px; padding: 10px; background: rgba(244,33,46,0.08);
-      border: 1px solid rgba(244,33,46,0.15); border-radius: 10px; color: var(--xos-danger);
-      font-family: var(--xos-font); font-size: 0.7rem; font-weight: 600; cursor: pointer;
-      display: flex; align-items: center; justify-content: center; gap: 6px;
-      transition: all 0.2s ease;
-    }
-    .priority-remove-btn:hover { background: rgba(244,33,46,0.15); }
-    /* ===== ADD TO PRIORITY BTN (in results) ===== */
-    .add-priority-btn {
-      background: transparent; border: 1px solid var(--xos-border); border-radius: 20px;
-      padding: 7px 14px; font-size: 0.6rem; color: var(--xos-accent); cursor: pointer;
-      font-family: var(--xos-font); font-weight: 600; display: flex; align-items: center;
-      gap: 5px; transition: all 0.2s ease; margin-top: 12px;
-    }
-    .add-priority-btn i { font-size: 0.5rem; }
-    .add-priority-btn:hover { background: var(--xos-accent-glow); border-color: rgba(0,122,255,0.2); }
-    .add-priority-btn.added {
-      color: var(--xos-success); border-color: rgba(0,186,124,0.2);
-      pointer-events: none; opacity: 0.7;
-    }
-    /* ===== FORM ===== */
-    .form-group { margin-bottom: 20px; position: relative; }
-    .form-label { display: flex; align-items: center; gap: 8px; font-size: 0.65rem; font-weight: 600; color: var(--xos-text-secondary); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 10px; }
-    .form-label i { font-size: 0.6rem; color: var(--xos-accent); width: 14px; text-align: center; }
-    .form-label .step-num { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 6px; background: var(--xos-accent-glow); border: 1px solid rgba(0,122,255,0.12); font-size: 0.55rem; font-weight: 700; color: var(--xos-accent); }
-    .xos-input { width: 100%; background: var(--xos-surface); border: 1px solid var(--xos-border); border-radius: var(--xos-radius-sm); padding: 14px 16px; color: var(--xos-text-primary); font-family: var(--xos-font); font-size: 0.88rem; outline: none; transition: all 0.2s ease; }
-    .xos-input::placeholder { color: var(--xos-text-tertiary); }
-    .xos-input:hover { border-color: var(--xos-border-hover); }
-    .xos-input:focus { border-color: var(--xos-accent); box-shadow: 0 0 0 3px rgba(0,122,255,0.1), 0 0 20px rgba(0,122,255,0.05); background: rgba(0,122,255,0.02); }
-    /* ===== CUSTOM DROPDOWN ===== */
-    .xos-dropdown { position: relative; width: 100%; }
-    .xos-dropdown-trigger { width: 100%; background: var(--xos-surface); border: 1px solid var(--xos-border); border-radius: var(--xos-radius-sm); padding: 14px 16px; color: var(--xos-text-primary); font-family: var(--xos-font); font-size: 0.88rem; outline: none; transition: all 0.2s ease; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 10px; user-select: none; -webkit-user-select: none; }
-    .xos-dropdown-trigger:hover { border-color: var(--xos-border-hover); }
-    .xos-dropdown-trigger.open { border-color: var(--xos-accent); box-shadow: 0 0 0 3px rgba(0,122,255,0.1), 0 0 20px rgba(0,122,255,0.05); background: rgba(0,122,255,0.02); }
-    .xos-dropdown-trigger .dd-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .xos-dropdown-trigger .dd-text.placeholder { color: var(--xos-text-tertiary); }
-    .xos-dropdown-trigger .dd-chevron { font-size: 0.55rem; color: var(--xos-text-tertiary); transition: transform 0.25s ease, color 0.2s ease; flex-shrink: 0; }
-    .xos-dropdown-trigger.open .dd-chevron { transform: rotate(180deg); color: var(--xos-accent); }
-    .xos-dropdown-menu { position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: rgba(12,12,12,0.98); border: 1px solid var(--xos-border); border-radius: var(--xos-radius-sm); z-index: 200; display: none; max-height: 260px; overflow-y: auto; backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); box-shadow: 0 16px 48px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04); animation: dropIn 0.15s ease; }
-    .xos-dropdown-menu.show { display: block; }
-    .xos-dropdown-menu::-webkit-scrollbar { width: 4px; }
-    .xos-dropdown-menu::-webkit-scrollbar-track { background: transparent; }
-    .xos-dropdown-menu::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
-    .xos-dropdown-item { padding: 12px 16px; font-size: 0.78rem; color: var(--xos-text-secondary); cursor: pointer; border-bottom: 1px solid var(--xos-divider); transition: all 0.15s ease; display: flex; align-items: center; gap: 10px; }
-    .xos-dropdown-item:last-child { border-bottom: none; }
-    .xos-dropdown-item:hover { background: rgba(0,122,255,0.06); color: var(--xos-text-primary); }
-    .xos-dropdown-item.selected { color: var(--xos-accent); }
-    .xos-dropdown-item .dd-item-icon { font-size: 0.5rem; width: 14px; text-align: center; flex-shrink: 0; color: var(--xos-text-tertiary); transition: color 0.15s ease; }
-    .xos-dropdown-item:hover .dd-item-icon { color: var(--xos-accent); }
-    .xos-dropdown-item.selected .dd-item-icon { color: var(--xos-accent); }
-    .xos-dropdown-search { position: sticky; top: 0; background: rgba(12,12,12,0.98); padding: 10px 14px; border-bottom: 1px solid var(--xos-divider); z-index: 1; }
-    .xos-dropdown-search input { width: 100%; background: var(--xos-surface); border: 1px solid var(--xos-border); border-radius: 8px; padding: 8px 12px 8px 30px; color: var(--xos-text-primary); font-family: var(--xos-font); font-size: 0.75rem; outline: none; transition: border-color 0.2s ease; }
-    .xos-dropdown-search input::placeholder { color: var(--xos-text-tertiary); }
-    .xos-dropdown-search input:focus { border-color: var(--xos-accent); }
-    .xos-dropdown-search i { position: absolute; left: 24px; top: 50%; transform: translateY(-50%); font-size: 0.55rem; color: var(--xos-text-tertiary); pointer-events: none; }
-    /* ===== BUTTON ===== */
-    .xos-btn { width: 100%; background: #fff; color: #000; border: none; border-radius: var(--xos-radius-sm); padding: 15px; font-family: var(--xos-font); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; transition: all 0.2s ease; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 10px; position: relative; overflow: hidden; }
-    .xos-btn::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 100%); transform: translateX(-100%); transition: transform 0.5s ease; }
-    .xos-btn:hover::before { transform: translateX(100%); }
-    .xos-btn:hover { box-shadow: 0 0 30px rgba(255,255,255,0.1); transform: translateY(-1px); }
-    .xos-btn:active { transform: scale(0.98) translateY(0); }
-    .xos-btn i { font-size: 0.7rem; transition: transform 0.2s ease; }
-    .xos-btn:hover i { transform: translateX(3px); }
-    /* ===== SUGGEST BOX ===== */
-    .suggest-box { position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: rgba(12,12,12,0.98); border: 1px solid var(--xos-border); border-radius: var(--xos-radius-sm); z-index: 100; display: none; max-height: 240px; overflow-y: auto; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); box-shadow: 0 16px 48px rgba(0,0,0,0.6); animation: dropIn 0.15s ease; }
+    .dd-menu.show { display: block; }
     @keyframes dropIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
-    .suggest-box::-webkit-scrollbar { width: 4px; }
-    .suggest-box::-webkit-scrollbar-track { background: transparent; }
-    .suggest-box::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
-    .suggest-item { padding: 12px 16px; font-size: 0.78rem; color: var(--xos-text-secondary); cursor: pointer; border-bottom: 1px solid var(--xos-divider); transition: all 0.15s ease; display: flex; align-items: center; gap: 10px; }
-    .suggest-item::before { content: '\f054'; font-family: 'Font Awesome 6 Free'; font-weight: 900; font-size: 0.45rem; color: var(--xos-text-tertiary); transition: color 0.15s ease; }
+    .dd-menu::-webkit-scrollbar { width: 3px; }
+    .dd-menu::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+
+    .dd-search {
+      position: sticky;
+      top: 0;
+      background: var(--surface-2);
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .dd-search-wrap { position: relative; }
+    .dd-search input {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-xs);
+      padding: 8px 12px;
+      color: var(--text-1);
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .dd-search input::placeholder { color: var(--text-3); }
+    .dd-search input:focus { border-color: var(--border-focus); }
+
+    .dd-item {
+      padding: 12px 16px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-2);
+      cursor: pointer;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.12s, color 0.12s;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .dd-item:last-child { border-bottom: none; }
+    .dd-item:hover { background: var(--surface-3); color: var(--text-0); }
+    .dd-item.selected { color: var(--text-0); }
+    .dd-item .dd-check { font-size: 0.5rem; color: var(--text-0); opacity: 0; }
+    .dd-item.selected .dd-check { opacity: 1; }
+
+    /* ─── SUGGEST BOX ─── */
+    .suggest-box {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0; right: 0;
+      background: var(--surface-2);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--r-sm);
+      z-index: 100;
+      display: none;
+      max-height: 220px;
+      overflow-y: auto;
+      animation: dropIn 0.15s ease;
+    }
+    .suggest-box::-webkit-scrollbar { width: 3px; }
+    .suggest-box::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+    .suggest-item {
+      padding: 11px 16px;
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--text-2);
+      cursor: pointer;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.12s, color 0.12s;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
     .suggest-item:last-child { border-bottom: none; }
-    .suggest-item:hover { background: rgba(0,122,255,0.06); color: var(--xos-text-primary); }
-    .suggest-item:hover::before { color: var(--xos-accent); }
-    /* ===== RESULTS ===== */
-    .results-container { margin-top: 28px; display: none; border-top: 1px solid var(--xos-divider); padding-top: 24px; animation: fadeUp 0.35s ease; }
-    @keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
-    .result-card { background: var(--xos-surface); border: 1px solid var(--xos-border); border-radius: var(--xos-radius); padding: 18px; margin-bottom: 12px; transition: all 0.25s ease; position: relative; }
-    .result-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(0,122,255,0.15), transparent); opacity: 0; transition: opacity 0.25s ease; }
-    .result-card:hover { border-color: var(--xos-border-hover); background: rgba(255,255,255,0.04); }
-    .result-card:hover::before { opacity: 1; }
-    .result-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
-    .college-id { font-size: 0.55rem; font-weight: 700; color: var(--xos-text-tertiary); letter-spacing: 0.1em; display: flex; align-items: center; gap: 5px; background: var(--xos-surface); padding: 3px 8px; border-radius: 6px; border: 1px solid var(--xos-divider); }
-    .college-id i { font-size: 0.5rem; color: var(--xos-text-tertiary); }
-    .college-name { font-size: 0.9rem; font-weight: 600; line-height: 1.35; margin-bottom: 6px; padding-right: 40px; color: var(--xos-text-primary); }
-    .college-loc { font-size: 0.68rem; color: var(--xos-accent); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
-    .college-loc i { font-size: 0.6rem; opacity: 0.8; }
-    .branch-name { font-size: 0.7rem; color: var(--xos-text-secondary); margin-bottom: 14px; padding: 6px 10px; background: var(--xos-surface); border-radius: 8px; border: 1px solid var(--xos-divider); display: flex; align-items: center; gap: 8px; }
-    .branch-name i { font-size: 0.6rem; color: var(--xos-accent); }
-    .cutoff-row { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--xos-divider); padding-top: 14px; flex-wrap: wrap; gap: 10px; }
-    .cutoff-block { display: flex; flex-direction: column; gap: 4px; }
-    .cutoff-label { font-size: 0.55rem; color: var(--xos-text-tertiary); text-transform: uppercase; letter-spacing: 0.1em; display: flex; align-items: center; gap: 5px; }
-    .cutoff-label i { font-size: 0.5rem; }
-    .cutoff-value { font-size: 1.15rem; font-weight: 700; color: var(--xos-text-primary); letter-spacing: -0.01em; }
-    .variance { font-size: 0.9rem; font-weight: 700; }
-    .variance-positive { color: var(--xos-text-tertiary); }
-    .variance-negative { color: var(--xos-text-secondary); }
-    .expand-btn { background: transparent; border: 1px solid var(--xos-border); border-radius: 20px; padding: 7px 14px; font-size: 0.6rem; color: var(--xos-accent); cursor: pointer; font-family: var(--xos-font); font-weight: 600; width: auto; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease; letter-spacing: 0.02em; }
-    .expand-btn i { font-size: 0.5rem; transition: transform 0.25s ease; }
-    .expand-btn:hover { background: var(--xos-accent-glow); border-color: rgba(0,122,255,0.2); }
-    .expand-btn.active i { transform: rotate(180deg); }
-    .subs-list { display: none; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--xos-divider); flex-wrap: wrap; gap: 8px; animation: fadeUp 0.25s ease; }
-    .subs-list.show { display: flex; }
-    .sub-chip { background: var(--xos-surface); border: 1px solid var(--xos-border); border-radius: 20px; padding: 7px 14px; font-size: 0.65rem; cursor: pointer; transition: all 0.2s ease; color: var(--xos-text-secondary); display: flex; align-items: center; gap: 4px; }
-    .sub-chip:hover { background: rgba(0,122,255,0.06); border-color: rgba(0,122,255,0.2); color: var(--xos-text-primary); }
-    .sub-chip-cutoff { font-size: 0.6rem; color: var(--xos-accent); margin-left: 4px; font-weight: 600; }
-    .no-results { text-align: center; color: var(--xos-text-tertiary); font-size: 0.8rem; padding: 40px 0; display: flex; flex-direction: column; align-items: center; gap: 10px; }
-    .no-results i { font-size: 1.4rem; color: var(--xos-text-tertiary); opacity: 0.5; }
-    .result-stats { font-size: 0.62rem; color: var(--xos-text-tertiary); margin-bottom: 16px; letter-spacing: 0.08em; display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--xos-surface); border-radius: 10px; border: 1px solid var(--xos-divider); }
-    .result-stats i { color: var(--xos-accent); font-size: 0.6rem; }
-    ::-webkit-scrollbar { width: 6px; }
+    .suggest-item:hover { background: var(--surface-3); color: var(--text-0); }
+    .suggest-item .suggest-arrow { font-size: 0.45rem; color: var(--text-3); }
+    .suggest-item:hover .suggest-arrow { color: var(--text-0); }
+
+    /* ─── PRIMARY BUTTON ─── */
+    .btn-primary {
+      width: 100%;
+      background: var(--text-0);
+      color: var(--bg);
+      border: none;
+      border-radius: var(--r-sm);
+      padding: 15px 28px;
+      font-family: var(--font-display);
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      cursor: pointer;
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: opacity 0.15s, transform 0.15s;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-primary:hover { opacity: 0.9; }
+    .btn-primary:active { transform: scale(0.98); }
+
+    /* ─── RESULTS ─── */
+    .results-container {
+      margin-top: 32px;
+      border-top: 1px solid var(--border);
+      padding-top: 28px;
+      display: none;
+      animation: fadeUp 0.3s ease;
+    }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+    .result-stats {
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      color: var(--text-3);
+      letter-spacing: 0.08em;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .result-stats::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--text-0);
+      flex-shrink: 0;
+    }
+
+    .result-card {
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
+      margin-bottom: 12px;
+      background: var(--surface);
+      transition: border-color 0.2s;
+    }
+    .result-card:hover { border-color: var(--border-strong); }
+
+    .result-card-top {
+      padding: 18px 18px 0;
+    }
+    .result-id {
+      font-family: var(--font-mono);
+      font-size: 0.52rem;
+      color: var(--text-3);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .result-name {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--text-0);
+      letter-spacing: -0.02em;
+      line-height: 1.3;
+      margin-bottom: 6px;
+    }
+    .result-loc {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      color: var(--text-3);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .result-loc i { font-size: 0.5rem; }
+
+    .result-branch-tag {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      color: var(--text-2);
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--r-xs);
+      padding: 5px 10px;
+      margin-bottom: 16px;
+      letter-spacing: 0.02em;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .result-metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border-top: 1px solid var(--border);
+    }
+    .metric-block {
+      background: var(--surface);
+      padding: 14px 18px;
+    }
+    .metric-label {
+      font-family: var(--font-mono);
+      font-size: 0.5rem;
+      color: var(--text-3);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+    .metric-value {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--text-0);
+      letter-spacing: -0.04em;
+      line-height: 1;
+    }
+    .metric-value.positive { color: var(--text-2); }
+    .metric-value.negative { color: var(--text-1); }
+
+    .result-actions {
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      border-top: 1px solid var(--border);
+    }
+
+    .btn-add {
+      background: transparent;
+      border: 1px solid var(--border-strong);
+      border-radius: 20px;
+      padding: 7px 14px;
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      font-weight: 500;
+      color: var(--text-1);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+      letter-spacing: 0.05em;
+    }
+    .btn-add i { font-size: 0.45rem; }
+    .btn-add:hover { background: var(--text-0); color: var(--bg); border-color: var(--text-0); }
+    .btn-add.added { color: var(--success); border-color: rgba(0,204,102,0.2); pointer-events: none; }
+    .btn-add.added:hover { background: transparent; color: var(--success); border-color: rgba(0,204,102,0.2); }
+
+    .btn-specs {
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 7px 14px;
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      color: var(--text-2);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+      letter-spacing: 0.05em;
+    }
+    .btn-specs i { font-size: 0.45rem; transition: transform 0.2s; }
+    .btn-specs:hover { border-color: var(--border-strong); color: var(--text-1); }
+    .btn-specs.active i { transform: rotate(180deg); }
+
+    .specs-panel {
+      display: none;
+      padding: 12px 18px 16px;
+      border-top: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 6px;
+      animation: fadeUp 0.2s ease;
+    }
+    .specs-panel.show { display: flex; }
+    .spec-chip {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 6px 12px;
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      color: var(--text-2);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+    .spec-chip:hover { background: var(--surface-3); border-color: var(--border-strong); color: var(--text-0); }
+    .spec-cutoff { color: var(--text-1); font-weight: 500; }
+
+    /* ─── NO RESULTS ─── */
+    .no-results {
+      text-align: center;
+      padding: 48px 20px;
+      color: var(--text-3);
+    }
+    .no-results i { font-size: 1.2rem; display: block; margin-bottom: 12px; opacity: 0.4; }
+    .no-results p { font-size: 0.75rem; }
+
+    /* ─── PRIORITY LIST ─── */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-3);
+    }
+    .empty-state i { font-size: 1.2rem; display: block; margin-bottom: 12px; opacity: 0.3; }
+    .empty-state p { font-size: 0.75rem; }
+    .empty-state .hint { font-size: 0.62rem; margin-top: 6px; opacity: 0.6; font-family: var(--font-mono); }
+
+    .priority-card {
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
+      margin-bottom: 8px;
+      background: var(--surface);
+      transition: border-color 0.2s;
+    }
+    .priority-card:hover { border-color: var(--border-strong); }
+    .priority-card-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      cursor: pointer;
+    }
+    .p-mono {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--text-0);
+      color: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .p-info { flex: 1; min-width: 0; }
+    .p-name {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-0);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .p-branch {
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      color: var(--text-3);
+      margin-top: 3px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .p-chevron { font-size: 0.45rem; color: var(--text-3); transition: transform 0.2s; }
+    .priority-card.expanded .p-chevron { transform: rotate(180deg); color: var(--text-2); }
+    .p-details {
+      display: none;
+      padding: 0 16px 16px;
+      border-top: 1px solid var(--border);
+      animation: fadeUp 0.2s ease;
+    }
+    .priority-card.expanded .p-details { display: block; }
+    .p-detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .p-detail-row:last-of-type { border-bottom: none; }
+    .p-detail-label { font-family: var(--font-mono); font-size: 0.55rem; color: var(--text-3); letter-spacing: 0.08em; text-transform: uppercase; }
+    .p-detail-value { font-size: 0.8rem; font-weight: 600; color: var(--text-0); }
+    .btn-remove {
+      width: 100%;
+      margin-top: 12px;
+      padding: 10px;
+      background: transparent;
+      border: 1px solid rgba(255,59,59,0.2);
+      border-radius: var(--r-sm);
+      color: var(--danger);
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.2s;
+    }
+    .btn-remove:hover { background: rgba(255,59,59,0.07); }
+
+    /* ─── COLLEGES LIST ─── */
+    .college-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .college-row:last-child { border-bottom: none; }
+    .college-mono {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid var(--border-strong);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--text-1);
+      flex-shrink: 0;
+    }
+    .college-info { flex: 1; min-width: 0; }
+    .college-row-name { font-size: 0.78rem; font-weight: 600; color: var(--text-1); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .college-row-loc { font-family: var(--font-mono); font-size: 0.58rem; color: var(--text-3); margin-top: 3px; }
+
+    /* ─── BRANCHES LIST ─── */
+    .branch-group { margin-bottom: 4px; }
+    .branch-core {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 13px 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+    .branch-core:hover { border-color: var(--border-strong); }
+    .branch-core-left { display: flex; align-items: center; gap: 10px; }
+    .branch-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--text-3); flex-shrink: 0; }
+    .branch-core.expanded .branch-dot { background: var(--text-0); }
+    .branch-core-name { font-size: 0.74rem; font-weight: 600; color: var(--text-1); }
+    .branch-core-right { display: flex; align-items: center; gap: 8px; }
+    .branch-spec-count { font-family: var(--font-mono); font-size: 0.52rem; color: var(--text-3); }
+    .branch-chevron { font-size: 0.45rem; color: var(--text-3); transition: transform 0.2s; }
+    .branch-core.expanded .branch-chevron { transform: rotate(180deg); }
+    .branch-subs { display: none; padding: 4px 0 4px 24px; }
+    .branch-subs.show { display: block; }
+    .branch-sub {
+      padding: 9px 12px;
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      color: var(--text-3);
+      border-left: 1px solid var(--border);
+      margin-bottom: 2px;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .branch-sub:hover { color: var(--text-2); border-color: var(--border-strong); }
+
+    /* ─── SCROLLBAR ─── */
+    ::-webkit-scrollbar { width: 4px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 6px; }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.14); }
-    @media (max-width: 560px) {
-      body { padding: 12px; }
-      .xos-panel { padding: 24px 18px; border-radius: 20px; }
-      .cutoff-row { flex-direction: column; align-items: flex-start; }
+    ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
+
+    @media (max-width: 520px) {
+      body { padding: 16px 12px 60px; }
+      .result-metrics { grid-template-columns: 1fr 1fr; }
     }
   </style>
 </head>
 <body>
-<!-- ===== ONBOARDING MODAL ===== -->
+
+<!-- ONBOARDING -->
 <div class="onboard-overlay" id="onboardModal">
   <div class="onboard-card">
-    <div class="onboard-icon"><i class="fa-solid fa-user-astronaut"></i></div>
-    <h2>Welcome to Disha</h2>
-    <p>Enter your name to get started</p>
-    <input type="text" class="onboard-input" id="onboardNameInput" placeholder="Your name..." autocomplete="off" spellcheck="false" maxlength="30">
-    <button class="onboard-btn" id="onboardSubmitBtn" disabled>LET'S GO <i class="fa-solid fa-arrow-right"></i></button>
+    <div class="onboard-eyebrow">x0s · Disha Match</div>
+    <h2>What's<br><span>your name?</span></h2>
+    <input type="text" class="onboard-input" id="onboardNameInput" placeholder="Enter your name" autocomplete="off" spellcheck="false" maxlength="30">
+    <button class="onboard-btn" id="onboardSubmitBtn" disabled>Continue</button>
   </div>
 </div>
-<!-- ===== SIDEBAR BACKDROP ===== -->
+
+<!-- SIDEBAR -->
 <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
-<!-- ===== SIDEBAR DRAWER ===== -->
 <div class="sidebar" id="sidebar">
-  <div class="sidebar-profile">
-    <div class="sidebar-pfp" id="sidebarPfp">?</div>
-    <div>
-      <div class="sidebar-username" id="sidebarUsername">User</div>
-      <div class="sidebar-usertag">CET Explorer</div>
-    </div>
+  <div class="sidebar-top">
+    <div class="sidebar-monogram" id="sidebarPfp">?</div>
+    <div class="sidebar-name" id="sidebarUsername">User</div>
+    <div class="sidebar-role">CET Explorer</div>
   </div>
-  <div class="sidebar-nav">
-    <div class="sidebar-item active" data-view="match" id="navMatch">
-      <i class="fa-solid fa-crosshairs"></i> Disha Match
+  <nav class="sidebar-nav">
+    <div class="nav-item active" data-view="match">
+      <span class="nav-label"><i class="fa-solid fa-crosshairs"></i> Match Engine</span>
     </div>
-    <div class="sidebar-item" data-view="priority" id="navPriority">
-      <i class="fa-solid fa-heart"></i> Priority List
-      <span class="nav-count" id="navPriorityCount" style="display:none;">0</span>
+    <div class="nav-item" data-view="priority">
+      <span class="nav-label"><i class="fa-regular fa-bookmark"></i> Priority List</span>
+      <span class="nav-badge" id="navPriorityCount">0</span>
     </div>
-    <div class="sidebar-item" data-view="colleges" id="navColleges">
-      <i class="fa-solid fa-building-columns"></i> Colleges
+    <div class="nav-item" data-view="colleges">
+      <span class="nav-label"><i class="fa-regular fa-building"></i> Colleges</span>
     </div>
-    <div class="sidebar-item" data-view="branches" id="navBranches">
-      <i class="fa-solid fa-code-branch"></i> Branches
+    <div class="nav-item" data-view="branches">
+      <span class="nav-label"><i class="fa-solid fa-sitemap"></i> Branches</span>
     </div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-footer-text">x0s · Disha v3.0</div>
   </div>
-  <div class="sidebar-footer">x0s · Disha Match v3.0</div>
 </div>
-<!-- ===== MAIN PANEL ===== -->
-<div class="xos-panel">
-  <div class="xos-header">
-    <div class="xos-header-left">
-      <h2 id="headerTitle">Disha Match Engine</h2>
-      <div class="xos-header-sub" id="headerSub">
-        <i class="fa-solid fa-layer-group"></i>
-        <span id="headerSubText">Core + Specializations · ±2000 range</span>
+
+<!-- MAIN -->
+<div class="panel">
+  <div class="header">
+    <div>
+      <div class="header-wordmark">x0s · Disha Match</div>
+      <h1 id="headerTitle">Match Engine</h1>
+      <div class="header-sub" id="headerSub">Core + Specializations · ±2000 range</div>
+    </div>
+    <button class="menu-btn" id="menuBtn"><i class="fa-solid fa-bars-staggered"></i></button>
+  </div>
+
+  <!-- VIEW: MATCH -->
+  <div class="view active" id="view-match">
+    <div class="field">
+      <div class="field-label">
+        <div class="field-step">1</div>
+        <span class="field-label-text">Core Branch</span>
+      </div>
+      <div style="position:relative;">
+        <input type="text" id="inputBranch" class="xos-input" placeholder="e.g., COMPUTER SCIENCE AND ENGINEERING" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+        <div id="branchSuggestBox" class="suggest-box"></div>
       </div>
     </div>
-    <button class="hamburger-btn" id="hamburgerBtn"><i class="fa-solid fa-bars"></i></button>
-  </div>
-  <!-- ===== VIEW: MATCH ===== -->
-  <div class="app-view active" id="view-match">
-    <div class="form-group">
-      <label class="form-label">
-        <span class="step-num">1</span>
-        <i class="fa-solid fa-code-branch"></i> Core Branch
-      </label>
-      <input type="text" id="inputBranch" class="xos-input" placeholder="e.g., COMPUTER SCIENCE AND ENGINEERING" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" name="xos-branch-nonauto" data-form-type="other" data-lpignore="true" aria-autocomplete="list" role="combobox">
-      <div id="branchSuggestBox" class="suggest-box"></div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">
-        <span class="step-num">2</span>
-        <i class="fa-solid fa-tag"></i> Category
-      </label>
+    <div class="field">
+      <div class="field-label">
+        <div class="field-step">2</div>
+        <span class="field-label-text">Category</span>
+      </div>
       <div class="xos-dropdown" id="categoryDropdown">
-        <div class="xos-dropdown-trigger" id="categoryTrigger" tabindex="0">
+        <div class="dd-trigger" id="categoryTrigger" tabindex="0">
           <span class="dd-text placeholder">Loading categories...</span>
           <i class="fa-solid fa-chevron-down dd-chevron"></i>
         </div>
-        <div class="xos-dropdown-menu" id="categoryMenu">
-          <div class="xos-dropdown-search">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" id="categorySearchInput" placeholder="Search categories..." autocomplete="off" autocorrect="off" spellcheck="false">
+        <div class="dd-menu" id="categoryMenu">
+          <div class="dd-search">
+            <div class="dd-search-wrap">
+              <input type="text" id="categorySearchInput" placeholder="Search categories..." autocomplete="off" spellcheck="false">
+            </div>
           </div>
           <div id="categoryMenuItems"></div>
         </div>
       </div>
       <input type="hidden" id="inputCategory" value="">
     </div>
-    <div class="form-group">
-      <label class="form-label">
-        <span class="step-num">3</span>
-        <i class="fa-solid fa-ranking-star"></i> Your Rank
-      </label>
+    <div class="field">
+      <div class="field-label">
+        <div class="field-step">3</div>
+        <span class="field-label-text">Your Rank</span>
+      </div>
       <input type="number" id="inputRank" class="xos-input" placeholder="Enter CET rank" min="1" autocomplete="off">
     </div>
-    <button class="xos-btn" id="searchBtn">
-      SEARCH <i class="fa-solid fa-arrow-right"></i>
+    <button class="btn-primary" id="searchBtn">
+      Run Match <i class="fa-solid fa-arrow-right" style="font-size:0.6rem;"></i>
     </button>
     <div id="resultsArea" class="results-container"></div>
   </div>
-  <!-- ===== VIEW: PRIORITY LIST ===== -->
-  <div class="app-view" id="view-priority">
-    <div class="view-title">
-      <i class="fa-solid fa-heart"></i>
+
+  <!-- VIEW: PRIORITY -->
+  <div class="view" id="view-priority">
+    <div class="view-header">
       <h3>Priority List</h3>
       <span class="view-count" id="priorityViewCount">0 saved</span>
     </div>
     <div id="priorityListContainer"></div>
   </div>
-  <!-- ===== VIEW: COLLEGES ===== -->
-  <div class="app-view" id="view-colleges">
-    <div class="view-title">
-      <i class="fa-solid fa-building-columns"></i>
-      <h3>All Colleges</h3>
+
+  <!-- VIEW: COLLEGES -->
+  <div class="view" id="view-colleges">
+    <div class="view-header">
+      <h3>Colleges</h3>
       <span class="view-count" id="collegesViewCount">0 colleges</span>
     </div>
-    <div id="collegesListContainer" class="college-list"></div>
+    <div id="collegesListContainer"></div>
   </div>
-  <!-- ===== VIEW: BRANCHES ===== -->
-  <div class="app-view" id="view-branches">
-    <div class="view-title">
-      <i class="fa-solid fa-code-branch"></i>
-      <h3>All Branches</h3>
+
+  <!-- VIEW: BRANCHES -->
+  <div class="view" id="view-branches">
+    <div class="view-header">
+      <h3>Branches</h3>
       <span class="view-count" id="branchesViewCount">0 branches</span>
     </div>
     <div id="branchesListContainer"></div>
   </div>
 </div>
+
 <script src="./college-data.js"></script>
 <script>
-  // ============ GLOBAL STATE ============
   let Engine = { branches: [], categories: [], branchToCode: new Map(), codeToBranch: new Map(), specializationMap: new Map() };
   let lastSearchCategory = '';
-  // ============ ONBOARDING ============
+
+  /* ── ONBOARDING ── */
   function initOnboarding() {
     const saved = localStorage.getItem('xos_username');
     const modal = document.getElementById('onboardModal');
-    if (saved) {
-      modal.classList.add('hidden');
-      applyUsername(saved);
-      return;
-    }
+    if (saved) { modal.classList.add('hidden'); applyUsername(saved); return; }
     const input = document.getElementById('onboardNameInput');
     const btn = document.getElementById('onboardSubmitBtn');
     input.addEventListener('input', () => { btn.disabled = input.value.trim().length === 0; });
-    input.addEventListener('keydown', (e) => { if (e.key === 'Enter' && input.value.trim()) submitOnboard(); });
-    btn.addEventListener('click', submitOnboard);
-    function submitOnboard() {
+    input.addEventListener('keydown', (e) => { if (e.key === 'Enter' && input.value.trim()) submit(); });
+    btn.addEventListener('click', submit);
+    function submit() {
       const name = input.value.trim();
       if (!name) return;
       localStorage.setItem('xos_username', name);
@@ -544,21 +996,17 @@
     setTimeout(() => input.focus(), 400);
   }
   function applyUsername(name) {
-    const letter = name.charAt(0).toUpperCase();
-    document.getElementById('sidebarPfp').textContent = letter;
+    document.getElementById('sidebarPfp').textContent = name.charAt(0).toUpperCase();
     document.getElementById('sidebarUsername').textContent = name;
   }
-  // ============ SIDEBAR ============
+
+  /* ── SIDEBAR ── */
   function initSidebar() {
-    const btn = document.getElementById('hamburgerBtn');
-    const sidebar = document.getElementById('sidebar');
-    const backdrop = document.getElementById('sidebarBackdrop');
-    btn.addEventListener('click', () => toggleSidebar(true));
-    backdrop.addEventListener('click', () => toggleSidebar(false));
-    document.querySelectorAll('.sidebar-item').forEach(item => {
+    document.getElementById('menuBtn').addEventListener('click', () => toggleSidebar(true));
+    document.getElementById('sidebarBackdrop').addEventListener('click', () => toggleSidebar(false));
+    document.querySelectorAll('.nav-item').forEach(item => {
       item.addEventListener('click', () => {
-        const view = item.getAttribute('data-view');
-        switchView(view);
+        switchView(item.getAttribute('data-view'));
         toggleSidebar(false);
       });
     });
@@ -567,21 +1015,23 @@
     document.getElementById('sidebar').classList.toggle('open', open);
     document.getElementById('sidebarBackdrop').classList.toggle('open', open);
   }
-  // ============ VIEW SWITCHING ============
-  function switchView(viewName) {
-    document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
-    document.getElementById(`view-${viewName}`).classList.add('active');
-    document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
-    document.querySelector(`.sidebar-item[data-view="${viewName}"]`).classList.add('active');
-    const titles = { match: 'Disha Match Engine', priority: 'Priority List', colleges: 'All Colleges', branches: 'All Branches' };
+
+  /* ── VIEW SWITCH ── */
+  function switchView(name) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById(`view-${name}`).classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+    document.querySelector(`.nav-item[data-view="${name}"]`).classList.add('active');
+    const titles = { match: 'Match Engine', priority: 'Priority List', colleges: 'Colleges', branches: 'Branches' };
     const subs = { match: 'Core + Specializations · ±2000 range', priority: 'Your saved colleges', colleges: 'Browse all institutions', branches: 'Core & specializations' };
-    document.getElementById('headerTitle').textContent = titles[viewName] || '';
-    document.getElementById('headerSubText').textContent = subs[viewName] || '';
-    if (viewName === 'priority') renderPriorityList();
-    if (viewName === 'colleges') renderCollegesList();
-    if (viewName === 'branches') renderBranchesList();
+    document.getElementById('headerTitle').textContent = titles[name] || '';
+    document.getElementById('headerSub').textContent = subs[name] || '';
+    if (name === 'priority') renderPriorityList();
+    if (name === 'colleges') renderCollegesList();
+    if (name === 'branches') renderBranchesList();
   }
-  // ============ CLEAN BRANCH NAME ============
+
+  /* ── CLEAN BRANCH ── */
   function cleanBranchName(name) {
     if (!name) return '';
     let clean = name.toUpperCase()
@@ -608,253 +1058,228 @@
     if (clean === 'COMPUTER SCIENCE' || clean === 'COMPUTER ENGINEERING') clean = 'COMPUTER SCIENCE AND ENGINEERING';
     return clean;
   }
-  // ============ BUILD MASTER DATA ============
+
+  /* ── BUILD DATA ── */
   function buildMasterData() {
     if (!window.XOS_CUTOFF || !window.XOS_DICT) { console.error("Missing college-data.js"); return false; }
     const branchSet = new Set(), categorySet = new Set();
     for (const [code, rawName] of Object.entries(window.XOS_DICT)) {
       const clean = cleanBranchName(rawName);
-      branchSet.add(clean); Engine.branchToCode.set(clean, code); Engine.codeToBranch.set(code, clean);
+      branchSet.add(clean);
+      Engine.branchToCode.set(clean, code);
+      Engine.codeToBranch.set(code, clean);
     }
     for (const college of window.XOS_CUTOFF) {
-      if (college.branches) { for (const branchData of Object.values(college.branches)) { for (const cat in branchData) { if (branchData[cat] !== null && branchData[cat] !== undefined) categorySet.add(cat); } } }
+      if (college.branches) {
+        for (const branchData of Object.values(college.branches)) {
+          for (const cat in branchData) { if (branchData[cat] !== null && branchData[cat] !== undefined) categorySet.add(cat); }
+        }
+      }
     }
     Engine.branches = Array.from(branchSet).sort();
     Engine.categories = Array.from(categorySet).sort();
     for (const [code, rawName] of Object.entries(window.XOS_DICT)) {
       const clean = cleanBranchName(rawName);
-      const parenMatch = clean.match(/^(.*?)\s*\((.*)\)$/);
-      if (parenMatch) {
-        const coreName = parenMatch[1].trim();
-        if (!Engine.specializationMap.has(coreName)) Engine.specializationMap.set(coreName, []);
-        if (!Engine.specializationMap.get(coreName).includes(clean)) Engine.specializationMap.get(coreName).push(clean);
+      const m = clean.match(/^(.*?)\s*\((.*)\)$/);
+      if (m) {
+        const core = m[1].trim();
+        if (!Engine.specializationMap.has(core)) Engine.specializationMap.set(core, []);
+        if (!Engine.specializationMap.get(core).includes(clean)) Engine.specializationMap.get(core).push(clean);
       }
     }
     for (const [core, specs] of Engine.specializationMap) Engine.specializationMap.set(core, specs.sort());
     return true;
   }
-  // ============ CATEGORY DROPDOWN ============
+
+  /* ── CATEGORY DROPDOWN ── */
   function populateCategoryDropdown() {
     const hidden = document.getElementById('inputCategory');
     const trigger = document.getElementById('categoryTrigger');
     const menu = document.getElementById('categoryMenu');
-    const itemsContainer = document.getElementById('categoryMenuItems');
-    const searchInput = document.getElementById('categorySearchInput');
+    const items = document.getElementById('categoryMenuItems');
+    const search = document.getElementById('categorySearchInput');
     hidden.value = '';
-    function renderItems(filter) {
-      const q = (filter || '').toUpperCase();
+    function renderItems(f) {
+      const q = (f || '').toUpperCase();
       const filtered = q ? Engine.categories.filter(c => c.toUpperCase().includes(q)) : Engine.categories;
-      if (filtered.length === 0) {
-        itemsContainer.innerHTML = '<div class="xos-dropdown-item" style="color:var(--xos-text-tertiary);pointer-events:none;"><i class="fa-regular fa-circle-xmark dd-item-icon"></i> No matching categories</div>';
-        return;
-      }
-      itemsContainer.innerHTML = filtered.map(c => {
+      if (!filtered.length) { items.innerHTML = '<div class="dd-item" style="pointer-events:none;color:var(--text-3);">No results</div>'; return; }
+      items.innerHTML = filtered.map(c => {
         const sel = hidden.value === c;
-        return `<div class="xos-dropdown-item${sel ? ' selected' : ''}" data-value="${escapeHtml(c)}"><i class="${sel ? 'fa-solid fa-circle-check' : 'fa-regular fa-circle'} dd-item-icon"></i>${escapeHtml(c)}</div>`;
+        return `<div class="dd-item${sel ? ' selected' : ''}" data-value="${escapeHtml(c)}">${escapeHtml(c)}<i class="fa-solid fa-check dd-check"></i></div>`;
       }).join('');
-      itemsContainer.querySelectorAll('.xos-dropdown-item').forEach(item => {
+      items.querySelectorAll('.dd-item').forEach(item => {
         item.addEventListener('click', () => {
           hidden.value = item.getAttribute('data-value');
-          trigger.querySelector('.dd-text').textContent = hidden.value;
-          trigger.querySelector('.dd-text').classList.remove('placeholder');
+          const el = trigger.querySelector('.dd-text');
+          el.textContent = hidden.value;
+          el.classList.remove('placeholder');
           closeDD();
         });
       });
     }
-    function openDD() { menu.classList.add('show'); trigger.classList.add('open'); searchInput.value = ''; renderItems(''); setTimeout(() => searchInput.focus(), 50); }
+    function openDD() { menu.classList.add('show'); trigger.classList.add('open'); search.value = ''; renderItems(''); setTimeout(() => search.focus(), 50); }
     function closeDD() { menu.classList.remove('show'); trigger.classList.remove('open'); }
-    function toggleDD() { menu.classList.contains('show') ? closeDD() : openDD(); }
-    trigger.addEventListener('click', (e) => { e.stopPropagation(); toggleDD(); });
-    trigger.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleDD(); } else if (e.key === 'Escape') closeDD(); });
-    searchInput.addEventListener('input', (e) => renderItems(e.target.value));
-    searchInput.addEventListener('click', (e) => e.stopPropagation());
-    searchInput.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeDD(); trigger.focus(); } });
+    trigger.addEventListener('click', (e) => { e.stopPropagation(); menu.classList.contains('show') ? closeDD() : openDD(); });
+    trigger.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); menu.classList.contains('show') ? closeDD() : openDD(); } else if (e.key === 'Escape') closeDD(); });
+    search.addEventListener('input', (e) => renderItems(e.target.value));
+    search.addEventListener('click', (e) => e.stopPropagation());
+    search.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeDD(); trigger.focus(); } });
     document.addEventListener('click', (e) => { if (!document.getElementById('categoryDropdown').contains(e.target)) closeDD(); });
-    trigger.querySelector('.dd-text').textContent = 'Select category...';
+    trigger.querySelector('.dd-text').textContent = 'Select category';
     trigger.querySelector('.dd-text').classList.add('placeholder');
     renderItems('');
   }
-  // ============ BRANCH AUTOCOMPLETE ============
+
+  /* ── AUTOCOMPLETE ── */
   function setupAutocomplete() {
     const input = document.getElementById('inputBranch');
-    const suggestBox = document.getElementById('branchSuggestBox');
+    const box = document.getElementById('branchSuggestBox');
     input.addEventListener('input', (e) => {
-      const query = e.target.value.trim().toUpperCase();
-      if (!query) { suggestBox.style.display = 'none'; return; }
-      const matches = Engine.branches.filter(b => b.includes(query)).slice(0, 6);
-      if (matches.length === 0) {
-        suggestBox.innerHTML = '<div class="suggest-item" style="color:var(--xos-text-tertiary);pointer-events:none;">No matching branches</div>';
+      const q = e.target.value.trim().toUpperCase();
+      if (!q) { box.style.display = 'none'; return; }
+      const matches = Engine.branches.filter(b => b.includes(q)).slice(0, 6);
+      if (!matches.length) {
+        box.innerHTML = '<div class="suggest-item" style="color:var(--text-3);pointer-events:none;">No matches</div>';
       } else {
-        suggestBox.innerHTML = matches.map(m => `<div class="suggest-item" onclick="selectBranch('${m.replace(/'/g, "\\'")}')">${m}</div>`).join('');
+        box.innerHTML = matches.map(m => `<div class="suggest-item" onclick="selectBranch('${m.replace(/'/g, "\\'")}')">${m}<i class="fa-solid fa-arrow-up-left suggest-arrow"></i></div>`).join('');
       }
-      suggestBox.style.display = 'block';
+      box.style.display = 'block';
     });
-    input.addEventListener('blur', () => setTimeout(() => suggestBox.style.display = 'none', 200));
+    input.addEventListener('blur', () => setTimeout(() => box.style.display = 'none', 200));
   }
-  window.selectBranch = function(val) { document.getElementById('inputBranch').value = val; document.getElementById('branchSuggestBox').style.display = 'none'; };
-  // ============ PRIORITY LIST (localStorage) ============
-  function getPriorityList() {
-    try { return JSON.parse(localStorage.getItem('xos_priority_list') || '[]'); } catch(e) { return []; }
-  }
-  function savePriorityList(list) {
-    localStorage.setItem('xos_priority_list', JSON.stringify(list));
-    updatePriorityCount();
-  }
+  window.selectBranch = (val) => { document.getElementById('inputBranch').value = val; document.getElementById('branchSuggestBox').style.display = 'none'; };
+
+  /* ── PRIORITY STORAGE ── */
+  function getPriority() { try { return JSON.parse(localStorage.getItem('xos_priority_list') || '[]'); } catch { return []; } }
+  function savePriority(list) { localStorage.setItem('xos_priority_list', JSON.stringify(list)); updatePriorityBadge(); }
   function addToPriority(item) {
-    const list = getPriorityList();
+    const list = getPriority();
     const key = item.id + '|' + item.branch;
-    if (list.find(x => (x.id + '|' + x.branch) === key)) return false;
+    if (list.find(x => x.id + '|' + x.branch === key)) return false;
     list.push(item);
-    savePriorityList(list);
+    savePriority(list);
     return true;
   }
   function removeFromPriority(id, branch) {
-    let list = getPriorityList();
-    list = list.filter(x => !((x.id + '|' + x.branch) === (id + '|' + branch)));
-    savePriorityList(list);
+    savePriority(getPriority().filter(x => x.id + '|' + x.branch !== id + '|' + branch));
     renderPriorityList();
   }
-  function isInPriority(id, branch) {
-    return getPriorityList().some(x => (x.id + '|' + x.branch) === (id + '|' + branch));
+  function isInPriority(id, branch) { return getPriority().some(x => x.id + '|' + x.branch === id + '|' + branch); }
+  function updatePriorityBadge() {
+    const n = getPriority().length;
+    const b = document.getElementById('navPriorityCount');
+    b.textContent = n; b.style.display = n > 0 ? 'inline-block' : 'none';
   }
-  function updatePriorityCount() {
-    const count = getPriorityList().length;
-    const badge = document.getElementById('navPriorityCount');
-    if (count > 0) { badge.textContent = count; badge.style.display = 'inline-block'; }
-    else { badge.style.display = 'none'; }
-  }
-  // ============ RENDER PRIORITY LIST ============
+
+  /* ── RENDER PRIORITY ── */
   function renderPriorityList() {
-    const container = document.getElementById('priorityListContainer');
-    const list = getPriorityList();
+    const el = document.getElementById('priorityListContainer');
+    const list = getPriority();
     document.getElementById('priorityViewCount').textContent = `${list.length} saved`;
-    if (list.length === 0) {
-      container.innerHTML = `<div class="priority-empty"><i class="fa-regular fa-heart"></i><p>No colleges saved yet</p><div class="hint">Search and add colleges from Disha Match</div></div>`;
+    if (!list.length) {
+      el.innerHTML = `<div class="empty-state"><i class="fa-regular fa-bookmark"></i><p>No colleges saved yet</p><div class="hint">Add colleges from Match Engine</div></div>`;
       return;
     }
-    container.innerHTML = list.map((item, idx) => {
-      const shortName = getShortName(item.name);
-      const letter = shortName.charAt(0).toUpperCase();
-      return `
-        <div class="priority-card" id="pcard_${idx}">
-          <div class="priority-card-header" onclick="togglePriorityCard(${idx})">
-            <div class="priority-card-pfp">${letter}</div>
-            <div class="priority-card-info">
-              <div class="priority-card-name"><span class="marquee-inner">${escapeHtml(item.name)}</span></div>
-              <div class="priority-card-branch"><i class="fa-solid fa-book" style="font-size:0.5rem;color:var(--xos-accent);margin-right:4px;"></i>${escapeHtml(item.branch)}</div>
-            </div>
-            <i class="fa-solid fa-chevron-down priority-card-chevron"></i>
+    el.innerHTML = list.map((item, idx) => {
+      const letter = getShortName(item.name).charAt(0).toUpperCase();
+      return `<div class="priority-card" id="pcard_${idx}">
+        <div class="priority-card-row" onclick="togglePriorityCard(${idx})">
+          <div class="p-mono">${letter}</div>
+          <div class="p-info">
+            <div class="p-name">${escapeHtml(item.name)}</div>
+            <div class="p-branch">${escapeHtml(item.branch)}</div>
           </div>
-          <div class="priority-card-details">
-            <div class="priority-detail-row">
-              <span class="priority-detail-label"><i class="fa-solid fa-location-dot"></i> Location</span>
-              <span class="priority-detail-value" style="color:var(--xos-accent);">${escapeHtml(item.location)}</span>
-            </div>
-            <div class="priority-detail-row">
-              <span class="priority-detail-label"><i class="fa-solid fa-hashtag"></i> College ID</span>
-              <span class="priority-detail-value">${item.id}</span>
-            </div>
-            <div class="priority-detail-row">
-              <span class="priority-detail-label"><i class="fa-solid fa-chart-line"></i> Cutoff (${escapeHtml(item.category || '')})</span>
-              <span class="priority-detail-value">${item.cutoff ? item.cutoff.toLocaleString('en-IN') : '—'}</span>
-            </div>
-            <div class="priority-detail-row">
-              <span class="priority-detail-label"><i class="fa-solid fa-arrow-up-right-dots"></i> Variance</span>
-              <span class="priority-detail-value ${item.diff >= 0 ? 'variance-positive' : 'variance-negative'}">${item.diff >= 0 ? '+' : ''}${item.diff}</span>
-            </div>
-            <button class="priority-remove-btn" onclick="removeFromPriority('${item.id}','${escapeHtml(item.branch).replace(/'/g, "\\'")}')">
-              <i class="fa-solid fa-trash"></i> Remove from Priority List
-            </button>
-          </div>
-        </div>`;
+          <i class="fa-solid fa-chevron-down p-chevron"></i>
+        </div>
+        <div class="p-details">
+          <div class="p-detail-row"><span class="p-detail-label">Location</span><span class="p-detail-value">${escapeHtml(item.location)}</span></div>
+          <div class="p-detail-row"><span class="p-detail-label">College ID</span><span class="p-detail-value">${item.id}</span></div>
+          <div class="p-detail-row"><span class="p-detail-label">Cutoff (${escapeHtml(item.category || '')})</span><span class="p-detail-value">${item.cutoff ? item.cutoff.toLocaleString('en-IN') : '—'}</span></div>
+          <div class="p-detail-row"><span class="p-detail-label">Variance</span><span class="p-detail-value">${item.diff >= 0 ? '+' : ''}${item.diff}</span></div>
+          <button class="btn-remove" onclick="removeFromPriority('${item.id}','${escapeHtml(item.branch).replace(/'/g,"\\'")}')" >
+            <i class="fa-regular fa-trash-can"></i> Remove
+          </button>
+        </div>
+      </div>`;
     }).join('');
   }
-  window.togglePriorityCard = function(idx) {
+  window.togglePriorityCard = (idx) => {
     const card = document.getElementById(`pcard_${idx}`);
     if (!card) return;
-    const wasExpanded = card.classList.contains('expanded');
-    // Close all
+    const was = card.classList.contains('expanded');
     document.querySelectorAll('.priority-card.expanded').forEach(c => c.classList.remove('expanded'));
-    // Open clicked one if it wasn't already open
-    if (!wasExpanded) card.classList.add('expanded');
+    if (!was) card.classList.add('expanded');
   };
-  // ============ RENDER COLLEGES LIST ============
+
+  /* ── RENDER COLLEGES ── */
   function renderCollegesList() {
-    const container = document.getElementById('collegesListContainer');
-    if (!window.XOS_CUTOFF) { container.innerHTML = '<div class="priority-empty"><i class="fa-solid fa-circle-exclamation"></i><p>Data not loaded</p></div>'; return; }
-    const colleges = window.XOS_CUTOFF;
-    document.getElementById('collegesViewCount').textContent = `${colleges.length} colleges`;
-    container.innerHTML = colleges.map(c => {
-      const shortName = getShortName(c.name);
-      const letter = shortName.charAt(0).toUpperCase();
-      const loc = c.location || 'Karnataka';
-      return `
-        <div class="college-list-item">
-          <div class="college-list-pfp">${letter}</div>
-          <div class="college-list-info">
-            <div class="college-list-name">${escapeHtml(shortName)}</div>
-            <div class="college-list-loc"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(loc)}</div>
-          </div>
-        </div>`;
+    const el = document.getElementById('collegesListContainer');
+    if (!window.XOS_CUTOFF) { el.innerHTML = '<div class="empty-state"><p>Data not loaded</p></div>'; return; }
+    document.getElementById('collegesViewCount').textContent = `${window.XOS_CUTOFF.length} colleges`;
+    el.innerHTML = window.XOS_CUTOFF.map(c => {
+      const short = getShortName(c.name);
+      return `<div class="college-row">
+        <div class="college-mono">${short.charAt(0).toUpperCase()}</div>
+        <div class="college-info">
+          <div class="college-row-name">${escapeHtml(short)}</div>
+          <div class="college-row-loc">${escapeHtml(c.location || 'Karnataka')}</div>
+        </div>
+      </div>`;
     }).join('');
   }
-  // ============ RENDER BRANCHES LIST ============
+
+  /* ── RENDER BRANCHES ── */
   function renderBranchesList() {
-    const container = document.getElementById('branchesListContainer');
-    // Separate core branches (no parentheses) from specializations
+    const el = document.getElementById('branchesListContainer');
     const coreBranches = Engine.branches.filter(b => !b.includes('('));
     document.getElementById('branchesViewCount').textContent = `${coreBranches.length} core branches`;
-    container.innerHTML = coreBranches.map((core, idx) => {
+    el.innerHTML = coreBranches.map((core, idx) => {
       const subs = Engine.specializationMap.get(core) || [];
-      return `
-        <div class="branch-group">
-          <div class="branch-core-item" onclick="toggleBranchGroup(${idx})" id="bcore_${idx}">
-            <i class="fa-solid fa-microchip core-icon"></i>
-            <span class="core-name">${escapeHtml(core)}</span>
-            ${subs.length > 0 ? `<span class="core-count">${subs.length} spec${subs.length > 1 ? 's' : ''}</span>` : ''}
-            ${subs.length > 0 ? `<i class="fa-solid fa-chevron-down core-chevron"></i>` : ''}
+      return `<div class="branch-group">
+        <div class="branch-core" onclick="toggleBranch(${idx})" id="bc_${idx}">
+          <div class="branch-core-left">
+            <div class="branch-dot"></div>
+            <span class="branch-core-name">${escapeHtml(core)}</span>
           </div>
-          ${subs.length > 0 ? `
-            <div class="branch-subs" id="bsubs_${idx}">
-              ${subs.map(s => {
-                const specPart = s.match(/\((.+)\)$/);
-                const specLabel = specPart ? specPart[1] : s;
-                return `<div class="branch-sub-item"><i class="fa-solid fa-diagram-project"></i> ${escapeHtml(specLabel)}</div>`;
-              }).join('')}
-            </div>` : ''}
-        </div>`;
+          <div class="branch-core-right">
+            ${subs.length ? `<span class="branch-spec-count">${subs.length} specs</span><i class="fa-solid fa-chevron-down branch-chevron"></i>` : ''}
+          </div>
+        </div>
+        ${subs.length ? `<div class="branch-subs" id="bs_${idx}">${subs.map(s => {
+          const m = s.match(/\((.+)\)$/);
+          return `<div class="branch-sub">${escapeHtml(m ? m[1] : s)}</div>`;
+        }).join('')}</div>` : ''}
+      </div>`;
     }).join('');
   }
-  window.toggleBranchGroup = function(idx) {
-    const core = document.getElementById(`bcore_${idx}`);
-    const subs = document.getElementById(`bsubs_${idx}`);
-    if (!core || !subs) return;
-    core.classList.toggle('expanded');
-    subs.classList.toggle('show');
+  window.toggleBranch = (idx) => {
+    const core = document.getElementById(`bc_${idx}`);
+    const subs = document.getElementById(`bs_${idx}`);
+    if (core) core.classList.toggle('expanded');
+    if (subs) subs.classList.toggle('show');
   };
-  // ============ SEARCH ENGINE ============
+
+  /* ── SEARCH ── */
   function searchColleges() {
     const targetBranch = document.getElementById('inputBranch').value.trim().toUpperCase();
     const targetCat = document.getElementById('inputCategory').value;
     const userRank = parseInt(document.getElementById('inputRank').value, 10);
-    const resultsArea = document.getElementById('resultsArea');
+    const area = document.getElementById('resultsArea');
     lastSearchCategory = targetCat;
     if (!targetBranch || !targetCat || isNaN(userRank)) {
-      resultsArea.innerHTML = `<div class="no-results"><i class="fa-solid fa-triangle-exclamation"></i> Please fill all fields</div>`;
-      resultsArea.style.display = 'block'; return;
+      area.innerHTML = `<div class="no-results"><i class="fa-solid fa-triangle-exclamation"></i><p>Please fill all fields</p></div>`;
+      area.style.display = 'block'; return;
     }
     if (!window.XOS_CUTOFF) return;
     let matchingCore = null;
     for (const branch of Engine.branches) { if (branch === targetBranch || branch.includes(targetBranch)) { matchingCore = branch; break; } }
     if (!matchingCore) {
-      resultsArea.innerHTML = `<div class="no-results"><i class="fa-solid fa-triangle-exclamation"></i> Branch "${targetBranch}" not found</div>`;
-      resultsArea.style.display = 'block'; return;
+      area.innerHTML = `<div class="no-results"><i class="fa-solid fa-triangle-exclamation"></i><p>Branch not found</p></div>`;
+      area.style.display = 'block'; return;
     }
-    const branchesToSearch = [matchingCore];
-    const specializations = Engine.specializationMap.get(matchingCore) || [];
-    branchesToSearch.push(...specializations);
+    const branchesToSearch = [matchingCore, ...(Engine.specializationMap.get(matchingCore) || [])];
     const codesToSearch = new Set();
-    for (const branch of branchesToSearch) { const code = Engine.branchToCode.get(branch); if (code) codesToSearch.add(code); }
+    for (const b of branchesToSearch) { const c = Engine.branchToCode.get(b); if (c) codesToSearch.add(c); }
     const RANGE = 2000, matches = [];
     for (const college of window.XOS_CUTOFF) {
       if (!college.branches) continue;
@@ -878,78 +1303,81 @@
     const finalResults = [];
     for (const [_, cd] of collegeMap) { if (cd.coreMatch) finalResults.push(cd); }
     finalResults.sort((a, b) => Math.abs(a.coreMatch.diff) - Math.abs(b.coreMatch.diff));
-    resultsArea.style.display = 'block';
-    if (finalResults.length === 0) {
-      resultsArea.innerHTML = `<div class="no-results"><i class="fa-regular fa-folder-open"></i> No colleges found for "${matchingCore}" within ±${RANGE} rank range</div>`;
+    area.style.display = 'block';
+    if (!finalResults.length) {
+      area.innerHTML = `<div class="no-results"><i class="fa-regular fa-folder-open"></i><p>No colleges within ±${RANGE} rank range</p></div>`;
       return;
     }
-    let html = `<div class="result-stats"><i class="fa-solid fa-crosshairs"></i> ${finalResults.length} college(s) · ${branchesToSearch.length} branch(es) searched (core + ${specializations.length} specs)</div>`;
+    const specs = Engine.specializationMap.get(matchingCore) || [];
+    let html = `<div class="result-stats">${finalResults.length} college${finalResults.length > 1 ? 's' : ''} · ${branchesToSearch.length} branch${branchesToSearch.length > 1 ? 'es' : ''} searched</div>`;
     finalResults.forEach((college, idx) => {
-      const core = college.coreMatch, specs = college.specializations;
-      const alreadyAdded = isInPriority(core.id, core.branch);
-      html += `
-        <div class="result-card" id="result_${idx}">
-          <div class="result-header"><div class="college-id"><i class="fa-solid fa-hashtag"></i> ${college.id}</div></div>
-          <div class="college-name">${escapeHtml(college.name)}</div>
-          <div class="college-loc"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(college.location)}</div>
-          <div class="branch-name"><i class="fa-solid fa-book"></i> ${core.branch}</div>
-          <div class="cutoff-row">
-            <div class="cutoff-block">
-              <div class="cutoff-label"><i class="fa-solid fa-chart-line"></i> Cutoff (${targetCat})</div>
-              <div class="cutoff-value">${core.cutoff.toLocaleString('en-IN')}</div>
-            </div>
-            <div class="cutoff-block">
-              <div class="cutoff-label"><i class="fa-solid fa-arrow-up-right-dots"></i> Variance</div>
-              <div class="variance ${core.diff >= 0 ? 'variance-positive' : 'variance-negative'}">${core.diff >= 0 ? '+' : ''}${core.diff}</div>
-            </div>
-            ${specs.length > 0 ? `<button class="expand-btn" onclick="toggleSpecs(${idx}, this)"><i class="fa-solid fa-chevron-down"></i> ${specs.length} spec${specs.length > 1 ? 's' : ''}</button>` : ''}
+      const core = college.coreMatch;
+      const subs = college.specializations;
+      const already = isInPriority(core.id, core.branch);
+      html += `<div class="result-card" id="result_${idx}">
+        <div class="result-card-top">
+          <div class="result-id">${college.id}</div>
+          <div class="result-name">${escapeHtml(college.name)}</div>
+          <div class="result-loc"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(college.location)}</div>
+          <div class="result-branch-tag">${escapeHtml(core.branch)}</div>
+        </div>
+        <div class="result-metrics">
+          <div class="metric-block">
+            <div class="metric-label">Cutoff · ${targetCat}</div>
+            <div class="metric-value">${core.cutoff.toLocaleString('en-IN')}</div>
           </div>
-          <button class="add-priority-btn ${alreadyAdded ? 'added' : ''}" id="addBtn_${idx}" onclick="handleAddPriority(${idx}, '${core.id}', '${escapeHtml(college.name).replace(/'/g, "\\'")}', '${escapeHtml(college.location).replace(/'/g, "\\'")}', '${escapeHtml(core.branch).replace(/'/g, "\\'")}', ${core.cutoff}, ${core.diff})">
-            <i class="fa-solid ${alreadyAdded ? 'fa-check' : 'fa-plus'}"></i> ${alreadyAdded ? 'Added' : 'Add to Priority'}
+          <div class="metric-block">
+            <div class="metric-label">Variance</div>
+            <div class="metric-value ${core.diff >= 0 ? 'positive' : 'negative'}">${core.diff >= 0 ? '+' : ''}${core.diff}</div>
+          </div>
+        </div>
+        <div class="result-actions">
+          <button class="btn-add ${already ? 'added' : ''}" id="addBtn_${idx}" onclick="handleAdd(${idx}, '${core.id}', '${escapeHtml(college.name).replace(/'/g,"\\'")}', '${escapeHtml(college.location).replace(/'/g,"\\'")}', '${escapeHtml(core.branch).replace(/'/g,"\\'")}', ${core.cutoff}, ${core.diff})">
+            <i class="fa-solid ${already ? 'fa-check' : 'fa-plus'}"></i> ${already ? 'Saved' : 'Save'}
           </button>
-          <div class="subs-list" id="specs_${idx}">
-            ${specs.map(spec => `<span class="sub-chip" onclick="searchSpecialization('${escapeHtml(spec.branch).replace(/'/g, "\\'")}')">${escapeHtml(spec.branch)} <span class="sub-chip-cutoff">${spec.cutoff.toLocaleString('en-IN')}</span></span>`).join('')}
-          </div>
-        </div>`;
+          ${subs.length ? `<button class="btn-specs" onclick="toggleSpecs(${idx}, this)" id="specsBtn_${idx}"><i class="fa-solid fa-chevron-down"></i> ${subs.length} spec${subs.length > 1 ? 's' : ''}</button>` : ''}
+        </div>
+        <div class="specs-panel" id="specs_${idx}">
+          ${subs.map(s => `<span class="spec-chip" onclick="searchSpecialization('${escapeHtml(s.branch).replace(/'/g,"\\'")}')">${escapeHtml(s.branch)} <span class="spec-cutoff">${s.cutoff.toLocaleString('en-IN')}</span></span>`).join('')}
+        </div>
+      </div>`;
     });
-    resultsArea.innerHTML = html;
+    area.innerHTML = html;
   }
-  window.handleAddPriority = function(idx, id, name, location, branch, cutoff, diff) {
+
+  window.handleAdd = (idx, id, name, location, branch, cutoff, diff) => {
     const btn = document.getElementById(`addBtn_${idx}`);
     if (!btn || btn.classList.contains('added')) return;
-    const success = addToPriority({ id, name, location, branch, cutoff, diff, category: lastSearchCategory });
-    if (success) {
+    if (addToPriority({ id, name, location, branch, cutoff, diff, category: lastSearchCategory })) {
       btn.classList.add('added');
-      btn.innerHTML = '<i class="fa-solid fa-check"></i> Added';
+      btn.innerHTML = '<i class="fa-solid fa-check"></i> Saved';
     }
   };
-  window.toggleSpecs = function(idx, btn) { const s = document.getElementById(`specs_${idx}`); if (s) { s.classList.toggle('show'); if (btn) btn.classList.toggle('active'); } };
-  window.searchSpecialization = function(branchName) { document.getElementById('inputBranch').value = branchName; searchColleges(); };
-  // ============ HELPERS ============
-  function getShortName(name) {
-    if (!name) return '';
-    const commaIdx = name.indexOf(',');
-    return commaIdx > 0 ? name.substring(0, commaIdx).trim() : name.trim();
-  }
+  window.toggleSpecs = (idx, btn) => {
+    const s = document.getElementById(`specs_${idx}`);
+    if (s) { s.classList.toggle('show'); if (btn) btn.classList.toggle('active'); }
+  };
+  window.searchSpecialization = (branchName) => { document.getElementById('inputBranch').value = branchName; searchColleges(); };
+
+  /* ── HELPERS ── */
+  function getShortName(name) { if (!name) return ''; const i = name.indexOf(','); return i > 0 ? name.substring(0, i).trim() : name.trim(); }
   function escapeHtml(str) {
     if (!str) return '';
-    return str.replace(/[&<>"']/g, m => {
-      if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;';
-      if (m === '"') return '&quot;'; if (m === "'") return '&#39;'; return m;
-    });
+    return str.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
   }
-  // ============ INITIALIZE ============
+
+  /* ── INIT ── */
   initOnboarding();
   if (buildMasterData()) {
     populateCategoryDropdown();
     setupAutocomplete();
     initSidebar();
-    updatePriorityCount();
+    updatePriorityBadge();
     document.getElementById('searchBtn').addEventListener('click', searchColleges);
     document.getElementById('inputRank').addEventListener('keypress', (e) => { if (e.key === 'Enter') searchColleges(); });
   } else {
-    const trigger = document.getElementById('categoryTrigger');
-    if (trigger) { trigger.querySelector('.dd-text').textContent = 'Error loading data'; trigger.querySelector('.dd-text').classList.add('placeholder'); }
+    const t = document.getElementById('categoryTrigger');
+    if (t) { t.querySelector('.dd-text').textContent = 'Error loading data'; }
   }
 </script>
 </body>
