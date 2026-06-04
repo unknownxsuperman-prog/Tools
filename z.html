@@ -217,9 +217,15 @@
     .sidebar.open { right: 0; }
 
     .sidebar-top {
-      padding: 28px 24px 24px;
+      padding: 24px 20px 20px;
       border-bottom: 1px solid var(--border);
     }
+    .sidebar-profile-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .sidebar-profile-text { display: flex; flex-direction: column; justify-content: center; min-width: 0; }
     .sidebar-monogram {
       width: 40px;
       height: 40px;
@@ -231,7 +237,6 @@
       justify-content: center;
       font-size: 1rem;
       font-weight: 800;
-      margin-bottom: 12px;
     }
     .sidebar-name { font-size: 0.9rem; font-weight: 700; color: var(--text-0); }
     .sidebar-role { font-family: var(--font-mono); font-size: 0.55rem; color: var(--text-3); margin-top: 3px; letter-spacing: 0.1em; }
@@ -835,6 +840,136 @@
     }
     .branch-sub:hover { color: var(--text-2); border-color: var(--border-strong); }
 
+    /* ─── RANK PREDICTOR ─── */
+    .pred-three-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .pred-subject-block { display: flex; flex-direction: column; gap: 6px; }
+    .pred-subject-label {
+      font-family: var(--font-mono);
+      font-size: 0.52rem;
+      color: var(--text-3);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .pred-subject-input {
+      text-align: center;
+      font-size: 1.1rem;
+      font-weight: 700;
+      padding: 12px 8px;
+    }
+    .pred-total-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      margin-top: 4px;
+    }
+    .pred-total-label {
+      font-family: var(--font-mono);
+      font-size: 0.55rem;
+      color: var(--text-3);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .pred-total-display {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+    #predBoardsTotal {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-0);
+      letter-spacing: -0.02em;
+    }
+    .pred-total-max {
+      font-family: var(--font-mono);
+      font-size: 0.55rem;
+      color: var(--text-3);
+    }
+    .predictor-result {
+      margin-top: 28px;
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
+      animation: fadeUp 0.3s ease;
+    }
+    .pred-result-label {
+      font-family: var(--font-mono);
+      font-size: 0.52rem;
+      color: var(--text-3);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .pred-rank-display {
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--text-0);
+      letter-spacing: -0.04em;
+      line-height: 1;
+      margin-bottom: 20px;
+    }
+    .pred-meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+    .pred-meta-block {
+      background: var(--surface);
+      padding: 12px 14px;
+    }
+    .pred-meta-label {
+      font-family: var(--font-mono);
+      font-size: 0.48rem;
+      color: var(--text-3);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .pred-meta-value {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-1);
+      letter-spacing: -0.02em;
+    }
+    .btn-predict-college {
+      width: 100%;
+      background: transparent;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--r-sm);
+      padding: 14px;
+      font-family: var(--font-display);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-1);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.2s;
+    }
+    .btn-predict-college:hover {
+      background: var(--text-0);
+      color: var(--bg);
+      border-color: var(--text-0);
+    }
+    .btn-predict-college i { font-size: 0.6rem; }
+
     /* ─── SCROLLBAR ─── */
     ::-webkit-scrollbar { width: 4px; }
     ::-webkit-scrollbar-track { background: transparent; }
@@ -862,9 +997,13 @@
 <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 <div class="sidebar" id="sidebar">
   <div class="sidebar-top">
-    <div class="sidebar-monogram" id="sidebarPfp">?</div>
-    <div class="sidebar-name" id="sidebarUsername">User</div>
-    <div class="sidebar-role">CET Explorer</div>
+    <div class="sidebar-profile-row">
+      <div class="sidebar-monogram" id="sidebarPfp">?</div>
+      <div class="sidebar-profile-text">
+        <div class="sidebar-name" id="sidebarUsername">User</div>
+        <div class="sidebar-role">CET Explorer</div>
+      </div>
+    </div>
   </div>
   <nav class="sidebar-nav">
     <div class="nav-item active" data-view="match">
@@ -879,6 +1018,9 @@
     </div>
     <div class="nav-item" data-view="branches">
       <span class="nav-label"><i class="fa-solid fa-sitemap"></i> Branches</span>
+    </div>
+    <div class="nav-item" data-view="predictor">
+      <span class="nav-label"><i class="fa-solid fa-calculator"></i> Rank Predictor</span>
     </div>
   </nav>
   <div class="sidebar-footer">
@@ -969,6 +1111,58 @@
     </div>
     <div id="branchesListContainer"></div>
   </div>
+  <!-- VIEW: PREDICTOR -->
+  <div class="view" id="view-predictor">
+    <div class="view-header">
+      <h3>Rank Predictor</h3>
+      <span class="view-count">2PU + KCET</span>
+    </div>
+
+    <!-- 2PU Marks -->
+    <div class="field">
+      <div class="field-label">
+        <div class="field-step">1</div>
+        <span class="field-label-text">2nd PU Marks (max 100 each)</span>
+      </div>
+      <div class="pred-three-grid">
+        <div class="pred-subject-block">
+          <div class="pred-subject-label">Physics</div>
+          <input type="number" id="predPhysics" class="xos-input pred-subject-input" placeholder="00" min="0" max="100" autocomplete="off">
+        </div>
+        <div class="pred-subject-block">
+          <div class="pred-subject-label">Chemistry</div>
+          <input type="number" id="predChemistry" class="xos-input pred-subject-input" placeholder="00" min="0" max="100" autocomplete="off">
+        </div>
+        <div class="pred-subject-block">
+          <div class="pred-subject-label">Maths</div>
+          <input type="number" id="predMaths" class="xos-input pred-subject-input" placeholder="00" min="0" max="100" autocomplete="off">
+        </div>
+      </div>
+      <div class="pred-total-row">
+        <span class="pred-total-label">Total</span>
+        <div class="pred-total-display">
+          <span id="predBoardsTotal">—</span>
+          <span class="pred-total-max">/ 300</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- KCET Marks -->
+    <div class="field">
+      <div class="field-label">
+        <div class="field-step">2</div>
+        <span class="field-label-text">KCET Score (max 180)</span>
+      </div>
+      <input type="number" id="predKCET" class="xos-input" placeholder="Enter total KCET marks" min="0" max="180" autocomplete="off">
+    </div>
+
+    <button class="btn-primary" id="predictBtn">
+      Predict Rank <i class="fa-solid fa-arrow-right" style="font-size:0.6rem;"></i>
+    </button>
+
+    <!-- Result -->
+    <div id="predictorResult" class="predictor-result" style="display:none;"></div>
+  </div>
 </div>
 
 <script src="./college-data.js"></script>
@@ -1022,14 +1216,143 @@
     document.getElementById(`view-${name}`).classList.add('active');
     document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
     document.querySelector(`.nav-item[data-view="${name}"]`).classList.add('active');
-    const titles = { match: 'Match Engine', priority: 'Priority List', colleges: 'Colleges', branches: 'Branches' };
-    const subs = { match: 'Core + Specializations · ±2000 range', priority: 'Your saved colleges', colleges: 'Browse all institutions', branches: 'Core & specializations' };
+    const titles = { match: 'Match Engine', priority: 'Priority List', colleges: 'Colleges', branches: 'Branches', predictor: 'Rank Predictor' };
+    const subs = { match: 'Core + Specializations · ±2000 range', priority: 'Your saved colleges', colleges: 'Browse all institutions', branches: 'Core & specializations', predictor: '2PU + KCET → Estimated rank' };
     document.getElementById('headerTitle').textContent = titles[name] || '';
     document.getElementById('headerSub').textContent = subs[name] || '';
     if (name === 'priority') renderPriorityList();
     if (name === 'colleges') renderCollegesList();
     if (name === 'branches') renderBranchesList();
   }
+
+  /* ── RANK PREDICTOR ENGINE ── */
+  class KCETRankPredictor {
+    constructor() {
+      this.totalCandidates = 315000;
+      this.anchors = [
+        { p: 100.0, r: 1 }, { p: 98.50, r: 10 }, { p: 96.00, r: 100 },
+        { p: 92.50, r: 1000 }, { p: 88.50, r: 3000 }, { p: 85.00, r: 5500 },
+        { p: 81.50, r: 9000 }, { p: 77.00, r: 15000 }, { p: 72.00, r: 25000 },
+        { p: 65.00, r: 50000 }, { p: 58.00, r: 75000 }, { p: 0.00, r: 315000 }
+      ];
+      this.formulas = [];
+      this.compileFormulas();
+    }
+    compileFormulas() {
+      for (let i = 0; i < this.anchors.length - 1; i++) {
+        const upper = this.anchors[i], lower = this.anchors[i + 1];
+        const lnR_Upper = Math.log(upper.r), lnR_Lower = Math.log(lower.r);
+        const M = (lnR_Lower - lnR_Upper) / (lower.p - upper.p);
+        const C = lnR_Upper - M * upper.p;
+        this.formulas.push({ maxP: upper.p, minP: lower.p, M, C });
+      }
+    }
+    predictRank(percentage) {
+      if (percentage >= 100) return 1;
+      if (percentage <= 0) return this.totalCandidates;
+      for (let formula of this.formulas) {
+        if (percentage <= formula.maxP && percentage > formula.minP) {
+          let rank = Math.exp(formula.M * percentage + formula.C);
+          const maxR = Math.max(this.anchors.find(a => a.p === formula.maxP).r, this.anchors.find(a => a.p === formula.minP).r);
+          const minR = Math.min(this.anchors.find(a => a.p === formula.maxP).r, this.anchors.find(a => a.p === formula.minP).r);
+          return Math.round(Math.max(minR, Math.min(maxR, rank)));
+        }
+      }
+      return this.totalCandidates;
+    }
+    getFringeDensity(percentage) {
+      for (let formula of this.formulas) {
+        if (percentage <= formula.maxP && percentage > formula.minP) {
+          const deltaP = formula.maxP - formula.minP;
+          const upperR = this.anchors.find(a => a.p === formula.maxP).r;
+          const lowerR = this.anchors.find(a => a.p === formula.minP).r;
+          return Math.round(Math.abs(lowerR - upperR) / deltaP);
+        }
+      }
+      return 0;
+    }
+  }
+  const kcetEngine = new KCETRankPredictor();
+
+  function initPredictor() {
+    const ph = document.getElementById('predPhysics');
+    const ch = document.getElementById('predChemistry');
+    const ma = document.getElementById('predMaths');
+    const totalEl = document.getElementById('predBoardsTotal');
+    function clamp(input, max) {
+      let v = parseFloat(input.value);
+      if (!isNaN(v)) { if (v > max) { input.value = max; v = max; } if (v < 0) { input.value = 0; v = 0; } }
+      return isNaN(v) ? null : v;
+    }
+    function updateTotal() {
+      const p = clamp(ph, 100), c = clamp(ch, 100), m = clamp(ma, 100);
+      const vals = [p, c, m].filter(x => x !== null);
+      if (vals.length === 3) {
+        totalEl.textContent = (p + c + m).toString();
+      } else if (vals.length > 0) {
+        totalEl.textContent = vals.reduce((a,b)=>a+b,0).toString();
+      } else {
+        totalEl.textContent = '—';
+      }
+    }
+    [ph, ch, ma].forEach(el => el.addEventListener('input', updateTotal));
+    document.getElementById('predictBtn').addEventListener('click', runPrediction);
+    document.getElementById('predKCET').addEventListener('keypress', (e) => { if (e.key === 'Enter') runPrediction(); });
+  }
+
+  function runPrediction() {
+    const ph = parseFloat(document.getElementById('predPhysics').value) || 0;
+    const ch = parseFloat(document.getElementById('predChemistry').value) || 0;
+    const ma = parseFloat(document.getElementById('predMaths').value) || 0;
+    const kcet = parseFloat(document.getElementById('predKCET').value);
+    const resultEl = document.getElementById('predictorResult');
+
+    if (isNaN(kcet) || kcet < 0 || kcet > 180) {
+      resultEl.innerHTML = '<div class="no-results"><i class="fa-solid fa-triangle-exclamation"></i><p>Enter valid KCET marks (0–180)</p></div>';
+      resultEl.style.display = 'block'; return;
+    }
+    const boardsTotal = Math.min(300, ph + ch + ma);
+    const boardsPct = (boardsTotal / 300) * 100;
+    const kcetPct = (kcet / 180) * 100;
+    const finalPct = (boardsPct / 2) + (kcetPct / 2);
+    const rank = kcetEngine.predictRank(finalPct);
+    const density = kcetEngine.getFringeDensity(finalPct);
+
+    resultEl.innerHTML = `
+      <div class="pred-result-label">Estimated Rank</div>
+      <div class="pred-rank-display">${rank.toLocaleString('en-IN')}</div>
+      <div class="pred-meta-grid">
+        <div class="pred-meta-block">
+          <div class="pred-meta-label">Boards %</div>
+          <div class="pred-meta-value">${boardsPct.toFixed(2)}%</div>
+        </div>
+        <div class="pred-meta-block">
+          <div class="pred-meta-label">KCET %</div>
+          <div class="pred-meta-value">${kcetPct.toFixed(2)}%</div>
+        </div>
+        <div class="pred-meta-block">
+          <div class="pred-meta-label">Combined</div>
+          <div class="pred-meta-value">${finalPct.toFixed(2)}%</div>
+        </div>
+      </div>
+      <div class="pred-meta-grid" style="margin-bottom:16px;">
+        <div class="pred-meta-block" style="grid-column:1/-1;">
+          <div class="pred-meta-label">Candidate density in this range</div>
+          <div class="pred-meta-value">${density.toLocaleString('en-IN')} candidates / 1%</div>
+        </div>
+      </div>
+      <button class="btn-predict-college" onclick="bridgeToMatch(${rank})">
+        <i class="fa-solid fa-arrow-right"></i> Predict Colleges for this Rank
+      </button>
+    `;
+    resultEl.style.display = 'block';
+  }
+
+  window.bridgeToMatch = function(rank) {
+    document.getElementById('inputRank').value = rank;
+    switchView('match');
+    toggleSidebar(false);
+  };
 
   /* ── CLEAN BRANCH ── */
   function cleanBranchName(name) {
@@ -1373,6 +1696,7 @@
     setupAutocomplete();
     initSidebar();
     updatePriorityBadge();
+    initPredictor();
     document.getElementById('searchBtn').addEventListener('click', searchColleges);
     document.getElementById('inputRank').addEventListener('keypress', (e) => { if (e.key === 'Enter') searchColleges(); });
   } else {
