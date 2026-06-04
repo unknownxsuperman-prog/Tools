@@ -970,6 +970,156 @@
     }
     .btn-predict-college i { font-size: 0.6rem; }
 
+    /* ─── PROFILE MODAL ─── */
+    .profile-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 6000;
+      display: flex; align-items: flex-end; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.25s;
+    }
+    .profile-overlay.open { opacity: 1; pointer-events: all; }
+    .profile-sheet {
+      width: 100%; max-width: 500px; background: var(--surface);
+      border: 1px solid var(--border-strong); border-bottom: none;
+      border-radius: 20px 20px 0 0; padding: 0 0 40px;
+      transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.16,1,0.3,1);
+      max-height: 92vh; overflow-y: auto; overflow-x: hidden;
+    }
+    .profile-overlay.open .profile-sheet { transform: translateY(0); }
+    .profile-sheet::-webkit-scrollbar { width: 3px; }
+    .profile-sheet::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+    .profile-sheet-handle {
+      width: 36px; height: 4px; border-radius: 2px; background: var(--border-strong);
+      margin: 14px auto 0; cursor: pointer;
+    }
+    .profile-sheet-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 24px 16px; border-bottom: 1px solid var(--border);
+    }
+    .profile-sheet-title { font-size: 0.88rem; font-weight: 700; color: var(--text-0); letter-spacing: -0.02em; }
+    .profile-close-btn {
+      width: 28px; height: 28px; border-radius: 50%; background: var(--surface-2);
+      border: 1px solid var(--border); cursor: pointer; display: flex;
+      align-items: center; justify-content: center; font-size: 0.55rem; color: var(--text-2);
+      transition: all 0.15s;
+    }
+    .profile-close-btn:hover { background: var(--text-0); color: var(--bg); border-color: var(--text-0); }
+    .profile-identity {
+      display: flex; align-items: center; gap: 16px;
+      padding: 20px 24px; border-bottom: 1px solid var(--border);
+    }
+    .profile-big-mono {
+      width: 52px; height: 52px; border-radius: 50%; background: var(--text-0);
+      color: var(--bg); display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; font-weight: 800; flex-shrink: 0;
+    }
+    .profile-identity-text {}
+    .profile-identity-name { font-size: 1rem; font-weight: 700; color: var(--text-0); letter-spacing: -0.02em; }
+    .profile-identity-tag { font-family: var(--font-mono); font-size: 0.55rem; color: var(--text-3); margin-top: 3px; letter-spacing: 0.08em; }
+    .profile-section { padding: 20px 24px; border-bottom: 1px solid var(--border); }
+    .profile-section-label {
+      font-family: var(--font-mono); font-size: 0.52rem; color: var(--text-3);
+      letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 12px;
+    }
+    .profile-pref-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .profile-pref-block { display: flex; flex-direction: column; gap: 6px; }
+    .profile-pref-label { font-family: var(--font-mono); font-size: 0.5rem; color: var(--text-3); letter-spacing: 0.08em; text-transform: uppercase; }
+    .profile-saved-val {
+      font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-2);
+      background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--r-xs); padding: 6px 10px;
+    }
+    .profile-saved-val.set { color: var(--text-0); border-color: var(--border-strong); }
+    /* profile dropdown inside sheet */
+    .profile-dd { position: relative; }
+    .profile-dd-trigger {
+      width: 100%; background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--r-sm); padding: 11px 14px; color: var(--text-0);
+      font-family: var(--font-display); font-size: 0.8rem; font-weight: 500;
+      cursor: pointer; display: flex; align-items: center; justify-content: space-between;
+      transition: border-color 0.2s; user-select: none;
+    }
+    .profile-dd-trigger:hover { border-color: var(--border-strong); }
+    .profile-dd-trigger.open { border-color: var(--border-focus); }
+    .profile-dd-trigger .dd-text.placeholder { color: var(--text-3); }
+    .profile-dd-menu {
+      position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+      background: var(--surface-3); border: 1px solid var(--border-strong);
+      border-radius: var(--r-sm); z-index: 100; display: none;
+      max-height: 200px; overflow-y: auto; animation: dropIn 0.15s ease;
+    }
+    .profile-dd-menu.show { display: block; }
+    .profile-dd-search {
+      position: sticky; top: 0; background: var(--surface-3);
+      padding: 8px 10px; border-bottom: 1px solid var(--border);
+    }
+    .profile-dd-search input {
+      width: 100%; background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--r-xs); padding: 6px 10px; color: var(--text-1);
+      font-family: var(--font-mono); font-size: 0.65rem; outline: none; transition: border-color 0.2s;
+    }
+    .profile-dd-search input:focus { border-color: var(--border-focus); }
+    .profile-dd-item {
+      padding: 10px 14px; font-size: 0.72rem; font-weight: 500; color: var(--text-2);
+      cursor: pointer; border-bottom: 1px solid var(--border);
+      transition: background 0.1s, color 0.1s; display: flex; align-items: center; justify-content: space-between;
+    }
+    .profile-dd-item:last-child { border-bottom: none; }
+    .profile-dd-item:hover { background: var(--surface-2); color: var(--text-0); }
+    .profile-dd-item.selected { color: var(--text-0); }
+    .profile-dd-item .dd-check { font-size: 0.45rem; opacity: 0; }
+    .profile-dd-item.selected .dd-check { opacity: 1; }
+    /* branch search input */
+    .profile-branch-input {
+      width: 100%; background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--r-sm); padding: 11px 14px; color: var(--text-0);
+      font-family: var(--font-display); font-size: 0.8rem; font-weight: 500; outline: none;
+      transition: border-color 0.2s; position: relative;
+    }
+    .profile-branch-input::placeholder { color: var(--text-3); }
+    .profile-branch-input:focus { border-color: var(--border-focus); }
+    .profile-branch-suggest {
+      position: absolute; left: 24px; right: 24px; top: calc(100% + 2px);
+      background: var(--surface-3); border: 1px solid var(--border-strong);
+      border-radius: var(--r-sm); z-index: 200; display: none;
+      max-height: 180px; overflow-y: auto; animation: dropIn 0.15s ease;
+    }
+    .profile-branch-suggest.show { display: block; }
+    /* profile smart search results */
+    .profile-results-section { padding: 0 24px 0; }
+    .profile-results-label {
+      font-family: var(--font-mono); font-size: 0.52rem; color: var(--text-3);
+      letter-spacing: 0.12em; text-transform: uppercase; margin: 20px 0 12px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .profile-results-label::before {
+      content: ''; display: inline-block; width: 5px; height: 5px;
+      border-radius: 50%; background: var(--text-0); flex-shrink: 0;
+    }
+    .profile-college-card {
+      border: 1px solid var(--border); border-radius: var(--r);
+      overflow: hidden; margin-bottom: 8px; background: var(--surface);
+      transition: border-color 0.2s; cursor: pointer;
+    }
+    .profile-college-card:hover { border-color: var(--border-strong); }
+    .profile-college-row {
+      display: flex; align-items: center; gap: 12px; padding: 13px 14px;
+    }
+    .profile-college-mono {
+      width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border-strong);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.72rem; font-weight: 800; color: var(--text-1); flex-shrink: 0;
+    }
+    .profile-college-info { flex: 1; min-width: 0; }
+    .profile-college-name { font-size: 0.76rem; font-weight: 600; color: var(--text-0); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .profile-college-loc { font-family: var(--font-mono); font-size: 0.55rem; color: var(--text-3); margin-top: 2px; }
+    .profile-college-cutoff { font-family: var(--font-mono); font-size: 0.65rem; font-weight: 600; color: var(--text-1); flex-shrink: 0; }
+    .profile-college-details {
+      display: none; padding: 0 14px 14px; border-top: 1px solid var(--border);
+      animation: fadeUp 0.2s ease;
+    }
+    .profile-college-card.expanded .profile-college-details { display: block; }
+    .profile-college-card.expanded .profile-college-row { background: rgba(255,255,255,0.02); }
+
     /* ─── SCROLLBAR ─── */
     ::-webkit-scrollbar { width: 4px; }
     ::-webkit-scrollbar-track { background: transparent; }
@@ -996,12 +1146,12 @@
 <!-- SIDEBAR -->
 <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 <div class="sidebar" id="sidebar">
-  <div class="sidebar-top">
+  <div class="sidebar-top" style="cursor:pointer;" onclick="openProfile()" title="View Profile">
     <div class="sidebar-profile-row">
       <div class="sidebar-monogram" id="sidebarPfp">?</div>
       <div class="sidebar-profile-text">
         <div class="sidebar-name" id="sidebarUsername">User</div>
-        <div class="sidebar-role">CET Explorer</div>
+        <div class="sidebar-role">CET Explorer · tap to edit</div>
       </div>
     </div>
   </div>
@@ -1165,6 +1315,54 @@
   </div>
 </div>
 
+<!-- PROFILE SHEET -->
+<div class="profile-overlay" id="profileOverlay">
+  <div class="profile-sheet" id="profileSheet">
+    <div class="profile-sheet-handle" onclick="closeProfile()"></div>
+    <div class="profile-sheet-header">
+      <span class="profile-sheet-title">Profile</span>
+      <button class="profile-close-btn" onclick="closeProfile()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="profile-identity">
+      <div class="profile-big-mono" id="profileBigMono">?</div>
+      <div class="profile-identity-text">
+        <div class="profile-identity-name" id="profileName">User</div>
+        <div class="profile-identity-tag">x0s · CET Explorer</div>
+      </div>
+    </div>
+    <div class="profile-section">
+      <div class="profile-section-label">Preferences</div>
+      <div class="profile-pref-row">
+        <div class="profile-pref-block">
+          <div class="profile-pref-label">Category</div>
+          <div class="profile-dd" id="profileCatDropdown">
+            <div class="profile-dd-trigger" id="profileCatTrigger" tabindex="0">
+              <span class="dd-text placeholder" id="profileCatText">Select category</span>
+              <i class="fa-solid fa-chevron-down dd-chevron" style="font-size:0.45rem;color:var(--text-3);transition:transform 0.2s;"></i>
+            </div>
+            <div class="profile-dd-menu" id="profileCatMenu">
+              <div class="profile-dd-search">
+                <input type="text" id="profileCatSearch" placeholder="Search..." autocomplete="off" spellcheck="false">
+              </div>
+              <div id="profileCatItems"></div>
+            </div>
+          </div>
+        </div>
+        <div class="profile-pref-block">
+          <div class="profile-pref-label">Branch</div>
+          <div style="position:relative;">
+            <input type="text" id="profileBranchInput" class="profile-branch-input" placeholder="Search branch..." autocomplete="off" spellcheck="false" autocapitalize="off">
+            <div class="profile-branch-suggest" id="profileBranchSuggest"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="profile-results-section" id="profileResultsSection">
+      <div id="profileResultsList"></div>
+    </div>
+  </div>
+</div>
+
 <script src="./college-data.js"></script>
 <script>
   let Engine = { branches: [], categories: [], branchToCode: new Map(), codeToBranch: new Map(), specializationMap: new Map() };
@@ -1194,6 +1392,23 @@
     document.getElementById('sidebarUsername').textContent = name;
   }
 
+  /* ── HISTORY API ── */
+  function pushView(name) {
+    const state = { view: name };
+    const url = '#' + name;
+    if (history.state && history.state.view === name) return;
+    history.pushState(state, '', url);
+  }
+  function replaceView(name) {
+    history.replaceState({ view: name }, '', '#' + name);
+  }
+  window.addEventListener('popstate', (e) => {
+    const view = (e.state && e.state.view) ? e.state.view : 'match';
+    switchViewInternal(view);
+    toggleSidebar(false);
+    closeProfile();
+  });
+
   /* ── SIDEBAR ── */
   function initSidebar() {
     document.getElementById('menuBtn').addEventListener('click', () => toggleSidebar(true));
@@ -1217,7 +1432,7 @@
     document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
     document.querySelector(`.nav-item[data-view="${name}"]`).classList.add('active');
     const titles = { match: 'Match Engine', priority: 'Priority List', colleges: 'Colleges', branches: 'Branches', predictor: 'Rank Predictor' };
-    const subs = { match: 'Core + Specializations · ±2000 range', priority: 'Your saved colleges', colleges: 'Browse all institutions', branches: 'Core & specializations', predictor: '2PU + KCET → Estimated rank' };
+    const subs = { match: 'Core + Specializations · from your rank', priority: 'Your saved colleges', colleges: 'Browse all institutions', branches: 'Core & specializations', predictor: '2PU + KCET → Estimated rank' };
     document.getElementById('headerTitle').textContent = titles[name] || '';
     document.getElementById('headerSub').textContent = subs[name] || '';
     if (name === 'priority') renderPriorityList();
@@ -1352,6 +1567,202 @@
     document.getElementById('inputRank').value = rank;
     switchView('match');
     toggleSidebar(false);
+    closeProfile();
+  };
+
+  /* ── PROFILE SHEET ── */
+  let profilePrefs = { category: '', branch: '' };
+
+  function openProfile() {
+    // Sync identity
+    const name = localStorage.getItem('xos_username') || 'User';
+    document.getElementById('profileBigMono').textContent = name.charAt(0).toUpperCase();
+    document.getElementById('profileName').textContent = name;
+    // Load saved prefs
+    try { profilePrefs = JSON.parse(localStorage.getItem('xos_profile_prefs') || '{}'); } catch { profilePrefs = {}; }
+    profilePrefs.category = profilePrefs.category || '';
+    profilePrefs.branch = profilePrefs.branch || '';
+    // Set category UI
+    const catText = document.getElementById('profileCatText');
+    if (profilePrefs.category) { catText.textContent = profilePrefs.category; catText.classList.remove('placeholder'); }
+    else { catText.textContent = 'Select category'; catText.classList.add('placeholder'); }
+    // Set branch UI
+    document.getElementById('profileBranchInput').value = profilePrefs.branch || '';
+    // Render results if prefs set
+    renderProfileResults();
+    toggleSidebar(false);
+    document.getElementById('profileOverlay').classList.add('open');
+    history.pushState({ view: 'profile' }, '', '#profile');
+  }
+
+  function closeProfile() {
+    document.getElementById('profileOverlay').classList.remove('open');
+  }
+
+  function initProfileSheet() {
+    // Close on backdrop click
+    document.getElementById('profileOverlay').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('profileOverlay')) closeProfile();
+    });
+
+    // Category dropdown
+    const trigger = document.getElementById('profileCatTrigger');
+    const menu = document.getElementById('profileCatMenu');
+    const search = document.getElementById('profileCatSearch');
+    const items = document.getElementById('profileCatItems');
+    const catText = document.getElementById('profileCatText');
+    const chevron = trigger.querySelector('.dd-chevron');
+
+    function renderCatItems(f) {
+      const q = (f || '').toUpperCase();
+      const filtered = q ? Engine.categories.filter(x => x.toUpperCase().includes(q)) : Engine.categories;
+      if (!filtered.length) { items.innerHTML = '<div class="profile-dd-item" style="pointer-events:none;color:var(--text-3);">No results</div>'; return; }
+      items.innerHTML = filtered.map(cat => {
+        const sel = profilePrefs.category === cat;
+        return `<div class="profile-dd-item${sel?' selected':''}" data-val="${escapeHtml(cat)}">${escapeHtml(cat)}<i class="fa-solid fa-check dd-check"></i></div>`;
+      }).join('');
+      items.querySelectorAll('.profile-dd-item').forEach(el => {
+        el.addEventListener('click', () => {
+          profilePrefs.category = el.getAttribute('data-val');
+          catText.textContent = profilePrefs.category;
+          catText.classList.remove('placeholder');
+          menu.classList.remove('show');
+          trigger.classList.remove('open');
+          chevron.style.transform = '';
+          saveProfilePrefs();
+          renderProfileResults();
+        });
+      });
+    }
+    trigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const open = menu.classList.toggle('show');
+      trigger.classList.toggle('open', open);
+      chevron.style.transform = open ? 'rotate(180deg)' : '';
+      if (open) { search.value = ''; renderCatItems(''); setTimeout(() => search.focus(), 50); }
+    });
+    search.addEventListener('input', (e) => renderCatItems(e.target.value));
+    search.addEventListener('click', (e) => e.stopPropagation());
+    document.addEventListener('click', (e) => {
+      if (!document.getElementById('profileCatDropdown').contains(e.target)) {
+        menu.classList.remove('show'); trigger.classList.remove('open'); chevron.style.transform = '';
+      }
+    });
+    renderCatItems('');
+
+    // Branch autocomplete
+    const branchInput = document.getElementById('profileBranchInput');
+    const branchSuggest = document.getElementById('profileBranchSuggest');
+    branchInput.addEventListener('input', (e) => {
+      const q = e.target.value.trim().toUpperCase();
+      if (!q) { branchSuggest.classList.remove('show'); branchSuggest.innerHTML = ''; return; }
+      const matches = Engine.branches.filter(b => b.includes(q)).slice(0, 7);
+      if (!matches.length) { branchSuggest.classList.remove('show'); return; }
+      branchSuggest.innerHTML = matches.map(m =>
+        `<div class="suggest-item" onclick="selectProfileBranch('${m.replace(/'/g,"\'")}')">${escapeHtml(m)}<i class="fa-solid fa-arrow-up-left suggest-arrow"></i></div>`
+      ).join('');
+      branchSuggest.classList.add('show');
+    });
+    branchInput.addEventListener('blur', () => setTimeout(() => branchSuggest.classList.remove('show'), 200));
+    branchInput.addEventListener('change', () => {
+      profilePrefs.branch = branchInput.value.trim();
+      saveProfilePrefs();
+      renderProfileResults();
+    });
+  }
+
+  window.selectProfileBranch = function(val) {
+    document.getElementById('profileBranchInput').value = val;
+    document.getElementById('profileBranchSuggest').classList.remove('show');
+    profilePrefs.branch = val;
+    saveProfilePrefs();
+    renderProfileResults();
+  };
+
+  function saveProfilePrefs() {
+    localStorage.setItem('xos_profile_prefs', JSON.stringify(profilePrefs));
+  }
+
+  function renderProfileResults() {
+    const container = document.getElementById('profileResultsList');
+    const cat = profilePrefs.category;
+    const branch = (profilePrefs.branch || '').trim().toUpperCase();
+    if (!cat || !branch) {
+      container.innerHTML = `<div style="padding:24px 0;text-align:center;font-family:var(--font-mono);font-size:0.6rem;color:var(--text-3);letter-spacing:0.1em;">SELECT CATEGORY AND BRANCH TO SEE COLLEGES</div>`;
+      return;
+    }
+    if (!window.XOS_CUTOFF) return;
+    // Find matching branch
+    let matchingBranch = null;
+    for (const b of Engine.branches) { if (b === branch || b.includes(branch)) { matchingBranch = b; break; } }
+    if (!matchingBranch) {
+      container.innerHTML = `<div style="padding:20px 0;text-align:center;font-family:var(--font-mono);font-size:0.6rem;color:var(--text-3);">BRANCH NOT FOUND</div>`;
+      return;
+    }
+    const branchesToSearch = [matchingBranch, ...(Engine.specializationMap.get(matchingBranch) || [])];
+    const codesToSearch = new Set();
+    for (const b of branchesToSearch) { const code = Engine.branchToCode.get(b); if (code) codesToSearch.add(code); }
+    const results = [];
+    for (const college of window.XOS_CUTOFF) {
+      if (!college.branches) continue;
+      for (const [branchCode, cutoffData] of Object.entries(college.branches)) {
+        if (!codesToSearch.has(branchCode)) continue;
+        const cutoff = cutoffData[cat];
+        if (cutoff === null || cutoff === undefined) continue;
+        const branchName = Engine.codeToBranch.get(branchCode) || branchCode;
+        results.push({ id: college.id, name: college.name, location: college.location || 'Karnataka', branch: branchName, cutoff });
+      }
+    }
+    results.sort((a, b) => a.cutoff - b.cutoff);
+    if (!results.length) {
+      container.innerHTML = `<div style="padding:20px 0;text-align:center;font-family:var(--font-mono);font-size:0.6rem;color:var(--text-3);">NO DATA FOUND</div>`;
+      return;
+    }
+    container.innerHTML = `<div class="profile-results-label">${results.length} colleges · ${escapeHtml(matchingBranch)} · ${escapeHtml(cat)}</div>` +
+      results.map((r, idx) => {
+        const short = getShortName(r.name);
+        const letter = short.charAt(0).toUpperCase();
+        const inPrio = isInPriority(r.id, r.branch);
+        return `<div class="profile-college-card" id="pcc_${idx}" onclick="toggleProfileCard(${idx}, '${r.id}', '${escapeHtml(r.name).replace(/'/g,"\'")}', '${escapeHtml(r.location).replace(/'/g,"\'")}', '${escapeHtml(r.branch).replace(/'/g,"\'")}', ${r.cutoff}, '${escapeHtml(cat)}')">
+          <div class="profile-college-row">
+            <div class="profile-college-mono">${letter}</div>
+            <div class="profile-college-info">
+              <div class="profile-college-name">${escapeHtml(short)}</div>
+              <div class="profile-college-loc">${escapeHtml(r.location)}</div>
+            </div>
+            <div class="profile-college-cutoff">${r.cutoff.toLocaleString('en-IN')}</div>
+          </div>
+          <div class="profile-college-details" id="pcd_${idx}">
+            <div style="padding-top:10px;">
+              <div class="p-detail-row"><span class="p-detail-label">College ID</span><span class="p-detail-value">${r.id}</span></div>
+              <div class="p-detail-row"><span class="p-detail-label">Branch</span><span class="p-detail-value" style="font-size:0.7rem;">${escapeHtml(r.branch)}</span></div>
+              <div class="p-detail-row"><span class="p-detail-label">Cutoff (${escapeHtml(cat)})</span><span class="p-detail-value">${r.cutoff.toLocaleString('en-IN')}</span></div>
+              <div class="p-detail-row"><span class="p-detail-label">Location</span><span class="p-detail-value">${escapeHtml(r.location)}</span></div>
+              <button class="btn-add ${inPrio ? 'added' : ''}" id="pca_${idx}" style="margin-top:10px;" onclick="event.stopPropagation();handleProfileAdd(${idx}, '${r.id}', '${escapeHtml(r.name).replace(/'/g,"\'")}', '${escapeHtml(r.location).replace(/'/g,"\'")}', '${escapeHtml(r.branch).replace(/'/g,"\'")}', ${r.cutoff}, '${escapeHtml(cat)}')">
+                <i class="fa-solid ${inPrio ? 'fa-check' : 'fa-plus'}"></i> ${inPrio ? 'Saved' : 'Save to Priority'}
+              </button>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+  }
+
+  window.toggleProfileCard = function(idx) {
+    const card = document.getElementById(`pcc_${idx}`);
+    if (!card) return;
+    const was = card.classList.contains('expanded');
+    document.querySelectorAll('.profile-college-card.expanded').forEach(c => c.classList.remove('expanded'));
+    if (!was) card.classList.add('expanded');
+  };
+
+  window.handleProfileAdd = function(idx, id, name, location, branch, cutoff, category) {
+    const btn = document.getElementById(`pca_${idx}`);
+    if (!btn || btn.classList.contains('added')) return;
+    const diff = 0; // profile view doesn't have user rank context
+    if (addToPriority({ id, name, location, branch, cutoff, diff, category })) {
+      btn.classList.add('added');
+      btn.innerHTML = '<i class="fa-solid fa-check"></i> Saved';
+    }
   };
 
   /* ── CLEAN BRANCH ── */
@@ -1603,7 +2014,7 @@
     const branchesToSearch = [matchingCore, ...(Engine.specializationMap.get(matchingCore) || [])];
     const codesToSearch = new Set();
     for (const b of branchesToSearch) { const c = Engine.branchToCode.get(b); if (c) codesToSearch.add(c); }
-    const RANGE = 2000, matches = [];
+    const matches = [];
     for (const college of window.XOS_CUTOFF) {
       if (!college.branches) continue;
       for (const [branchCode, cutoffData] of Object.entries(college.branches)) {
@@ -1611,7 +2022,7 @@
         const cutoff = cutoffData[targetCat];
         if (cutoff === null || cutoff === undefined) continue;
         const diff = cutoff - userRank;
-        if (Math.abs(diff) <= RANGE) {
+        if (diff >= 0) {
           const branchName = Engine.codeToBranch.get(branchCode) || branchCode;
           matches.push({ id: college.id, name: college.name, location: college.location || 'Karnataka', branch: branchName, cutoff, diff, isSpecialization: branchName !== matchingCore, coreBranch: matchingCore });
         }
@@ -1628,7 +2039,7 @@
     finalResults.sort((a, b) => Math.abs(a.coreMatch.diff) - Math.abs(b.coreMatch.diff));
     area.style.display = 'block';
     if (!finalResults.length) {
-      area.innerHTML = `<div class="no-results"><i class="fa-regular fa-folder-open"></i><p>No colleges within ±${RANGE} rank range</p></div>`;
+      area.innerHTML = `<div class="no-results"><i class="fa-regular fa-folder-open"></i><p>No colleges found for this rank and branch</p></div>`;
       return;
     }
     const specs = Engine.specializationMap.get(matchingCore) || [];
@@ -1695,10 +2106,17 @@
     populateCategoryDropdown();
     setupAutocomplete();
     initSidebar();
+    initProfileSheet();
     updatePriorityBadge();
     initPredictor();
     document.getElementById('searchBtn').addEventListener('click', searchColleges);
     document.getElementById('inputRank').addEventListener('keypress', (e) => { if (e.key === 'Enter') searchColleges(); });
+    // History API: restore view from hash or default to match
+    const hash = location.hash.replace('#', '') || 'match';
+    const validViews = ['match','priority','colleges','branches','predictor'];
+    const initView = validViews.includes(hash) ? hash : 'match';
+    replaceView(initView);
+    switchViewInternal(initView);
   } else {
     const t = document.getElementById('categoryTrigger');
     if (t) { t.querySelector('.dd-text').textContent = 'Error loading data'; }
