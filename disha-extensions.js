@@ -96,19 +96,21 @@ async function dishaRespond(query) {
     return dishaRenderAppPill({ name:'GitHub', url:'https://github.com', faIcon:'fa-github', iconBg:'#161b22', sub:'github.com' });
   if (/\b(open|launch|go to|visit)\s+spotify\b/i.test(lower))
     return dishaRenderAppPill({ name:'Spotify', url:'https://open.spotify.com', faIcon:'fa-spotify', iconBg:'#1db954', sub:'open.spotify.com' });
-// ── MCA PREDICTOR ──
-if (/\b(mca|m\.c\.a)\s+(predict|rank|calculator|prediction|estimate|guess)\b/i.test(lower) ||
-    /\bpredict\s+mca\s+rank\b/i.test(lower)) {
-  let rank = null;
-  const rankMatch = lower.match(/rank\s*(\d+)/i);
-  if (rankMatch) rank = parseInt(rankMatch[1], 10);
-  return `<div style="padding:12px 0;">
-    <div style="font-size:.9rem;font-weight:600;margin-bottom:4px;">🎓 MCA Rank Predictor</div>
-    <div style="font-size:.7rem;color:#777;margin-bottom:12px;">Estimate your MCA rank based on Karnataka PGCET or other entrance scores.</div>
-    ${dishaMcaLink(rank)}
-    <div style="margin-top:8px;font-size:.6rem;color:#444;">Tip: Say “mca predict rank 1350” to pre‑fill your rank.</div>
-  </div>`;
-}
+
+  // ── MCA PREDICTOR ──
+  if (/\b(mca|m\.c\.a)\s+(predict|rank|calculator|prediction|estimate|guess)\b/i.test(lower) ||
+      /\bpredict\s+mca\s+rank\b/i.test(lower)) {
+    let rank = null;
+    const rankMatch = lower.match(/rank\s*(\d+)/i);
+    if (rankMatch) rank = parseInt(rankMatch[1], 10);
+    return `<div style="padding:12px 0;">
+      <div style="font-size:.9rem;font-weight:600;margin-bottom:4px;">🎓 MCA Rank Predictor</div>
+      <div style="font-size:.7rem;color:#777;margin-bottom:12px;">Estimate your MCA rank based on Karnataka PGCET or other entrance scores.</div>
+      ${dishaMcaLink(rank)}
+      <div style="margin-top:8px;font-size:.6rem;color:#444;">Tip: Say “mca predict rank 1350” to pre‑fill your rank.</div>
+    </div>`;
+  }
+
   if (/^(hi|hello|hey|yo|good morning|good afternoon|good evening)/i.test(q)) return dishaGreet();
   if (/\b(bye|goodbye|see you)\b/i.test(lower)) return `Goodbye! 👋 Queries: ${DISHA_STATE.stats.queriesHandled}`;
   if (/\b(who are you|your name|what are you)\b/i.test(lower))
@@ -211,7 +213,7 @@ function dishaGreet() {
 }
 
 function dishaCaps() {
-  return `**Disha can handle:**\n• \`calc 15 * 23\` — Math\n• \`weather in Bangalore\` — Weather\n• \`convert 100 km to mi\` — Units\n• \`time in Tokyo\` — World clock\n• \`define API\` — Definitions\n• \`password 20\` — Secure password\n• \`timer 5 minutes\` — Countdown\n• \`kcet predict\` — KCET rank predictor\n• \`hostel essentials\` — Packing list\n• \`open YouTube\` — App launcher`;
+  return `**Disha can handle:**\n• \`calc 15 * 23\` — Math\n• \`weather in Bangalore\` — Weather\n• \`convert 100 km to mi\` — Units\n• \`time in Tokyo\` — World clock\n• \`define API\` — Definitions\n• \`password 20\` — Secure password\n• \`timer 5 minutes\` — Countdown\n• \`kcet predict\` — KCET rank predictor\n• \`mca predict\` — MCA rank predictor\n• \`hostel essentials\` — Packing list\n• \`open YouTube\` — App launcher`;
 }
 
 function dishaHostel() {
@@ -227,7 +229,7 @@ function dishaKB(lower) {
     {k:['prime','minister','india'],a:'Narendra Modi (since 2014)'},{k:['ceo','apple'],a:'Tim Cook (since 2011)'},{k:['ceo','google'],a:'Sundar Pichai'},{k:['ceo','microsoft'],a:'Satya Nadella'},
   ];
   for(const item of kb){if(item.k.every(k=>lower.includes(k))) return `**${item.k.join(' ')}**: ${item.a}`;}
-  const s=['Try: weather, calc, convert, define, kcet predict, hostel essentials.','Ask me: weather in Mumbai, calc 2^10, define algorithm.'];
+  const s=['Try: weather, calc, convert, define, kcet predict, mca predict, hostel essentials.','Ask me: weather in Mumbai, calc 2^10, mca predict rank 1500.'];
   return s[DISHA_STATE.stats.queriesHandled%s.length];
 }
 
@@ -469,9 +471,10 @@ function dishaRenderMatches(matches){
     </div>`).join('');
 }
 
-// "Get to know more" link — passes rank into Disha Match URL
+// "Get to know more" link — passes rank into Disha Match URL (query before fragment)
 function dishaMatchLink(rank) {
-  const url = DISHA_MATCH_URL + '&rank=' + rank;
+  const [base, hash] = DISHA_MATCH_URL.split('#');
+  const url = `${base}?rank=${rank}${hash ? '#' + hash : ''}`;
   return `<a href="${url}" target="_blank" rel="noopener"
     style="display:flex;align-items:center;justify-content:space-between;
     margin-top:14px;padding:13px 16px;
@@ -486,11 +489,14 @@ function dishaMatchLink(rank) {
     <i class="fa-solid fa-arrow-up-right-from-square" style="color:#666;font-size:.82rem;flex-shrink:0;margin-left:12px;"></i>
   </a>`;
 }
+
 function dishaMcaLink(rank = null) {
-  let url = DISHA_MCA_URL;
+  const [base, hash] = DISHA_MCA_URL.split('#');
+  let url = base;
   if (rank && !isNaN(rank)) {
-    url += (url.includes('?') ? '&' : '?') + 'rank=' + encodeURIComponent(rank);
+    url += `?rank=${encodeURIComponent(rank)}`;
   }
+  if (hash) url += '#' + hash;
   return `<a href="${url}" target="_blank" rel="noopener"
     style="display:flex;align-items:center;justify-content:space-between;
     margin-top:8px;padding:13px 16px;
@@ -658,8 +664,10 @@ setTimeout(function(){
     if(inp) inp.value='';
     document.getElementById('es-send')?.classList.remove('visible');
 
-    if(/\b(kcet|rank predictor|predict rank)\b/i.test(lower)){
-      setTimeout(launchKcetPredictor,280); return;
+    // FIX: Do not intercept queries that contain "mca" (to allow MCA predictor)
+    if (/\b(kcet|rank predictor|predict rank)\b/i.test(lower) && !/\bmca\b/i.test(lower)) {
+      setTimeout(launchKcetPredictor,280);
+      return;
     }
 
     const sys=document.createElement('div');
