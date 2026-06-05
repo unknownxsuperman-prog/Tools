@@ -15,6 +15,7 @@ const DISHA_STATE = {
 };
 
 const DISHA_MATCH_URL = 'https://unknownxsuperman-prog.github.io/Tools/index%20(3).html#match';
+const DISHA_MCA_URL = 'https://unknownxsuperman-prog.github.io/Tools/index%20(4).html#match';
 
 // ── MARKDOWN ──
 function dishaMarkdown(md) {
@@ -95,7 +96,19 @@ async function dishaRespond(query) {
     return dishaRenderAppPill({ name:'GitHub', url:'https://github.com', faIcon:'fa-github', iconBg:'#161b22', sub:'github.com' });
   if (/\b(open|launch|go to|visit)\s+spotify\b/i.test(lower))
     return dishaRenderAppPill({ name:'Spotify', url:'https://open.spotify.com', faIcon:'fa-spotify', iconBg:'#1db954', sub:'open.spotify.com' });
-
+// ── MCA PREDICTOR ──
+if (/\b(mca|m\.c\.a)\s+(predict|rank|calculator|prediction|estimate|guess)\b/i.test(lower) ||
+    /\bpredict\s+mca\s+rank\b/i.test(lower)) {
+  let rank = null;
+  const rankMatch = lower.match(/rank\s*(\d+)/i);
+  if (rankMatch) rank = parseInt(rankMatch[1], 10);
+  return `<div style="padding:12px 0;">
+    <div style="font-size:.9rem;font-weight:600;margin-bottom:4px;">🎓 MCA Rank Predictor</div>
+    <div style="font-size:.7rem;color:#777;margin-bottom:12px;">Estimate your MCA rank based on Karnataka PGCET or other entrance scores.</div>
+    ${dishaMcaLink(rank)}
+    <div style="margin-top:8px;font-size:.6rem;color:#444;">Tip: Say “mca predict rank 1350” to pre‑fill your rank.</div>
+  </div>`;
+}
   if (/^(hi|hello|hey|yo|good morning|good afternoon|good evening)/i.test(q)) return dishaGreet();
   if (/\b(bye|goodbye|see you)\b/i.test(lower)) return `Goodbye! 👋 Queries: ${DISHA_STATE.stats.queriesHandled}`;
   if (/\b(who are you|your name|what are you)\b/i.test(lower))
@@ -469,6 +482,25 @@ function dishaMatchLink(rank) {
     <div>
       <div style="font-size:.78rem;font-weight:700;color:#fff;letter-spacing:-.01em;">Get to know more about colleges</div>
       <div style="font-size:.62rem;color:#555;margin-top:3px;font-family:monospace;">Disha Match Engine · Rank ${rank.toLocaleString('en-IN')} pre-filled</div>
+    </div>
+    <i class="fa-solid fa-arrow-up-right-from-square" style="color:#666;font-size:.82rem;flex-shrink:0;margin-left:12px;"></i>
+  </a>`;
+}
+function dishaMcaLink(rank = null) {
+  let url = DISHA_MCA_URL;
+  if (rank && !isNaN(rank)) {
+    url += (url.includes('?') ? '&' : '?') + 'rank=' + encodeURIComponent(rank);
+  }
+  return `<a href="${url}" target="_blank" rel="noopener"
+    style="display:flex;align-items:center;justify-content:space-between;
+    margin-top:8px;padding:13px 16px;
+    background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);
+    border-radius:12px;text-decoration:none;transition:background .18s;"
+    onmouseover="this.style.background='rgba(255,255,255,.08)'"
+    onmouseout="this.style.background='rgba(255,255,255,.04)'">
+    <div>
+      <div style="font-size:.78rem;font-weight:700;color:#fff;letter-spacing:-.01em;">Predict your MCA rank →</div>
+      <div style="font-size:.62rem;color:#555;margin-top:3px;font-family:monospace;">Disha MCA Match Engine${rank ? ` · Rank ${rank.toLocaleString('en-IN')} pre-filled` : ''}</div>
     </div>
     <i class="fa-solid fa-arrow-up-right-from-square" style="color:#666;font-size:.82rem;flex-shrink:0;margin-left:12px;"></i>
   </a>`;
