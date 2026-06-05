@@ -1220,7 +1220,7 @@ window.deleteSharedList = idx => {
 };
 
 /* ════════════════════════════════════════
-   INIT
+   INIT – FIXED SHARE HANDLING
 ════════════════════════════════════════ */
 initOnboarding();
 initSidebar();
@@ -1236,23 +1236,52 @@ makeDropdown('ssCatTrigger','ssCatMenu','ssCatSearch','ssCatItems','ssCategory',
 document.getElementById('searchBtn').addEventListener('click', runMatch);
 document.getElementById('inputRank').addEventListener('keypress', e => { if(e.key==='Enter') runMatch(); });
 
-// History API init
-const rawHash = location.hash.replace('#','');
-if (rawHash.startsWith('SHARE/')) {
-  history.replaceState({view:'match'},'',location.pathname+'#match');
-  switchViewInternal('match');
-  setTimeout(() => checkIncomingShare(), 100);
-} else {
+// ─── Handle shared links immediately ───
+(function handleInitialHash() {
+  const rawHash = location.hash.replace('#','');
+  if (!rawHash) {
+    // Normal start – no hash
+    replaceView('match');
+    switchViewInternal('match');
+    return;
+  }
+
+  if (rawHash.startsWith('SHARE/')) {
+    // 1. Parse while hash is still intact
+    const parsed = parseShareHash(rawHash);
+    if (parsed && parsed.items.length) {
+      // 2. Set up the incoming share modal
+      pendingIncoming = parsed;
+      document.getElementById('incomingTitle').innerHTML = `${escapeHtml(parsed.username)}'s<br><span>Priority List</span>`;
+      document.getElementById('incomingMeta').textContent = `${parsed.items.length} college${parsed.items.length!==1?'s':''} shared`;
+      document.getElementById('incomingPreview').innerHTML = parsed.items.map(it=>
+        `<div class="incoming-preview-item"><i class="fa-solid fa-circle-dot"></i> ${escapeHtml(it.name)} <span style="color:var(--text-3);margin-left:auto;font-size:.52rem">${escapeHtml(it.category)}</span></div>`
+      ).join('');
+      document.getElementById('incomingSaveBtn').onclick = saveIncoming;
+      document.getElementById('incomingOverlay').classList.remove('hidden');
+
+      // 3. Remove the hash so the modal doesn’t appear again on refresh
+      history.replaceState({view:'match'},'',location.pathname);
+      switchViewInternal('match');
+    } else {
+      // Invalid share data – clean up
+      history.replaceState({view:'match'},'',location.pathname+'#match');
+      switchViewInternal('match');
+    }
+    return;
+  }
+
+  // Normal hash (e.g. #priority, #colleges)
   const initView = VALID_VIEWS.includes(rawHash) ? rawHash : 'match';
   replaceView(initView);
   switchViewInternal(initView);
-}
+})();
 
 if (!MCA_DATA.length) {
   const area=document.getElementById('resultsArea');
   area.innerHTML='<div class="no-results"><i class="fa-solid fa-circle-exclamation"></i><p>Add Mca.js next to this file to load data</p></div>';
   area.style.display='block';
-}
+                                                               }
 </script>
 </body>
 </html>
