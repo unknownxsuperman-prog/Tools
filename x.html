@@ -3,328 +3,1769 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>x0s · Disha Match | Core + Specializations</title>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>Disha · Match Engine</title>
+  <meta name="description" content="Disha Match Engine — find colleges matching your CET rank.">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --xos-bg: #000000;
-      --xos-accent: #007aff;
-      --xos-card: rgba(10, 10, 10, 0.85);
-      --xos-border: #1a1a1a;
-      --xos-font: 'Space Grotesk', sans-serif;
+      --bg: #000;
+      --surface: #0a0a0a;
+      --surface-2: #111;
+      --surface-3: #161616;
+      --border: rgba(255,255,255,0.07);
+      --border-strong: rgba(255,255,255,0.14);
+      --border-focus: rgba(255,255,255,0.5);
+      --text-0: #fff;
+      --text-1: #e8e8e8;
+      --text-2: #888;
+      --text-3: #444;
+      --danger: #ff3b3b;
+      --success: #00cc66;
+      --font-display: 'Space Grotesk', sans-serif;
+      --font-mono: 'DM Mono', monospace;
+      --r: 14px;
+      --r-sm: 10px;
+      --r-xs: 6px;
     }
 
     body {
-      margin: 0;
-      padding: 20px;
-      background: var(--xos-bg);
-      color: #ffffff;
-      font-family: var(--xos-font);
+      background: var(--bg);
+      color: var(--text-1);
+      font-family: var(--font-display);
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: flex-start;
-      min-height: 100vh;
+      padding: 24px 16px 60px;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
     }
 
-    .xos-panel {
+    /* ─── NOISE TEXTURE ─── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.4;
+    }
+
+    /* ─── PANEL ─── */
+    .panel {
       width: 100%;
-      max-width: 520px;
-      background: var(--xos-card);
-      border: 1px solid var(--xos-border);
-      border-radius: 24px;
-      padding: 28px 24px;
-      backdrop-filter: blur(24px);
-      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
-    }
-
-    .xos-badge {
-      font-size: 8px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.2em;
-      color: var(--xos-accent);
-      background: rgba(0, 122, 255, 0.1);
-      border: 1px solid rgba(0, 122, 255, 0.2);
-      padding: 3px 10px;
-      border-radius: 6px;
-    }
-
-    .form-group {
-      margin-bottom: 20px;
+      max-width: 500px;
       position: relative;
+      z-index: 1;
+      animation: panelIn 0.5s cubic-bezier(0.16,1,0.3,1) both;
     }
+    @keyframes panelIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
 
-    .form-label {
-      display: block;
-      font-size: 0.65rem;
+    /* ─── ONBOARDING ─── */
+    .onboard-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.97);
+      z-index: 9000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.25s ease;
+    }
+    .onboard-overlay.hidden { display: none; }
+    @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+    .onboard-card {
+      width: 90%;
+      max-width: 360px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--r);
+      background: var(--surface);
+      padding: 44px 32px;
+      animation: scaleIn 0.35s cubic-bezier(0.16,1,0.3,1) both;
+    }
+    @keyframes scaleIn { from { opacity:0; transform:scale(0.94); } to { opacity:1; transform:scale(1); } }
+
+    .onboard-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      color: var(--text-3);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .onboard-card h2 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--text-0);
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 32px;
+    }
+    .onboard-card h2 span { color: var(--text-3); }
+    .onboard-input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--border-strong);
+      padding: 12px 0;
+      color: var(--text-0);
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 500;
+      outline: none;
+      transition: border-color 0.2s;
+      margin-bottom: 32px;
+    }
+    .onboard-input::placeholder { color: var(--text-3); }
+    .onboard-input:focus { border-color: var(--text-0); }
+    .onboard-btn {
+      background: var(--text-0);
+      color: var(--bg);
+      border: none;
+      border-radius: var(--r-sm);
+      padding: 14px 28px;
+      font-family: var(--font-display);
+      font-size: 0.7rem;
       font-weight: 700;
-      color: #666;
       letter-spacing: 0.15em;
       text-transform: uppercase;
-      margin-bottom: 8px;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+    .onboard-btn:hover { opacity: 0.88; }
+    .onboard-btn:active { transform: scale(0.97); }
+    .onboard-btn:disabled { opacity: 0.2; cursor: not-allowed; transform: none; }
+
+    /* ─── HEADER ─── */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 0 0 24px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 32px;
+    }
+    .header-wordmark {
+      font-family: var(--font-mono);
+      font-size: 0.55rem;
+      color: var(--text-3);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .header h1 {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--text-0);
+      letter-spacing: -0.03em;
+      line-height: 1;
+    }
+    .header-sub {
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      color: var(--text-3);
+      margin-top: 8px;
+      letter-spacing: 0.05em;
+    }
+    .menu-btn {
+      width: 38px;
+      height: 38px;
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      background: transparent;
+      color: var(--text-2);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      transition: border-color 0.2s, color 0.2s;
+      flex-shrink: 0;
+    }
+    .menu-btn:hover { border-color: var(--border-strong); color: var(--text-0); }
+
+    /* ─── SIDEBAR ─── */
+    .sidebar-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 4000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+    }
+    .sidebar-backdrop.open { opacity: 1; pointer-events: all; }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      right: -290px;
+      width: 270px;
+      height: 100vh;
+      background: var(--surface);
+      border-left: 1px solid var(--border);
+      z-index: 4001;
+      transition: right 0.35s cubic-bezier(0.16,1,0.3,1);
+      display: flex;
+      flex-direction: column;
+    }
+    .sidebar.open { right: 0; }
+
+    .sidebar-top {
+      padding: 24px 20px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .sidebar-profile-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .sidebar-profile-text { display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+    .sidebar-monogram {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--text-0);
+      color: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-weight: 800;
+    }
+    .sidebar-name { font-size: 0.9rem; font-weight: 700; color: var(--text-0); }
+    .sidebar-role { font-family: var(--font-mono); font-size: 0.55rem; color: var(--text-3); margin-top: 3px; letter-spacing: 0.1em; }
+
+    .sidebar-nav { flex: 1; padding: 16px 16px; display: flex; flex-direction: column; gap: 2px; }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      border-radius: var(--r-sm);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      color: var(--text-2);
+      font-size: 0.78rem;
+      font-weight: 500;
+    }
+    .nav-item:hover { background: var(--surface-2); color: var(--text-1); }
+    .nav-item.active { background: var(--text-0); color: var(--bg); }
+    .nav-item .nav-label { display: flex; align-items: center; gap: 10px; }
+    .nav-item .nav-label i { font-size: 0.65rem; width: 14px; text-align: center; }
+    .nav-badge {
+      font-family: var(--font-mono);
+      font-size: 0.52rem;
+      font-weight: 500;
+      background: var(--text-0);
+      color: var(--bg);
+      padding: 2px 7px;
+      border-radius: 20px;
+      display: none;
+    }
+    .nav-item.active .nav-badge { background: var(--bg); color: var(--text-0); }
+
+    .sidebar-footer { padding: 20px 24px; border-top: 1px solid var(--border); }
+    .sidebar-footer-text { font-family: var(--font-mono); font-size: 0.5rem; color: var(--text-3); letter-spacing: 0.15em; text-transform: uppercase; }
+
+    /* ─── VIEWS ─── */
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* ─── VIEW HEADER ─── */
+    .view-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .view-header h3 { font-size: 1rem; font-weight: 700; color: var(--text-0); letter-spacing: -0.02em; }
+    .view-count { font-family: var(--font-mono); font-size: 0.55rem; color: var(--text-3); letter-spacing: 0.08em; }
+
+    /* ─── FORM ─── */
+    .field { margin-bottom: 24px; }
+    .field-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .field-step {
+      width: 20px;
+      height: 20px;
+      border: 1px solid var(--border-strong);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 0.52rem;
+      color: var(--text-2);
+      flex-shrink: 0;
+    }
+    .field-label-text {
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      color: var(--text-2);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
     }
 
     .xos-input {
       width: 100%;
-      background: #000000;
-      border: 1px solid var(--xos-border);
-      border-radius: 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
       padding: 14px 16px;
-      color: #ffffff;
-      font-family: var(--xos-font);
-      font-size: 0.9rem;
+      color: var(--text-0);
+      font-family: var(--font-display);
+      font-size: 0.88rem;
+      font-weight: 500;
       outline: none;
-      transition: all 0.2s;
+      transition: border-color 0.2s;
+      position: relative;
     }
+    .xos-input::placeholder { color: var(--text-3); }
+    .xos-input:hover { border-color: var(--border-strong); }
+    .xos-input:focus { border-color: var(--border-focus); }
 
-    .xos-input:focus {
-      border-color: var(--xos-accent);
-      box-shadow: 0 0 0 1px rgba(0, 122, 255, 0.3);
-    }
-
-    select.xos-input {
-      cursor: pointer;
-    }
-
-    .xos-btn {
+    /* ─── DROPDOWN ─── */
+    .xos-dropdown { position: relative; }
+    .dd-trigger {
       width: 100%;
-      background: #ffffff;
-      color: #000000;
-      border: none;
-      border-radius: 14px;
-      padding: 16px;
-      font-family: var(--xos-font);
-      font-size: 0.85rem;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      padding: 14px 16px;
+      color: var(--text-0);
+      font-family: var(--font-display);
+      font-size: 0.88rem;
+      font-weight: 500;
+      outline: none;
       cursor: pointer;
-      transition: transform 0.15s;
-      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      transition: border-color 0.2s;
+      user-select: none;
     }
+    .dd-trigger:hover { border-color: var(--border-strong); }
+    .dd-trigger.open { border-color: var(--border-focus); }
+    .dd-trigger .dd-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .dd-trigger .dd-text.placeholder { color: var(--text-3); }
+    .dd-chevron { font-size: 0.5rem; color: var(--text-3); transition: transform 0.2s; }
+    .dd-trigger.open .dd-chevron { transform: rotate(180deg); color: var(--text-2); }
 
-    .xos-btn:active {
-      transform: scale(0.97);
+    .dd-menu {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0; right: 0;
+      background: var(--surface-2);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--r-sm);
+      z-index: 200;
+      display: none;
+      max-height: 260px;
+      overflow-y: auto;
+      animation: dropIn 0.15s ease;
     }
+    .dd-menu.show { display: block; }
+    @keyframes dropIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
+    .dd-menu::-webkit-scrollbar { width: 3px; }
+    .dd-menu::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
 
+    .dd-search {
+      position: sticky;
+      top: 0;
+      background: var(--surface-2);
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .dd-search-wrap { position: relative; }
+    .dd-search input {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-xs);
+      padding: 8px 12px;
+      color: var(--text-1);
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .dd-search input::placeholder { color: var(--text-3); }
+    .dd-search input:focus { border-color: var(--border-focus); }
+
+    .dd-item {
+      padding: 12px 16px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-2);
+      cursor: pointer;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.12s, color 0.12s;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .dd-item:last-child { border-bottom: none; }
+    .dd-item:hover { background: var(--surface-3); color: var(--text-0); }
+    .dd-item.selected { color: var(--text-0); }
+    .dd-item .dd-check { font-size: 0.5rem; color: var(--text-0); opacity: 0; }
+    .dd-item.selected .dd-check { opacity: 1; }
+
+    /* ─── SUGGEST BOX ─── */
     .suggest-box {
       position: absolute;
       top: calc(100% + 4px);
-      left: 0;
-      right: 0;
-      background: #0a0a0a;
-      border: 1px solid var(--xos-border);
-      border-radius: 14px;
+      left: 0; right: 0;
+      background: var(--surface-2);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--r-sm);
       z-index: 100;
       display: none;
       max-height: 220px;
       overflow-y: auto;
+      animation: dropIn 0.15s ease;
     }
-
+    .suggest-box::-webkit-scrollbar { width: 3px; }
+    .suggest-box::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
     .suggest-item {
-      padding: 12px 16px;
-      font-size: 0.8rem;
-      color: #ccc;
+      padding: 11px 16px;
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--text-2);
       cursor: pointer;
-      border-bottom: 1px solid #1a1a1a;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.12s, color 0.12s;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
+    .suggest-item:last-child { border-bottom: none; }
+    .suggest-item:hover { background: var(--surface-3); color: var(--text-0); }
+    .suggest-item .suggest-arrow { font-size: 0.45rem; color: var(--text-3); }
+    .suggest-item:hover .suggest-arrow { color: var(--text-0); }
 
-    .suggest-item:hover {
-      background: rgba(255, 255, 255, 0.05);
-      color: #fff;
+    /* ─── PRIMARY BUTTON ─── */
+    .btn-primary {
+      width: 100%;
+      background: var(--text-0);
+      color: var(--bg);
+      border: none;
+      border-radius: var(--r-sm);
+      padding: 15px 28px;
+      font-family: var(--font-display);
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      cursor: pointer;
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: opacity 0.15s, transform 0.15s;
+      position: relative;
+      overflow: hidden;
     }
+    .btn-primary:hover { opacity: 0.9; }
+    .btn-primary:active { transform: scale(0.98); }
 
+    /* ─── RESULTS ─── */
     .results-container {
-      margin-top: 28px;
+      margin-top: 32px;
+      border-top: 1px solid var(--border);
+      padding-top: 28px;
       display: none;
-      border-top: 1px solid var(--xos-border);
-      padding-top: 24px;
+      animation: fadeUp 0.3s ease;
+    }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+    .result-stats {
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      color: var(--text-3);
+      letter-spacing: 0.08em;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .result-stats::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--text-0);
+      flex-shrink: 0;
     }
 
     .result-card {
-      background: #000000;
-      border: 1px solid var(--xos-border);
-      border-radius: 16px;
-      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
       margin-bottom: 12px;
+      background: var(--surface);
+      transition: border-color 0.2s;
     }
+    .result-card:hover { border-color: var(--border-strong); }
 
-    .result-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
+    .result-card-top {
+      padding: 18px 18px 0;
+    }
+    .result-id {
+      font-family: var(--font-mono);
+      font-size: 0.52rem;
+      color: var(--text-3);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
       margin-bottom: 8px;
     }
-
-    .college-id {
-      font-size: 0.55rem;
+    .result-name {
+      font-size: 0.92rem;
       font-weight: 700;
-      color: #555;
-      letter-spacing: 0.1em;
-    }
-
-    .college-name {
-      font-size: 0.9rem;
-      font-weight: 600;
+      color: var(--text-0);
+      letter-spacing: -0.02em;
       line-height: 1.3;
-      margin-bottom: 4px;
-      padding-right: 40px;
+      margin-bottom: 6px;
     }
-
-    .college-loc {
-      font-size: 0.65rem;
-      color: var(--xos-accent);
-      margin-bottom: 10px;
-    }
-
-    .branch-name {
-      font-size: 0.7rem;
-      color: #888;
+    .result-loc {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      color: var(--text-3);
       margin-bottom: 12px;
-      padding: 4px 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .result-loc i { font-size: 0.5rem; }
+
+    .result-branch-tag {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      color: var(--text-2);
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--r-xs);
+      padding: 5px 10px;
+      margin-bottom: 16px;
+      letter-spacing: 0.02em;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
-    .cutoff-row {
+    .result-metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border-top: 1px solid var(--border);
+    }
+    .metric-block {
+      background: var(--surface);
+      padding: 14px 18px;
+    }
+    .metric-label {
+      font-family: var(--font-mono);
+      font-size: 0.5rem;
+      color: var(--text-3);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+    .metric-value {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--text-0);
+      letter-spacing: -0.04em;
+      line-height: 1;
+    }
+    .metric-value.positive { color: var(--text-2); }
+    .metric-value.negative { color: var(--text-1); }
+
+    .result-actions {
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      border-top: 1px solid var(--border);
+    }
+
+    .btn-add {
+      background: transparent;
+      border: 1px solid var(--border-strong);
+      border-radius: 20px;
+      padding: 7px 14px;
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      font-weight: 500;
+      color: var(--text-1);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+      letter-spacing: 0.05em;
+    }
+    .btn-add i { font-size: 0.45rem; }
+    .btn-add:hover { background: var(--text-0); color: var(--bg); border-color: var(--text-0); }
+    .btn-add.added { color: var(--success); border-color: rgba(0,204,102,0.2); pointer-events: none; }
+    .btn-add.added:hover { background: transparent; color: var(--success); border-color: rgba(0,204,102,0.2); }
+
+    .btn-specs {
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 7px 14px;
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      color: var(--text-2);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+      letter-spacing: 0.05em;
+    }
+    .btn-specs i { font-size: 0.45rem; transition: transform 0.2s; }
+    .btn-specs:hover { border-color: var(--border-strong); color: var(--text-1); }
+    .btn-specs.active i { transform: rotate(180deg); }
+
+    .specs-panel {
+      display: none;
+      padding: 12px 18px 16px;
+      border-top: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 6px;
+      animation: fadeUp 0.2s ease;
+    }
+    .specs-panel.show { display: flex; }
+    .spec-chip {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 6px 12px;
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      color: var(--text-2);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+    .spec-chip:hover { background: var(--surface-3); border-color: var(--border-strong); color: var(--text-0); }
+    .spec-cutoff { color: var(--text-1); font-weight: 500; }
+
+    /* ─── NO RESULTS ─── */
+    .no-results {
+      text-align: center;
+      padding: 48px 20px;
+      color: var(--text-3);
+    }
+    .no-results i { font-size: 1.2rem; display: block; margin-bottom: 12px; opacity: 0.4; }
+    .no-results p { font-size: 0.75rem; }
+
+    /* ─── PRIORITY LIST ─── */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-3);
+    }
+    .empty-state i { font-size: 1.2rem; display: block; margin-bottom: 12px; opacity: 0.3; }
+    .empty-state p { font-size: 0.75rem; }
+    .empty-state .hint { font-size: 0.62rem; margin-top: 6px; opacity: 0.6; font-family: var(--font-mono); }
+
+    .priority-card {
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
+      margin-bottom: 8px;
+      background: var(--surface);
+      transition: border-color 0.2s;
+    }
+    .priority-card:hover { border-color: var(--border-strong); }
+    .priority-card-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      cursor: pointer;
+    }
+    .p-mono {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--text-0);
+      color: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .p-info { flex: 1; min-width: 0; }
+    .p-name {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-0);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .p-branch {
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      color: var(--text-3);
+      margin-top: 3px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .p-chevron { font-size: 0.45rem; color: var(--text-3); transition: transform 0.2s; }
+    .priority-card.expanded .p-chevron { transform: rotate(180deg); color: var(--text-2); }
+    .p-details {
+      display: none;
+      padding: 0 16px 16px;
+      border-top: 1px solid var(--border);
+      animation: fadeUp 0.2s ease;
+    }
+    .priority-card.expanded .p-details { display: block; }
+    .p-detail-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-top: 1px solid #1a1a1a;
-      padding-top: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
     }
+    .p-detail-row:last-of-type { border-bottom: none; }
+    .p-detail-label { font-family: var(--font-mono); font-size: 0.55rem; color: var(--text-3); letter-spacing: 0.08em; text-transform: uppercase; }
+    .p-detail-value { font-size: 0.8rem; font-weight: 600; color: var(--text-0); }
+    .btn-remove {
+      width: 100%;
+      margin-top: 12px;
+      padding: 10px;
+      background: transparent;
+      border: 1px solid rgba(255,59,59,0.2);
+      border-radius: var(--r-sm);
+      color: var(--danger);
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.2s;
+    }
+    .btn-remove:hover { background: rgba(255,59,59,0.07); }
 
-    .cutoff-label {
-      font-size: 0.55rem;
-      color: #555;
-      text-transform: uppercase;
+    /* ─── COLLEGES LIST ─── */
+    .college-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .college-row:last-child { border-bottom: none; }
+    .college-mono {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid var(--border-strong);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--text-1);
+      flex-shrink: 0;
+    }
+    .college-info { flex: 1; min-width: 0; }
+    .college-row-name { font-size: 0.78rem; font-weight: 600; color: var(--text-1); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .college-row-loc { font-family: var(--font-mono); font-size: 0.58rem; color: var(--text-3); margin-top: 3px; }
+
+    /* ─── BRANCHES LIST ─── */
+    .branch-group { margin-bottom: 4px; }
+    .branch-core {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 13px 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+    .branch-core:hover { border-color: var(--border-strong); }
+    .branch-core-left { display: flex; align-items: center; gap: 10px; }
+    .branch-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--text-3); flex-shrink: 0; }
+    .branch-core.expanded .branch-dot { background: var(--text-0); }
+    .branch-core-name { font-size: 0.74rem; font-weight: 600; color: var(--text-1); }
+    .branch-core-right { display: flex; align-items: center; gap: 8px; }
+    .branch-spec-count { font-family: var(--font-mono); font-size: 0.52rem; color: var(--text-3); }
+    .branch-chevron { font-size: 0.45rem; color: var(--text-3); transition: transform 0.2s; }
+    .branch-core.expanded .branch-chevron { transform: rotate(180deg); }
+    .branch-subs { display: none; padding: 4px 0 4px 24px; }
+    .branch-subs.show { display: block; }
+    .branch-sub {
+      padding: 9px 12px;
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      color: var(--text-3);
+      border-left: 1px solid var(--border);
+      margin-bottom: 2px;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .branch-sub:hover { color: var(--text-2); border-color: var(--border-strong); }
+
+    /* ─── RANK PREDICTOR ─── */
+    .pred-three-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .pred-subject-block { display: flex; flex-direction: column; gap: 6px; }
+    .pred-subject-label {
+      font-family: var(--font-mono);
+      font-size: 0.52rem;
+      color: var(--text-3);
       letter-spacing: 0.1em;
+      text-transform: uppercase;
     }
-
-    .cutoff-value {
+    .pred-subject-input {
+      text-align: center;
       font-size: 1.1rem;
       font-weight: 700;
+      padding: 12px 8px;
     }
-
-    .variance {
-      font-size: 0.85rem;
-      font-weight: 600;
-    }
-
-    .variance-positive { color: #666; }
-    .variance-negative { color: #aaa; }
-
-    .expand-btn {
-      background: transparent;
-      border: 1px solid #2a2a2a;
-      border-radius: 30px;
-      padding: 6px 14px;
-      font-size: 0.6rem;
-      color: var(--xos-accent);
-      cursor: pointer;
-      font-family: var(--xos-font);
-      margin-top: 10px;
-      width: auto;
-    }
-
-    .expand-btn:hover {
-      background: rgba(0, 122, 255, 0.1);
-    }
-
-    .subs-list {
-      display: none;
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px solid #1a1a1a;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .subs-list.show {
+    .pred-total-row {
       display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      margin-top: 4px;
     }
-
-    .sub-chip {
-      background: #0a0a0a;
-      border: 1px solid #2a2a2a;
-      border-radius: 30px;
-      padding: 6px 12px;
-      font-size: 0.65rem;
+    .pred-total-label {
+      font-family: var(--font-mono);
+      font-size: 0.55rem;
+      color: var(--text-3);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .pred-total-display {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+    #predBoardsTotal {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-0);
+      letter-spacing: -0.02em;
+    }
+    .pred-total-max {
+      font-family: var(--font-mono);
+      font-size: 0.55rem;
+      color: var(--text-3);
+    }
+    .predictor-result {
+      margin-top: 28px;
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
+      animation: fadeUp 0.3s ease;
+    }
+    .pred-result-label {
+      font-family: var(--font-mono);
+      font-size: 0.52rem;
+      color: var(--text-3);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .pred-rank-display {
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--text-0);
+      letter-spacing: -0.04em;
+      line-height: 1;
+      margin-bottom: 20px;
+    }
+    .pred-meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+    .pred-meta-block {
+      background: var(--surface);
+      padding: 12px 14px;
+    }
+    .pred-meta-label {
+      font-family: var(--font-mono);
+      font-size: 0.48rem;
+      color: var(--text-3);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .pred-meta-value {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-1);
+      letter-spacing: -0.02em;
+    }
+    .btn-predict-college {
+      width: 100%;
+      background: transparent;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--r-sm);
+      padding: 14px;
+      font-family: var(--font-display);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-1);
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.2s;
+    }
+    .btn-predict-college:hover {
+      background: var(--text-0);
+      color: var(--bg);
+      border-color: var(--text-0);
+    }
+    .btn-predict-college i { font-size: 0.6rem; }
+
+    /* ─── PROFILE MODAL ─── */
+    .profile-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 6000;
+      display: flex; align-items: flex-end; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.25s;
+    }
+    .profile-overlay.open { opacity: 1; pointer-events: all; }
+    .profile-sheet {
+      width: 100%; max-width: 500px; background: var(--surface);
+      border: 1px solid var(--border-strong); border-bottom: none;
+      border-radius: 20px 20px 0 0; padding: 0 0 40px;
+      transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.16,1,0.3,1);
+      max-height: 92vh; overflow-y: auto; overflow-x: hidden;
+    }
+    .profile-overlay.open .profile-sheet { transform: translateY(0); }
+    .profile-sheet::-webkit-scrollbar { width: 3px; }
+    .profile-sheet::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+    .profile-sheet-handle {
+      width: 36px; height: 4px; border-radius: 2px; background: var(--border-strong);
+      margin: 14px auto 0; cursor: pointer;
+    }
+    .profile-sheet-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 24px 16px; border-bottom: 1px solid var(--border);
+    }
+    .profile-sheet-title { font-size: 0.88rem; font-weight: 700; color: var(--text-0); letter-spacing: -0.02em; }
+    .profile-close-btn {
+      width: 28px; height: 28px; border-radius: 50%; background: var(--surface-2);
+      border: 1px solid var(--border); cursor: pointer; display: flex;
+      align-items: center; justify-content: center; font-size: 0.55rem; color: var(--text-2);
       transition: all 0.15s;
     }
-
-    .sub-chip:hover {
-      background: #1a1a1a;
-      border-color: var(--xos-accent);
+    .profile-close-btn:hover { background: var(--text-0); color: var(--bg); border-color: var(--text-0); }
+    .profile-identity {
+      display: flex; align-items: center; gap: 16px;
+      padding: 20px 24px; border-bottom: 1px solid var(--border);
     }
-
-    .sub-chip-cutoff {
-      font-size: 0.6rem;
-      color: var(--xos-accent);
-      margin-left: 6px;
+    .profile-big-mono {
+      width: 52px; height: 52px; border-radius: 50%; background: var(--text-0);
+      color: var(--bg); display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; font-weight: 800; flex-shrink: 0;
     }
-
-    .no-results {
-      text-align: center;
-      color: #555;
-      font-size: 0.8rem;
-      padding: 30px 0;
+    .profile-identity-text {}
+    .profile-identity-name { font-size: 1rem; font-weight: 700; color: var(--text-0); letter-spacing: -0.02em; }
+    .profile-identity-tag { font-family: var(--font-mono); font-size: 0.55rem; color: var(--text-3); margin-top: 3px; letter-spacing: 0.08em; }
+    .profile-section { padding: 20px 24px; border-bottom: 1px solid var(--border); }
+    .profile-section-label {
+      font-family: var(--font-mono); font-size: 0.52rem; color: var(--text-3);
+      letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 12px;
     }
+    .profile-pref-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .profile-pref-block { display: flex; flex-direction: column; gap: 6px; }
+    .profile-pref-label { font-family: var(--font-mono); font-size: 0.5rem; color: var(--text-3); letter-spacing: 0.08em; text-transform: uppercase; }
+    .profile-saved-val {
+      font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-2);
+      background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--r-xs); padding: 6px 10px;
+    }
+    .profile-saved-val.set { color: var(--text-0); border-color: var(--border-strong); }
+    /* profile dropdown inside sheet */
+    .profile-dd { position: relative; }
+    .profile-dd-trigger {
+      width: 100%; background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--r-sm); padding: 11px 14px; color: var(--text-0);
+      font-family: var(--font-display); font-size: 0.8rem; font-weight: 500;
+      cursor: pointer; display: flex; align-items: center; justify-content: space-between;
+      transition: border-color 0.2s; user-select: none;
+    }
+    .profile-dd-trigger:hover { border-color: var(--border-strong); }
+    .profile-dd-trigger.open { border-color: var(--border-focus); }
+    .profile-dd-trigger .dd-text.placeholder { color: var(--text-3); }
+    .profile-dd-menu {
+      position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+      background: var(--surface-3); border: 1px solid var(--border-strong);
+      border-radius: var(--r-sm); z-index: 100; display: none;
+      max-height: 200px; overflow-y: auto; animation: dropIn 0.15s ease;
+    }
+    .profile-dd-menu.show { display: block; }
+    .profile-dd-search {
+      position: sticky; top: 0; background: var(--surface-3);
+      padding: 8px 10px; border-bottom: 1px solid var(--border);
+    }
+    .profile-dd-search input {
+      width: 100%; background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--r-xs); padding: 6px 10px; color: var(--text-1);
+      font-family: var(--font-mono); font-size: 0.65rem; outline: none; transition: border-color 0.2s;
+    }
+    .profile-dd-search input:focus { border-color: var(--border-focus); }
+    .profile-dd-item {
+      padding: 10px 14px; font-size: 0.72rem; font-weight: 500; color: var(--text-2);
+      cursor: pointer; border-bottom: 1px solid var(--border);
+      transition: background 0.1s, color 0.1s; display: flex; align-items: center; justify-content: space-between;
+    }
+    .profile-dd-item:last-child { border-bottom: none; }
+    .profile-dd-item:hover { background: var(--surface-2); color: var(--text-0); }
+    .profile-dd-item.selected { color: var(--text-0); }
+    .profile-dd-item .dd-check { font-size: 0.45rem; opacity: 0; }
+    .profile-dd-item.selected .dd-check { opacity: 1; }
+    /* branch search input */
+    .profile-branch-input {
+      width: 100%; background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--r-sm); padding: 11px 14px; color: var(--text-0);
+      font-family: var(--font-display); font-size: 0.8rem; font-weight: 500; outline: none;
+      transition: border-color 0.2s; position: relative;
+    }
+    .profile-branch-input::placeholder { color: var(--text-3); }
+    .profile-branch-input:focus { border-color: var(--border-focus); }
+    .profile-branch-suggest {
+      position: absolute; left: 24px; right: 24px; top: calc(100% + 2px);
+      background: var(--surface-3); border: 1px solid var(--border-strong);
+      border-radius: var(--r-sm); z-index: 200; display: none;
+      max-height: 180px; overflow-y: auto; animation: dropIn 0.15s ease;
+    }
+    .profile-branch-suggest.show { display: block; }
+    /* profile smart search results */
+    .profile-results-section { padding: 0 24px 0; }
+    .profile-results-label {
+      font-family: var(--font-mono); font-size: 0.52rem; color: var(--text-3);
+      letter-spacing: 0.12em; text-transform: uppercase; margin: 20px 0 12px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .profile-results-label::before {
+      content: ''; display: inline-block; width: 5px; height: 5px;
+      border-radius: 50%; background: var(--text-0); flex-shrink: 0;
+    }
+    .profile-college-card {
+      border: 1px solid var(--border); border-radius: var(--r);
+      overflow: hidden; margin-bottom: 8px; background: var(--surface);
+      transition: border-color 0.2s; cursor: pointer;
+    }
+    .profile-college-card:hover { border-color: var(--border-strong); }
+    .profile-college-row {
+      display: flex; align-items: center; gap: 12px; padding: 13px 14px;
+    }
+    .profile-college-mono {
+      width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border-strong);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.72rem; font-weight: 800; color: var(--text-1); flex-shrink: 0;
+    }
+    .profile-college-info { flex: 1; min-width: 0; }
+    .profile-college-name { font-size: 0.76rem; font-weight: 600; color: var(--text-0); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .profile-college-loc { font-family: var(--font-mono); font-size: 0.55rem; color: var(--text-3); margin-top: 2px; }
+    .profile-college-cutoff { font-family: var(--font-mono); font-size: 0.65rem; font-weight: 600; color: var(--text-1); flex-shrink: 0; }
+    .profile-college-details {
+      display: none; padding: 0 14px 14px; border-top: 1px solid var(--border);
+      animation: fadeUp 0.2s ease;
+    }
+    .profile-college-card.expanded .profile-college-details { display: block; }
+    .profile-college-card.expanded .profile-college-row { background: rgba(255,255,255,0.02); }
 
-    .result-stats {
-      font-size: 0.6rem;
-      color: #555;
-      margin-bottom: 12px;
-      letter-spacing: 0.1em;
+    /* ─── SCROLLBAR ─── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
+
+    @media (max-width: 520px) {
+      body { padding: 16px 12px 60px; }
+      .result-metrics { grid-template-columns: 1fr 1fr; }
     }
   </style>
 </head>
 <body>
 
-<div class="xos-panel">
-  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px;">
-    <div>
-      <h2 style="margin: 0; font-size: 1.2rem; font-weight: 700;">Disha Match Engine</h2>
-      <div style="font-size: 0.6rem; color: #555; margin-top: 4px;">Core + Specializations · ±2000 range</div>
+<!-- ONBOARDING -->
+<div class="onboard-overlay" id="onboardModal">
+  <div class="onboard-card">
+    <div class="onboard-eyebrow">x0s · Disha Match</div>
+    <h2>What's<br><span>your name?</span></h2>
+    <input type="text" class="onboard-input" id="onboardNameInput" placeholder="Enter your name" autocomplete="off" spellcheck="false" maxlength="30">
+    <button class="onboard-btn" id="onboardSubmitBtn" disabled>Continue</button>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-top" style="cursor:pointer;" onclick="openProfile()" title="View Profile">
+    <div class="sidebar-profile-row">
+      <div class="sidebar-monogram" id="sidebarPfp">?</div>
+      <div class="sidebar-profile-text">
+        <div class="sidebar-name" id="sidebarUsername">User</div>
+        <div class="sidebar-role">CET Explorer · tap to edit</div>
+      </div>
     </div>
-    <span class="xos-badge">v3.0</span>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-item active" data-view="match">
+      <span class="nav-label"><i class="fa-solid fa-crosshairs"></i> Match Engine</span>
+    </div>
+    <div class="nav-item" data-view="priority">
+      <span class="nav-label"><i class="fa-regular fa-bookmark"></i> Priority List</span>
+      <span class="nav-badge" id="navPriorityCount">0</span>
+    </div>
+    <div class="nav-item" data-view="colleges">
+      <span class="nav-label"><i class="fa-regular fa-building"></i> Colleges</span>
+    </div>
+    <div class="nav-item" data-view="branches">
+      <span class="nav-label"><i class="fa-solid fa-sitemap"></i> Branches</span>
+    </div>
+    <div class="nav-item" data-view="predictor">
+      <span class="nav-label"><i class="fa-solid fa-calculator"></i> Rank Predictor</span>
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sidebar-footer-text">x0s · Disha v3.0</div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="panel">
+  <div class="header">
+    <div>
+      <div class="header-wordmark">x0s · Disha Match</div>
+      <h1 id="headerTitle">Match Engine</h1>
+      <div class="header-sub" id="headerSub">Core + Specializations · ±2000 range</div>
+    </div>
+    <button class="menu-btn" id="menuBtn"><i class="fa-solid fa-bars-staggered"></i></button>
   </div>
 
-  <div class="form-group">
-    <label class="form-label">1. Core Branch</label>
-    <input type="text" id="inputBranch" class="xos-input" placeholder="e.g., COMPUTER SCIENCE AND ENGINEERING" autocomplete="off">
-    <div id="branchSuggestBox" class="suggest-box"></div>
+  <!-- VIEW: MATCH -->
+  <div class="view active" id="view-match">
+    <div class="field">
+      <div class="field-label">
+        <div class="field-step">1</div>
+        <span class="field-label-text">Core Branch</span>
+      </div>
+      <div style="position:relative;">
+        <input type="text" id="inputBranch" class="xos-input" placeholder="e.g., COMPUTER SCIENCE AND ENGINEERING" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+        <div id="branchSuggestBox" class="suggest-box"></div>
+      </div>
+    </div>
+    <div class="field">
+      <div class="field-label">
+        <div class="field-step">2</div>
+        <span class="field-label-text">Category</span>
+      </div>
+      <div class="xos-dropdown" id="categoryDropdown">
+        <div class="dd-trigger" id="categoryTrigger" tabindex="0">
+          <span class="dd-text placeholder">Loading categories...</span>
+          <i class="fa-solid fa-chevron-down dd-chevron"></i>
+        </div>
+        <div class="dd-menu" id="categoryMenu">
+          <div class="dd-search">
+            <div class="dd-search-wrap">
+              <input type="text" id="categorySearchInput" placeholder="Search categories..." autocomplete="off" spellcheck="false">
+            </div>
+          </div>
+          <div id="categoryMenuItems"></div>
+        </div>
+      </div>
+      <input type="hidden" id="inputCategory" value="">
+    </div>
+    <div class="field">
+      <div class="field-label">
+        <div class="field-step">3</div>
+        <span class="field-label-text">Your Rank</span>
+      </div>
+      <input type="number" id="inputRank" class="xos-input" placeholder="Enter CET rank" min="1" autocomplete="off">
+    </div>
+    <button class="btn-primary" id="searchBtn">
+      Run Match <i class="fa-solid fa-arrow-right" style="font-size:0.6rem;"></i>
+    </button>
+    <div id="resultsArea" class="results-container"></div>
   </div>
 
-  <div class="form-group">
-    <label class="form-label">2. Category</label>
-    <select id="inputCategory" class="xos-input">
-      <option value="">Loading categories...</option>
-    </select>
+  <!-- VIEW: PRIORITY -->
+  <div class="view" id="view-priority">
+    <div class="view-header">
+      <h3>Priority List</h3>
+      <span class="view-count" id="priorityViewCount">0 saved</span>
+    </div>
+    <div id="priorityListContainer"></div>
   </div>
 
-  <div class="form-group">
-    <label class="form-label">3. Your Rank</label>
-    <input type="number" id="inputRank" class="xos-input" placeholder="Enter CET rank" min="1">
+  <!-- VIEW: COLLEGES -->
+  <div class="view" id="view-colleges">
+    <div class="view-header">
+      <h3>Colleges</h3>
+      <span class="view-count" id="collegesViewCount">0 colleges</span>
+    </div>
+    <div id="collegesListContainer"></div>
   </div>
 
-  <button class="xos-btn" id="searchBtn">SEARCH →</button>
+  <!-- VIEW: BRANCHES -->
+  <div class="view" id="view-branches">
+    <div class="view-header">
+      <h3>Branches</h3>
+      <span class="view-count" id="branchesViewCount">0 branches</span>
+    </div>
+    <div id="branchesListContainer"></div>
+  </div>
+  <!-- VIEW: PREDICTOR -->
+  <div class="view" id="view-predictor">
+    <div class="view-header">
+      <h3>Rank Predictor</h3>
+      <span class="view-count">2PU + KCET</span>
+    </div>
 
-  <div id="resultsArea" class="results-container"></div>
+    <!-- 2PU Marks -->
+    <div class="field">
+      <div class="field-label">
+        <div class="field-step">1</div>
+        <span class="field-label-text">2nd PU Marks (max 100 each)</span>
+      </div>
+      <div class="pred-three-grid">
+        <div class="pred-subject-block">
+          <div class="pred-subject-label">Physics</div>
+          <input type="number" id="predPhysics" class="xos-input pred-subject-input" placeholder="00" min="0" max="100" autocomplete="off">
+        </div>
+        <div class="pred-subject-block">
+          <div class="pred-subject-label">Chemistry</div>
+          <input type="number" id="predChemistry" class="xos-input pred-subject-input" placeholder="00" min="0" max="100" autocomplete="off">
+        </div>
+        <div class="pred-subject-block">
+          <div class="pred-subject-label">Maths</div>
+          <input type="number" id="predMaths" class="xos-input pred-subject-input" placeholder="00" min="0" max="100" autocomplete="off">
+        </div>
+      </div>
+      <div class="pred-total-row">
+        <span class="pred-total-label">Total</span>
+        <div class="pred-total-display">
+          <span id="predBoardsTotal">—</span>
+          <span class="pred-total-max">/ 300</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- KCET Marks -->
+    <div class="field">
+      <div class="field-label">
+        <div class="field-step">2</div>
+        <span class="field-label-text">KCET Score (max 180)</span>
+      </div>
+      <input type="number" id="predKCET" class="xos-input" placeholder="Enter total KCET marks" min="0" max="180" autocomplete="off">
+    </div>
+
+    <button class="btn-primary" id="predictBtn">
+      Predict Rank <i class="fa-solid fa-arrow-right" style="font-size:0.6rem;"></i>
+    </button>
+
+    <!-- Result -->
+    <div id="predictorResult" class="predictor-result" style="display:none;"></div>
+  </div>
+</div>
+
+<!-- PROFILE SHEET -->
+<div class="profile-overlay" id="profileOverlay">
+  <div class="profile-sheet" id="profileSheet">
+    <div class="profile-sheet-handle" onclick="closeProfile()"></div>
+    <div class="profile-sheet-header">
+      <span class="profile-sheet-title">Profile</span>
+      <button class="profile-close-btn" onclick="closeProfile()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="profile-identity">
+      <div class="profile-big-mono" id="profileBigMono">?</div>
+      <div class="profile-identity-text">
+        <div class="profile-identity-name" id="profileName">User</div>
+        <div class="profile-identity-tag">x0s · CET Explorer</div>
+      </div>
+    </div>
+    <div class="profile-section">
+      <div class="profile-section-label">Preferences</div>
+      <div class="profile-pref-row">
+        <div class="profile-pref-block">
+          <div class="profile-pref-label">Category</div>
+          <div class="profile-dd" id="profileCatDropdown">
+            <div class="profile-dd-trigger" id="profileCatTrigger" tabindex="0">
+              <span class="dd-text placeholder" id="profileCatText">Select category</span>
+              <i class="fa-solid fa-chevron-down dd-chevron" style="font-size:0.45rem;color:var(--text-3);transition:transform 0.2s;"></i>
+            </div>
+            <div class="profile-dd-menu" id="profileCatMenu">
+              <div class="profile-dd-search">
+                <input type="text" id="profileCatSearch" placeholder="Search..." autocomplete="off" spellcheck="false">
+              </div>
+              <div id="profileCatItems"></div>
+            </div>
+          </div>
+        </div>
+        <div class="profile-pref-block">
+          <div class="profile-pref-label">Branch</div>
+          <div style="position:relative;">
+            <input type="text" id="profileBranchInput" class="profile-branch-input" placeholder="Search branch..." autocomplete="off" spellcheck="false" autocapitalize="off">
+            <div class="profile-branch-suggest" id="profileBranchSuggest"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="profile-results-section" id="profileResultsSection">
+      <div id="profileResultsList"></div>
+    </div>
+  </div>
 </div>
 
 <script src="./college-data.js"></script>
-
 <script>
-  // ============ GLOBAL STATE ============
   let Engine = { branches: [], categories: [], branchToCode: new Map(), codeToBranch: new Map(), specializationMap: new Map() };
+  let lastSearchCategory = '';
 
-  // ============ CLEAN BRANCH NAME ============
+  /* ── ONBOARDING ── */
+  function initOnboarding() {
+    const saved = localStorage.getItem('xos_username');
+    const modal = document.getElementById('onboardModal');
+    if (saved) { modal.classList.add('hidden'); applyUsername(saved); return; }
+    const input = document.getElementById('onboardNameInput');
+    const btn = document.getElementById('onboardSubmitBtn');
+    input.addEventListener('input', () => { btn.disabled = input.value.trim().length === 0; });
+    input.addEventListener('keydown', (e) => { if (e.key === 'Enter' && input.value.trim()) submit(); });
+    btn.addEventListener('click', submit);
+    function submit() {
+      const name = input.value.trim();
+      if (!name) return;
+      localStorage.setItem('xos_username', name);
+      modal.classList.add('hidden');
+      applyUsername(name);
+    }
+    setTimeout(() => input.focus(), 400);
+  }
+  function applyUsername(name) {
+    document.getElementById('sidebarPfp').textContent = name.charAt(0).toUpperCase();
+    document.getElementById('sidebarUsername').textContent = name;
+  }
+
+  /* ── HISTORY API ── */
+  function pushView(name) {
+    const state = { view: name };
+    const url = '#' + name;
+    if (history.state && history.state.view === name) return;
+    history.pushState(state, '', url);
+  }
+  function replaceView(name) {
+    history.replaceState({ view: name }, '', '#' + name);
+  }
+  window.addEventListener('popstate', (e) => {
+    const view = (e.state && e.state.view) ? e.state.view : 'match';
+    switchViewInternal(view);
+    toggleSidebar(false);
+    closeProfile();
+  });
+
+  /* ── SIDEBAR ── */
+  function initSidebar() {
+    document.getElementById('menuBtn').addEventListener('click', () => toggleSidebar(true));
+    document.getElementById('sidebarBackdrop').addEventListener('click', () => toggleSidebar(false));
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', () => {
+        switchView(item.getAttribute('data-view'));
+        toggleSidebar(false);
+      });
+    });
+  }
+  function toggleSidebar(open) {
+    document.getElementById('sidebar').classList.toggle('open', open);
+    document.getElementById('sidebarBackdrop').classList.toggle('open', open);
+  }
+
+  /* ── VIEW SWITCH ── */
+  function switchView(name) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById(`view-${name}`).classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+    document.querySelector(`.nav-item[data-view="${name}"]`).classList.add('active');
+    const titles = { match: 'Match Engine', priority: 'Priority List', colleges: 'Colleges', branches: 'Branches', predictor: 'Rank Predictor' };
+    const subs = { match: 'Core + Specializations · from your rank', priority: 'Your saved colleges', colleges: 'Browse all institutions', branches: 'Core & specializations', predictor: '2PU + KCET → Estimated rank' };
+    document.getElementById('headerTitle').textContent = titles[name] || '';
+    document.getElementById('headerSub').textContent = subs[name] || '';
+    if (name === 'priority') renderPriorityList();
+    if (name === 'colleges') renderCollegesList();
+    if (name === 'branches') renderBranchesList();
+  }
+
+  /* ── RANK PREDICTOR ENGINE ── */
+  class KCETRankPredictor {
+    constructor() {
+      this.totalCandidates = 315000;
+      this.anchors = [
+        { p: 100.0, r: 1 }, { p: 98.50, r: 10 }, { p: 96.00, r: 100 },
+        { p: 92.50, r: 1000 }, { p: 88.50, r: 3000 }, { p: 85.00, r: 5500 },
+        { p: 81.50, r: 9000 }, { p: 77.00, r: 15000 }, { p: 72.00, r: 25000 },
+        { p: 65.00, r: 50000 }, { p: 58.00, r: 75000 }, { p: 0.00, r: 315000 }
+      ];
+      this.formulas = [];
+      this.compileFormulas();
+    }
+    compileFormulas() {
+      for (let i = 0; i < this.anchors.length - 1; i++) {
+        const upper = this.anchors[i], lower = this.anchors[i + 1];
+        const lnR_Upper = Math.log(upper.r), lnR_Lower = Math.log(lower.r);
+        const M = (lnR_Lower - lnR_Upper) / (lower.p - upper.p);
+        const C = lnR_Upper - M * upper.p;
+        this.formulas.push({ maxP: upper.p, minP: lower.p, M, C });
+      }
+    }
+    predictRank(percentage) {
+      if (percentage >= 100) return 1;
+      if (percentage <= 0) return this.totalCandidates;
+      for (let formula of this.formulas) {
+        if (percentage <= formula.maxP && percentage > formula.minP) {
+          let rank = Math.exp(formula.M * percentage + formula.C);
+          const maxR = Math.max(this.anchors.find(a => a.p === formula.maxP).r, this.anchors.find(a => a.p === formula.minP).r);
+          const minR = Math.min(this.anchors.find(a => a.p === formula.maxP).r, this.anchors.find(a => a.p === formula.minP).r);
+          return Math.round(Math.max(minR, Math.min(maxR, rank)));
+        }
+      }
+      return this.totalCandidates;
+    }
+    getFringeDensity(percentage) {
+      for (let formula of this.formulas) {
+        if (percentage <= formula.maxP && percentage > formula.minP) {
+          const deltaP = formula.maxP - formula.minP;
+          const upperR = this.anchors.find(a => a.p === formula.maxP).r;
+          const lowerR = this.anchors.find(a => a.p === formula.minP).r;
+          return Math.round(Math.abs(lowerR - upperR) / deltaP);
+        }
+      }
+      return 0;
+    }
+  }
+  const kcetEngine = new KCETRankPredictor();
+
+  function initPredictor() {
+    const ph = document.getElementById('predPhysics');
+    const ch = document.getElementById('predChemistry');
+    const ma = document.getElementById('predMaths');
+    const totalEl = document.getElementById('predBoardsTotal');
+    function clamp(input, max) {
+      let v = parseFloat(input.value);
+      if (!isNaN(v)) { if (v > max) { input.value = max; v = max; } if (v < 0) { input.value = 0; v = 0; } }
+      return isNaN(v) ? null : v;
+    }
+    function updateTotal() {
+      const p = clamp(ph, 100), c = clamp(ch, 100), m = clamp(ma, 100);
+      const vals = [p, c, m].filter(x => x !== null);
+      if (vals.length === 3) {
+        totalEl.textContent = (p + c + m).toString();
+      } else if (vals.length > 0) {
+        totalEl.textContent = vals.reduce((a,b)=>a+b,0).toString();
+      } else {
+        totalEl.textContent = '—';
+      }
+    }
+    [ph, ch, ma].forEach(el => el.addEventListener('input', updateTotal));
+    document.getElementById('predictBtn').addEventListener('click', runPrediction);
+    document.getElementById('predKCET').addEventListener('keypress', (e) => { if (e.key === 'Enter') runPrediction(); });
+  }
+
+  function runPrediction() {
+    const ph = parseFloat(document.getElementById('predPhysics').value) || 0;
+    const ch = parseFloat(document.getElementById('predChemistry').value) || 0;
+    const ma = parseFloat(document.getElementById('predMaths').value) || 0;
+    const kcet = parseFloat(document.getElementById('predKCET').value);
+    const resultEl = document.getElementById('predictorResult');
+
+    if (isNaN(kcet) || kcet < 0 || kcet > 180) {
+      resultEl.innerHTML = '<div class="no-results"><i class="fa-solid fa-triangle-exclamation"></i><p>Enter valid KCET marks (0–180)</p></div>';
+      resultEl.style.display = 'block'; return;
+    }
+    const boardsTotal = Math.min(300, ph + ch + ma);
+    const boardsPct = (boardsTotal / 300) * 100;
+    const kcetPct = (kcet / 180) * 100;
+    const finalPct = (boardsPct / 2) + (kcetPct / 2);
+    const rank = kcetEngine.predictRank(finalPct);
+    const density = kcetEngine.getFringeDensity(finalPct);
+
+    resultEl.innerHTML = `
+      <div class="pred-result-label">Estimated Rank</div>
+      <div class="pred-rank-display">${rank.toLocaleString('en-IN')}</div>
+      <div class="pred-meta-grid">
+        <div class="pred-meta-block">
+          <div class="pred-meta-label">Boards %</div>
+          <div class="pred-meta-value">${boardsPct.toFixed(2)}%</div>
+        </div>
+        <div class="pred-meta-block">
+          <div class="pred-meta-label">KCET %</div>
+          <div class="pred-meta-value">${kcetPct.toFixed(2)}%</div>
+        </div>
+        <div class="pred-meta-block">
+          <div class="pred-meta-label">Combined</div>
+          <div class="pred-meta-value">${finalPct.toFixed(2)}%</div>
+        </div>
+      </div>
+      <div class="pred-meta-grid" style="margin-bottom:16px;">
+        <div class="pred-meta-block" style="grid-column:1/-1;">
+          <div class="pred-meta-label">Candidate density in this range</div>
+          <div class="pred-meta-value">${density.toLocaleString('en-IN')} candidates / 1%</div>
+        </div>
+      </div>
+      <button class="btn-predict-college" onclick="bridgeToMatch(${rank})">
+        <i class="fa-solid fa-arrow-right"></i> Predict Colleges for this Rank
+      </button>
+    `;
+    resultEl.style.display = 'block';
+  }
+
+  window.bridgeToMatch = function(rank) {
+    document.getElementById('inputRank').value = rank;
+    switchView('match');
+    toggleSidebar(false);
+    closeProfile();
+  };
+
+  /* ── PROFILE SHEET ── */
+  let profilePrefs = { category: '', branch: '' };
+
+  function openProfile() {
+    // Sync identity
+    const name = localStorage.getItem('xos_username') || 'User';
+    document.getElementById('profileBigMono').textContent = name.charAt(0).toUpperCase();
+    document.getElementById('profileName').textContent = name;
+    // Load saved prefs
+    try { profilePrefs = JSON.parse(localStorage.getItem('xos_profile_prefs') || '{}'); } catch { profilePrefs = {}; }
+    profilePrefs.category = profilePrefs.category || '';
+    profilePrefs.branch = profilePrefs.branch || '';
+    // Set category UI
+    const catText = document.getElementById('profileCatText');
+    if (profilePrefs.category) { catText.textContent = profilePrefs.category; catText.classList.remove('placeholder'); }
+    else { catText.textContent = 'Select category'; catText.classList.add('placeholder'); }
+    // Set branch UI
+    document.getElementById('profileBranchInput').value = profilePrefs.branch || '';
+    // Render results if prefs set
+    renderProfileResults();
+    toggleSidebar(false);
+    document.getElementById('profileOverlay').classList.add('open');
+    history.pushState({ view: 'profile' }, '', '#profile');
+  }
+
+  function closeProfile() {
+    document.getElementById('profileOverlay').classList.remove('open');
+  }
+
+  function initProfileSheet() {
+    // Close on backdrop click
+    document.getElementById('profileOverlay').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('profileOverlay')) closeProfile();
+    });
+
+    // Category dropdown
+    const trigger = document.getElementById('profileCatTrigger');
+    const menu = document.getElementById('profileCatMenu');
+    const search = document.getElementById('profileCatSearch');
+    const items = document.getElementById('profileCatItems');
+    const catText = document.getElementById('profileCatText');
+    const chevron = trigger.querySelector('.dd-chevron');
+
+    function renderCatItems(f) {
+      const q = (f || '').toUpperCase();
+      const filtered = q ? Engine.categories.filter(x => x.toUpperCase().includes(q)) : Engine.categories;
+      if (!filtered.length) { items.innerHTML = '<div class="profile-dd-item" style="pointer-events:none;color:var(--text-3);">No results</div>'; return; }
+      items.innerHTML = filtered.map(cat => {
+        const sel = profilePrefs.category === cat;
+        return `<div class="profile-dd-item${sel?' selected':''}" data-val="${escapeHtml(cat)}">${escapeHtml(cat)}<i class="fa-solid fa-check dd-check"></i></div>`;
+      }).join('');
+      items.querySelectorAll('.profile-dd-item').forEach(el => {
+        el.addEventListener('click', () => {
+          profilePrefs.category = el.getAttribute('data-val');
+          catText.textContent = profilePrefs.category;
+          catText.classList.remove('placeholder');
+          menu.classList.remove('show');
+          trigger.classList.remove('open');
+          chevron.style.transform = '';
+          saveProfilePrefs();
+          renderProfileResults();
+        });
+      });
+    }
+    trigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const open = menu.classList.toggle('show');
+      trigger.classList.toggle('open', open);
+      chevron.style.transform = open ? 'rotate(180deg)' : '';
+      if (open) { search.value = ''; renderCatItems(''); setTimeout(() => search.focus(), 50); }
+    });
+    search.addEventListener('input', (e) => renderCatItems(e.target.value));
+    search.addEventListener('click', (e) => e.stopPropagation());
+    document.addEventListener('click', (e) => {
+      if (!document.getElementById('profileCatDropdown').contains(e.target)) {
+        menu.classList.remove('show'); trigger.classList.remove('open'); chevron.style.transform = '';
+      }
+    });
+    renderCatItems('');
+
+    // Branch autocomplete
+    const branchInput = document.getElementById('profileBranchInput');
+    const branchSuggest = document.getElementById('profileBranchSuggest');
+    branchInput.addEventListener('input', (e) => {
+      const q = e.target.value.trim().toUpperCase();
+      if (!q) { branchSuggest.classList.remove('show'); branchSuggest.innerHTML = ''; return; }
+      const matches = Engine.branches.filter(b => b.includes(q)).slice(0, 7);
+      if (!matches.length) { branchSuggest.classList.remove('show'); return; }
+      branchSuggest.innerHTML = matches.map(m =>
+        `<div class="suggest-item" onclick="selectProfileBranch('${m.replace(/'/g,"\'")}')">${escapeHtml(m)}<i class="fa-solid fa-arrow-up-left suggest-arrow"></i></div>`
+      ).join('');
+      branchSuggest.classList.add('show');
+    });
+    branchInput.addEventListener('blur', () => setTimeout(() => branchSuggest.classList.remove('show'), 200));
+    branchInput.addEventListener('change', () => {
+      profilePrefs.branch = branchInput.value.trim();
+      saveProfilePrefs();
+      renderProfileResults();
+    });
+  }
+
+  window.selectProfileBranch = function(val) {
+    document.getElementById('profileBranchInput').value = val;
+    document.getElementById('profileBranchSuggest').classList.remove('show');
+    profilePrefs.branch = val;
+    saveProfilePrefs();
+    renderProfileResults();
+  };
+
+  function saveProfilePrefs() {
+    localStorage.setItem('xos_profile_prefs', JSON.stringify(profilePrefs));
+  }
+
+  function renderProfileResults() {
+    const container = document.getElementById('profileResultsList');
+    const cat = profilePrefs.category;
+    const branch = (profilePrefs.branch || '').trim().toUpperCase();
+    if (!cat || !branch) {
+      container.innerHTML = `<div style="padding:24px 0;text-align:center;font-family:var(--font-mono);font-size:0.6rem;color:var(--text-3);letter-spacing:0.1em;">SELECT CATEGORY AND BRANCH TO SEE COLLEGES</div>`;
+      return;
+    }
+    if (!window.XOS_CUTOFF) return;
+    // Find matching branch
+    let matchingBranch = null;
+    for (const b of Engine.branches) { if (b === branch || b.includes(branch)) { matchingBranch = b; break; } }
+    if (!matchingBranch) {
+      container.innerHTML = `<div style="padding:20px 0;text-align:center;font-family:var(--font-mono);font-size:0.6rem;color:var(--text-3);">BRANCH NOT FOUND</div>`;
+      return;
+    }
+    const branchesToSearch = [matchingBranch, ...(Engine.specializationMap.get(matchingBranch) || [])];
+    const codesToSearch = new Set();
+    for (const b of branchesToSearch) { const code = Engine.branchToCode.get(b); if (code) codesToSearch.add(code); }
+    const results = [];
+    for (const college of window.XOS_CUTOFF) {
+      if (!college.branches) continue;
+      for (const [branchCode, cutoffData] of Object.entries(college.branches)) {
+        if (!codesToSearch.has(branchCode)) continue;
+        const cutoff = cutoffData[cat];
+        if (cutoff === null || cutoff === undefined) continue;
+        const branchName = Engine.codeToBranch.get(branchCode) || branchCode;
+        results.push({ id: college.id, name: college.name, location: college.location || 'Karnataka', branch: branchName, cutoff });
+      }
+    }
+    results.sort((a, b) => a.cutoff - b.cutoff);
+    if (!results.length) {
+      container.innerHTML = `<div style="padding:20px 0;text-align:center;font-family:var(--font-mono);font-size:0.6rem;color:var(--text-3);">NO DATA FOUND</div>`;
+      return;
+    }
+    container.innerHTML = `<div class="profile-results-label">${results.length} colleges · ${escapeHtml(matchingBranch)} · ${escapeHtml(cat)}</div>` +
+      results.map((r, idx) => {
+        const short = getShortName(r.name);
+        const letter = short.charAt(0).toUpperCase();
+        const inPrio = isInPriority(r.id, r.branch);
+        return `<div class="profile-college-card" id="pcc_${idx}" onclick="toggleProfileCard(${idx}, '${r.id}', '${escapeHtml(r.name).replace(/'/g,"\'")}', '${escapeHtml(r.location).replace(/'/g,"\'")}', '${escapeHtml(r.branch).replace(/'/g,"\'")}', ${r.cutoff}, '${escapeHtml(cat)}')">
+          <div class="profile-college-row">
+            <div class="profile-college-mono">${letter}</div>
+            <div class="profile-college-info">
+              <div class="profile-college-name">${escapeHtml(short)}</div>
+              <div class="profile-college-loc">${escapeHtml(r.location)}</div>
+            </div>
+            <div class="profile-college-cutoff">${r.cutoff.toLocaleString('en-IN')}</div>
+          </div>
+          <div class="profile-college-details" id="pcd_${idx}">
+            <div style="padding-top:10px;">
+              <div class="p-detail-row"><span class="p-detail-label">College ID</span><span class="p-detail-value">${r.id}</span></div>
+              <div class="p-detail-row"><span class="p-detail-label">Branch</span><span class="p-detail-value" style="font-size:0.7rem;">${escapeHtml(r.branch)}</span></div>
+              <div class="p-detail-row"><span class="p-detail-label">Cutoff (${escapeHtml(cat)})</span><span class="p-detail-value">${r.cutoff.toLocaleString('en-IN')}</span></div>
+              <div class="p-detail-row"><span class="p-detail-label">Location</span><span class="p-detail-value">${escapeHtml(r.location)}</span></div>
+              <button class="btn-add ${inPrio ? 'added' : ''}" id="pca_${idx}" style="margin-top:10px;" onclick="event.stopPropagation();handleProfileAdd(${idx}, '${r.id}', '${escapeHtml(r.name).replace(/'/g,"\'")}', '${escapeHtml(r.location).replace(/'/g,"\'")}', '${escapeHtml(r.branch).replace(/'/g,"\'")}', ${r.cutoff}, '${escapeHtml(cat)}')">
+                <i class="fa-solid ${inPrio ? 'fa-check' : 'fa-plus'}"></i> ${inPrio ? 'Saved' : 'Save to Priority'}
+              </button>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+  }
+
+  window.toggleProfileCard = function(idx) {
+    const card = document.getElementById(`pcc_${idx}`);
+    if (!card) return;
+    const was = card.classList.contains('expanded');
+    document.querySelectorAll('.profile-college-card.expanded').forEach(c => c.classList.remove('expanded'));
+    if (!was) card.classList.add('expanded');
+  };
+
+  window.handleProfileAdd = function(idx, id, name, location, branch, cutoff, category) {
+    const btn = document.getElementById(`pca_${idx}`);
+    if (!btn || btn.classList.contains('added')) return;
+    const diff = 0; // profile view doesn't have user rank context
+    if (addToPriority({ id, name, location, branch, cutoff, diff, category })) {
+      btn.classList.add('added');
+      btn.innerHTML = '<i class="fa-solid fa-check"></i> Saved';
+    }
+  };
+
+  /* ── CLEAN BRANCH ── */
   function cleanBranchName(name) {
     if (!name) return '';
     let clean = name.toUpperCase()
@@ -348,300 +1789,383 @@
       .replace(/\(\s+/g, '(')
       .replace(/\s+\)/g, ')')
       .trim();
-
-    if (clean === 'COMPUTER SCIENCE' || clean === 'COMPUTER ENGINEERING') {
-      clean = 'COMPUTER SCIENCE AND ENGINEERING';
-    }
+    if (clean === 'COMPUTER SCIENCE' || clean === 'COMPUTER ENGINEERING') clean = 'COMPUTER SCIENCE AND ENGINEERING';
     return clean;
   }
 
-  // ============ BUILD MASTER DATA FROM COLLEGE-DATA.JS ============
+  /* ── BUILD DATA ── */
   function buildMasterData() {
-    if (!window.XOS_CUTOFF || !window.XOS_DICT) {
-      console.error("Missing college-data.js");
-      return false;
-    }
-
-    const branchSet = new Set();
-    const categorySet = new Set();
-
-    // Build branch mapping from XOS_DICT
+    if (!window.XOS_CUTOFF || !window.XOS_DICT) { console.error("Missing college-data.js"); return false; }
+    const branchSet = new Set(), categorySet = new Set();
     for (const [code, rawName] of Object.entries(window.XOS_DICT)) {
       const clean = cleanBranchName(rawName);
       branchSet.add(clean);
       Engine.branchToCode.set(clean, code);
       Engine.codeToBranch.set(code, clean);
     }
-
-    // Get categories from cutoff data
     for (const college of window.XOS_CUTOFF) {
       if (college.branches) {
         for (const branchData of Object.values(college.branches)) {
-          for (const cat in branchData) {
-            if (branchData[cat] !== null && branchData[cat] !== undefined) {
-              categorySet.add(cat);
-            }
-          }
+          for (const cat in branchData) { if (branchData[cat] !== null && branchData[cat] !== undefined) categorySet.add(cat); }
         }
       }
     }
-
     Engine.branches = Array.from(branchSet).sort();
     Engine.categories = Array.from(categorySet).sort();
-
-    // Build specialization map: core branch -> list of specialization branches
     for (const [code, rawName] of Object.entries(window.XOS_DICT)) {
       const clean = cleanBranchName(rawName);
-      
-      // Check if this is a specialization (has parentheses after core name)
-      const parenMatch = clean.match(/^(.*?)\s*\((.*)\)$/);
-      if (parenMatch) {
-        const coreName = parenMatch[1].trim();
-        const specName = clean;
-        
-        if (!Engine.specializationMap.has(coreName)) {
-          Engine.specializationMap.set(coreName, []);
-        }
-        if (!Engine.specializationMap.get(coreName).includes(specName)) {
-          Engine.specializationMap.get(coreName).push(specName);
-        }
+      const m = clean.match(/^(.*?)\s*\((.*)\)$/);
+      if (m) {
+        const core = m[1].trim();
+        if (!Engine.specializationMap.has(core)) Engine.specializationMap.set(core, []);
+        if (!Engine.specializationMap.get(core).includes(clean)) Engine.specializationMap.get(core).push(clean);
       }
     }
-
-    // Sort specializations for each core
-    for (const [core, specs] of Engine.specializationMap) {
-      Engine.specializationMap.set(core, specs.sort());
-    }
-
+    for (const [core, specs] of Engine.specializationMap) Engine.specializationMap.set(core, specs.sort());
     return true;
   }
 
-  // ============ POPULATE UI ============
+  /* ── CATEGORY DROPDOWN ── */
   function populateCategoryDropdown() {
-    const catSelect = document.getElementById('inputCategory');
-    catSelect.innerHTML = '<option value="">Select category...</option>' + 
-      Engine.categories.map(c => `<option value="${c}">${c}</option>`).join('');
+    const hidden = document.getElementById('inputCategory');
+    const trigger = document.getElementById('categoryTrigger');
+    const menu = document.getElementById('categoryMenu');
+    const items = document.getElementById('categoryMenuItems');
+    const search = document.getElementById('categorySearchInput');
+    hidden.value = '';
+    function renderItems(f) {
+      const q = (f || '').toUpperCase();
+      const filtered = q ? Engine.categories.filter(c => c.toUpperCase().includes(q)) : Engine.categories;
+      if (!filtered.length) { items.innerHTML = '<div class="dd-item" style="pointer-events:none;color:var(--text-3);">No results</div>'; return; }
+      items.innerHTML = filtered.map(c => {
+        const sel = hidden.value === c;
+        return `<div class="dd-item${sel ? ' selected' : ''}" data-value="${escapeHtml(c)}">${escapeHtml(c)}<i class="fa-solid fa-check dd-check"></i></div>`;
+      }).join('');
+      items.querySelectorAll('.dd-item').forEach(item => {
+        item.addEventListener('click', () => {
+          hidden.value = item.getAttribute('data-value');
+          const el = trigger.querySelector('.dd-text');
+          el.textContent = hidden.value;
+          el.classList.remove('placeholder');
+          closeDD();
+        });
+      });
+    }
+    function openDD() { menu.classList.add('show'); trigger.classList.add('open'); search.value = ''; renderItems(''); setTimeout(() => search.focus(), 50); }
+    function closeDD() { menu.classList.remove('show'); trigger.classList.remove('open'); }
+    trigger.addEventListener('click', (e) => { e.stopPropagation(); menu.classList.contains('show') ? closeDD() : openDD(); });
+    trigger.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); menu.classList.contains('show') ? closeDD() : openDD(); } else if (e.key === 'Escape') closeDD(); });
+    search.addEventListener('input', (e) => renderItems(e.target.value));
+    search.addEventListener('click', (e) => e.stopPropagation());
+    search.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeDD(); trigger.focus(); } });
+    document.addEventListener('click', (e) => { if (!document.getElementById('categoryDropdown').contains(e.target)) closeDD(); });
+    trigger.querySelector('.dd-text').textContent = 'Select category';
+    trigger.querySelector('.dd-text').classList.add('placeholder');
+    renderItems('');
   }
 
+  /* ── AUTOCOMPLETE ── */
   function setupAutocomplete() {
     const input = document.getElementById('inputBranch');
-    const suggestBox = document.getElementById('branchSuggestBox');
-
+    const box = document.getElementById('branchSuggestBox');
     input.addEventListener('input', (e) => {
-      const query = e.target.value.trim().toUpperCase();
-      if (!query) {
-        suggestBox.style.display = 'none';
-        return;
-      }
-      
-      const matches = Engine.branches.filter(b => b.includes(query)).slice(0, 6);
-      if (matches.length === 0) {
-        suggestBox.innerHTML = '<div class="suggest-item" style="color:#555;">No matching branches</div>';
+      const q = e.target.value.trim().toUpperCase();
+      if (!q) { box.style.display = 'none'; return; }
+      const matches = Engine.branches.filter(b => b.includes(q)).slice(0, 6);
+      if (!matches.length) {
+        box.innerHTML = '<div class="suggest-item" style="color:var(--text-3);pointer-events:none;">No matches</div>';
       } else {
-        suggestBox.innerHTML = matches.map(m => `
-          <div class="suggest-item" onclick="selectBranch('${m.replace(/'/g, "\\'")}')">${m}</div>
-        `).join('');
+        box.innerHTML = matches.map(m => `<div class="suggest-item" onclick="selectBranch('${m.replace(/'/g, "\\'")}')">${m}<i class="fa-solid fa-arrow-up-left suggest-arrow"></i></div>`).join('');
       }
-      suggestBox.style.display = 'block';
+      box.style.display = 'block';
     });
+    input.addEventListener('blur', () => setTimeout(() => box.style.display = 'none', 200));
+  }
+  window.selectBranch = (val) => { document.getElementById('inputBranch').value = val; document.getElementById('branchSuggestBox').style.display = 'none'; };
 
-    input.addEventListener('blur', () => {
-      setTimeout(() => suggestBox.style.display = 'none', 200);
-    });
+  /* ── PRIORITY STORAGE ── */
+  function getPriority() { try { return JSON.parse(localStorage.getItem('xos_priority_list') || '[]'); } catch { return []; } }
+  function savePriority(list) { localStorage.setItem('xos_priority_list', JSON.stringify(list)); updatePriorityBadge(); }
+  function addToPriority(item) {
+    const list = getPriority();
+    const key = item.id + '|' + item.branch;
+    if (list.find(x => x.id + '|' + x.branch === key)) return false;
+    list.push(item);
+    savePriority(list);
+    return true;
+  }
+  function removeFromPriority(id, branch) {
+    savePriority(getPriority().filter(x => x.id + '|' + x.branch !== id + '|' + branch));
+    renderPriorityList();
+  }
+  function isInPriority(id, branch) { return getPriority().some(x => x.id + '|' + x.branch === id + '|' + branch); }
+  function updatePriorityBadge() {
+    const n = getPriority().length;
+    const b = document.getElementById('navPriorityCount');
+    b.textContent = n; b.style.display = n > 0 ? 'inline-block' : 'none';
   }
 
-  window.selectBranch = function(val) {
-    document.getElementById('inputBranch').value = val;
-    document.getElementById('branchSuggestBox').style.display = 'none';
+  /* ── RENDER PRIORITY ── */
+  function renderPriorityList() {
+    const el = document.getElementById('priorityListContainer');
+    const list = getPriority();
+    document.getElementById('priorityViewCount').textContent = `${list.length} saved`;
+    if (!list.length) {
+      el.innerHTML = `<div class="empty-state"><i class="fa-regular fa-bookmark"></i><p>No colleges saved yet</p><div class="hint">Add colleges from Match Engine</div></div>`;
+      return;
+    }
+    el.innerHTML = list.map((item, idx) => {
+      const letter = getShortName(item.name).charAt(0).toUpperCase();
+      return `<div class="priority-card" id="pcard_${idx}">
+        <div class="priority-card-row" onclick="togglePriorityCard(${idx})">
+          <div class="p-mono">${letter}</div>
+          <div class="p-info">
+            <div class="p-name">${escapeHtml(item.name)}</div>
+            <div class="p-branch">${escapeHtml(item.branch)}</div>
+          </div>
+          <i class="fa-solid fa-chevron-down p-chevron"></i>
+        </div>
+        <div class="p-details">
+          <div class="p-detail-row"><span class="p-detail-label">Location</span><span class="p-detail-value">${escapeHtml(item.location)}</span></div>
+          <div class="p-detail-row"><span class="p-detail-label">College ID</span><span class="p-detail-value">${item.id}</span></div>
+          <div class="p-detail-row"><span class="p-detail-label">Cutoff (${escapeHtml(item.category || '')})</span><span class="p-detail-value">${item.cutoff ? item.cutoff.toLocaleString('en-IN') : '—'}</span></div>
+          <div class="p-detail-row"><span class="p-detail-label">Variance</span><span class="p-detail-value">${item.diff >= 0 ? '+' : ''}${item.diff}</span></div>
+          <button class="btn-remove" onclick="removeFromPriority('${item.id}','${escapeHtml(item.branch).replace(/'/g,"\\'")}')" >
+            <i class="fa-regular fa-trash-can"></i> Remove
+          </button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  window.togglePriorityCard = (idx) => {
+    const card = document.getElementById(`pcard_${idx}`);
+    if (!card) return;
+    const was = card.classList.contains('expanded');
+    document.querySelectorAll('.priority-card.expanded').forEach(c => c.classList.remove('expanded'));
+    if (!was) card.classList.add('expanded');
   };
 
-  // ============ SEARCH ENGINE ============
+  /* ── RENDER COLLEGES ── */
+  function renderCollegesList() {
+    const el = document.getElementById('collegesListContainer');
+    if (!window.XOS_CUTOFF) { el.innerHTML = '<div class="empty-state"><p>Data not loaded</p></div>'; return; }
+    document.getElementById('collegesViewCount').textContent = `${window.XOS_CUTOFF.length} colleges`;
+    el.innerHTML = window.XOS_CUTOFF.map(c => {
+      const short = getShortName(c.name);
+      return `<div class="college-row">
+        <div class="college-mono">${short.charAt(0).toUpperCase()}</div>
+        <div class="college-info">
+          <div class="college-row-name">${escapeHtml(short)}</div>
+          <div class="college-row-loc">${escapeHtml(c.location || 'Karnataka')}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  /* ── RENDER BRANCHES ── */
+  function renderBranchesList() {
+    const el = document.getElementById('branchesListContainer');
+    const coreBranches = Engine.branches.filter(b => !b.includes('('));
+    document.getElementById('branchesViewCount').textContent = `${coreBranches.length} core branches`;
+    el.innerHTML = coreBranches.map((core, idx) => {
+      const subs = Engine.specializationMap.get(core) || [];
+      return `<div class="branch-group">
+        <div class="branch-core" onclick="toggleBranch(${idx})" id="bc_${idx}">
+          <div class="branch-core-left">
+            <div class="branch-dot"></div>
+            <span class="branch-core-name">${escapeHtml(core)}</span>
+          </div>
+          <div class="branch-core-right">
+            ${subs.length ? `<span class="branch-spec-count">${subs.length} specs</span><i class="fa-solid fa-chevron-down branch-chevron"></i>` : ''}
+          </div>
+        </div>
+        ${subs.length ? `<div class="branch-subs" id="bs_${idx}">${subs.map(s => {
+          const m = s.match(/\((.+)\)$/);
+          return `<div class="branch-sub">${escapeHtml(m ? m[1] : s)}</div>`;
+        }).join('')}</div>` : ''}
+      </div>`;
+    }).join('');
+  }
+  window.toggleBranch = (idx) => {
+    const core = document.getElementById(`bc_${idx}`);
+    const subs = document.getElementById(`bs_${idx}`);
+    if (core) core.classList.toggle('expanded');
+    if (subs) subs.classList.toggle('show');
+  };
+
+  /* ── SEARCH ── */
   function searchColleges() {
     const targetBranch = document.getElementById('inputBranch').value.trim().toUpperCase();
     const targetCat = document.getElementById('inputCategory').value;
     const userRank = parseInt(document.getElementById('inputRank').value, 10);
-    const resultsArea = document.getElementById('resultsArea');
-
+    const area = document.getElementById('resultsArea');
+    lastSearchCategory = targetCat;
     if (!targetBranch || !targetCat || isNaN(userRank)) {
-      resultsArea.innerHTML = `<div class="no-results">⚠️ Please fill all fields</div>`;
-      resultsArea.style.display = 'block';
-      return;
+      area.innerHTML = `<div class="no-results"><i class="fa-solid fa-triangle-exclamation"></i><p>Please fill all fields</p></div>`;
+      area.style.display = 'block'; return;
     }
-
     if (!window.XOS_CUTOFF) return;
-
-    // Find the exact core branch and its specializations
     let matchingCore = null;
-    for (const branch of Engine.branches) {
-      if (branch === targetBranch || branch.includes(targetBranch)) {
-        matchingCore = branch;
-        break;
-      }
-    }
-
+    for (const branch of Engine.branches) { if (branch === targetBranch || branch.includes(targetBranch)) { matchingCore = branch; break; } }
     if (!matchingCore) {
-      resultsArea.innerHTML = `<div class="no-results">⚠️ Branch "${targetBranch}" not found</div>`;
-      resultsArea.style.display = 'block';
-      return;
+      area.innerHTML = `<div class="no-results"><i class="fa-solid fa-triangle-exclamation"></i><p>Branch not found</p></div>`;
+      area.style.display = 'block'; return;
     }
-
-    // Get all branch codes to search (core + its specializations)
-    const branchesToSearch = [matchingCore];
-    const specializations = Engine.specializationMap.get(matchingCore) || [];
-    branchesToSearch.push(...specializations);
-
-    // Get codes for all these branches
+    const branchesToSearch = [matchingCore, ...(Engine.specializationMap.get(matchingCore) || [])];
     const codesToSearch = new Set();
-    for (const branch of branchesToSearch) {
-      const code = Engine.branchToCode.get(branch);
-      if (code) codesToSearch.add(code);
-    }
-
-    const RANGE = 2000;
+    for (const b of branchesToSearch) { const c = Engine.branchToCode.get(b); if (c) codesToSearch.add(c); }
     const matches = [];
-
     for (const college of window.XOS_CUTOFF) {
       if (!college.branches) continue;
-      
       for (const [branchCode, cutoffData] of Object.entries(college.branches)) {
         if (!codesToSearch.has(branchCode)) continue;
-        
         const cutoff = cutoffData[targetCat];
         if (cutoff === null || cutoff === undefined) continue;
-        
         const diff = cutoff - userRank;
-        if (Math.abs(diff) <= RANGE) {
+        if (diff >= 0) {
           const branchName = Engine.codeToBranch.get(branchCode) || branchCode;
-          const isSpec = branchName !== matchingCore;
-          
-          matches.push({
-            id: college.id,
-            name: college.name,
-            location: college.location || 'Karnataka',
-            branch: branchName,
-            cutoff: cutoff,
-            diff: diff,
-            isSpecialization: isSpec,
-            coreBranch: matchingCore
-          });
+          matches.push({ id: college.id, name: college.name, location: college.location || 'Karnataka', branch: branchName, cutoff, diff, isSpecialization: branchName !== matchingCore, coreBranch: matchingCore });
         }
       }
     }
-
-    // Group matches by college
     const collegeMap = new Map();
     for (const match of matches) {
-      if (!collegeMap.has(match.id)) {
-        collegeMap.set(match.id, {
-          id: match.id,
-          name: match.name,
-          location: match.location,
-          coreMatch: null,
-          specializations: []
-        });
-      }
-      
-      const collegeData = collegeMap.get(match.id);
-      if (!match.isSpecialization) {
-        collegeData.coreMatch = match;
-      } else {
-        collegeData.specializations.push(match);
-      }
+      if (!collegeMap.has(match.id)) collegeMap.set(match.id, { id: match.id, name: match.name, location: match.location, coreMatch: null, specializations: [] });
+      const cd = collegeMap.get(match.id);
+      if (!match.isSpecialization) cd.coreMatch = match; else cd.specializations.push(match);
     }
-
-    // Build results array
     const finalResults = [];
-    for (const [_, collegeData] of collegeMap) {
-      if (collegeData.coreMatch) {
-        finalResults.push(collegeData);
-      }
-    }
-    
-    // Sort by variance of core branch
+    for (const [_, cd] of collegeMap) { if (cd.coreMatch) finalResults.push(cd); }
     finalResults.sort((a, b) => Math.abs(a.coreMatch.diff) - Math.abs(b.coreMatch.diff));
-
-    // Render
-    resultsArea.style.display = 'block';
-    if (finalResults.length === 0) {
-      resultsArea.innerHTML = `<div class="no-results">No colleges found for "${matchingCore}" within ±${RANGE} rank range</div>`;
+    area.style.display = 'block';
+    if (!finalResults.length) {
+      area.innerHTML = `<div class="no-results"><i class="fa-regular fa-folder-open"></i><p>No colleges found for this rank and branch</p></div>`;
       return;
     }
-
-    let html = `<div class="result-stats">🎯 ${finalResults.length} college(s) · ${branchesToSearch.length} branch(es) searched (core + ${specializations.length} specs)</div>`;
-    
+    const specs = Engine.specializationMap.get(matchingCore) || [];
+    let html = `<div class="result-stats">${finalResults.length} college${finalResults.length > 1 ? 's' : ''} · ${branchesToSearch.length} branch${branchesToSearch.length > 1 ? 'es' : ''} searched</div>`;
     finalResults.forEach((college, idx) => {
       const core = college.coreMatch;
-      const specs = college.specializations;
-      
-      html += `
-        <div class="result-card" id="result_${idx}">
-          <div class="result-header">
-            <div class="college-id">${college.id}</div>
+      const subs = college.specializations;
+      const already = isInPriority(core.id, core.branch);
+      html += `<div class="result-card" id="result_${idx}">
+        <div class="result-card-top">
+          <div class="result-id">${college.id}</div>
+          <div class="result-name">${escapeHtml(college.name)}</div>
+          <div class="result-loc"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(college.location)}</div>
+          <div class="result-branch-tag">${escapeHtml(core.branch)}</div>
+        </div>
+        <div class="result-metrics">
+          <div class="metric-block">
+            <div class="metric-label">Cutoff · ${targetCat}</div>
+            <div class="metric-value">${core.cutoff.toLocaleString('en-IN')}</div>
           </div>
-          <div class="college-name">${escapeHtml(college.name)}</div>
-          <div class="college-loc">📍 ${escapeHtml(college.location)}</div>
-          <div class="branch-name">📘 ${core.branch}</div>
-          <div class="cutoff-row">
-            <div>
-              <div class="cutoff-label">Cutoff (${targetCat})</div>
-              <div class="cutoff-value">${core.cutoff.toLocaleString('en-IN')}</div>
-            </div>
-            <div>
-              <div class="cutoff-label">Variance</div>
-              <div class="variance ${core.diff >= 0 ? 'variance-positive' : 'variance-negative'}">
-                ${core.diff >= 0 ? '+' : ''}${core.diff}
-              </div>
-            </div>
-            ${specs.length > 0 ? `<button class="expand-btn" onclick="toggleSpecs(${idx})">▼ ${specs.length} specialization${specs.length > 1 ? 's' : ''}</button>` : ''}
-          </div>
-          <div class="subs-list" id="specs_${idx}">
-            ${specs.map(spec => `
-              <span class="sub-chip" onclick="searchSpecialization('${escapeHtml(spec.branch).replace(/'/g, "\\'")}')">
-                ${escapeHtml(spec.branch)} 
-                <span class="sub-chip-cutoff">${spec.cutoff.toLocaleString('en-IN')}</span>
-              </span>
-            `).join('')}
+          <div class="metric-block">
+            <div class="metric-label">Variance</div>
+            <div class="metric-value ${core.diff >= 0 ? 'positive' : 'negative'}">${core.diff >= 0 ? '+' : ''}${core.diff}</div>
           </div>
         </div>
-      `;
+        <div class="result-actions">
+          <button class="btn-add ${already ? 'added' : ''}" id="addBtn_${idx}" onclick="handleAdd(${idx}, '${core.id}', '${escapeHtml(college.name).replace(/'/g,"\\'")}', '${escapeHtml(college.location).replace(/'/g,"\\'")}', '${escapeHtml(core.branch).replace(/'/g,"\\'")}', ${core.cutoff}, ${core.diff})">
+            <i class="fa-solid ${already ? 'fa-check' : 'fa-plus'}"></i> ${already ? 'Saved' : 'Save'}
+          </button>
+          ${subs.length ? `<button class="btn-specs" onclick="toggleSpecs(${idx}, this)" id="specsBtn_${idx}"><i class="fa-solid fa-chevron-down"></i> ${subs.length} spec${subs.length > 1 ? 's' : ''}</button>` : ''}
+        </div>
+        <div class="specs-panel" id="specs_${idx}">
+          ${subs.map(s => `<span class="spec-chip" onclick="searchSpecialization('${escapeHtml(s.branch).replace(/'/g,"\\'")}')">${escapeHtml(s.branch)} <span class="spec-cutoff">${s.cutoff.toLocaleString('en-IN')}</span></span>`).join('')}
+        </div>
+      </div>`;
     });
-    
-    resultsArea.innerHTML = html;
+    area.innerHTML = html;
   }
 
-  window.toggleSpecs = function(idx) {
-    const subsDiv = document.getElementById(`specs_${idx}`);
-    if (subsDiv) {
-      subsDiv.classList.toggle('show');
+  window.handleAdd = (idx, id, name, location, branch, cutoff, diff) => {
+    const btn = document.getElementById(`addBtn_${idx}`);
+    if (!btn || btn.classList.contains('added')) return;
+    if (addToPriority({ id, name, location, branch, cutoff, diff, category: lastSearchCategory })) {
+      btn.classList.add('added');
+      btn.innerHTML = '<i class="fa-solid fa-check"></i> Saved';
     }
   };
-
-  window.searchSpecialization = function(branchName) {
-    document.getElementById('inputBranch').value = branchName;
-    searchColleges();
+  window.toggleSpecs = (idx, btn) => {
+    const s = document.getElementById(`specs_${idx}`);
+    if (s) { s.classList.toggle('show'); if (btn) btn.classList.toggle('active'); }
   };
+  window.searchSpecialization = (branchName) => { document.getElementById('inputBranch').value = branchName; searchColleges(); };
 
+  /* ── HELPERS ── */
+  function getShortName(name) { if (!name) return ''; const i = name.indexOf(','); return i > 0 ? name.substring(0, i).trim() : name.trim(); }
   function escapeHtml(str) {
     if (!str) return '';
-    return str.replace(/[&<>]/g, function(m) {
-      if (m === '&') return '&amp;';
-      if (m === '<') return '&lt;';
-      if (m === '>') return '&gt;';
-      return m;
-    });
+    return str.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
   }
 
-  // ============ INITIALIZE ============
+  /* ── INIT ── */
+  initOnboarding();
   if (buildMasterData()) {
     populateCategoryDropdown();
     setupAutocomplete();
+    initSidebar();
+    initProfileSheet();
+    updatePriorityBadge();
+    initPredictor();
     document.getElementById('searchBtn').addEventListener('click', searchColleges);
-    document.getElementById('inputRank').addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') searchColleges();
-    });
+    document.getElementById('inputRank').addEventListener('keypress', (e) => { if (e.key === 'Enter') searchColleges(); });
+    // History API: restore view from hash or default to match
+    const hash = location.hash.replace('#', '') || 'match';
+    const validViews = ['match','priority','colleges','branches','predictor'];
+    const initView = validViews.includes(hash) ? hash : 'match';
+    replaceView(initView);
+    switchViewInternal(initView);
   } else {
-    document.getElementById('inputCategory').innerHTML = '<option>❌ Error loading data</option>';
+    const t = document.getElementById('categoryTrigger');
+    if (t) { t.querySelector('.dd-text').textContent = 'Error loading data'; }
   }
+</script>
+  <script>
+(function autofillRankFromHash() {
+  function apply() {
+    var hash = window.location.hash || '';
+    // Match formats: #match&rank=12345  OR  #rank=12345  OR  ?rank=12345
+    var m = hash.match(/[#&?]rank=(\d+)/i) ||
+            (window.location.search || '').match(/[?&]rank=(\d+)/i);
+    if (!m) return;
+
+    var rank = m[1];
+    var input = document.getElementById('inputRank');
+    if (!input) return;
+
+    input.value = rank;
+    input.dispatchEvent(new Event('input',  { bubbles: true }));
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+
+    // Make sure we're on the Match view
+    if (/match/i.test(hash)) {
+      var matchNav = document.querySelector('[data-view="match"], #nav-match');
+      if (matchNav) matchNav.click();
+    }
+
+    // Optional: auto-run search if branch + category already set
+    setTimeout(function () {
+      var branch = document.getElementById('inputBranch');
+      var cat    = document.getElementById('inputCategory');
+      var btn    = document.getElementById('searchBtn');
+      if (btn && branch && branch.value.trim() && cat && cat.value.trim()) {
+        btn.click();
+      } else if (input.scrollIntoView) {
+        input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        input.focus();
+      }
+    }, 300);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', apply);
+  } else {
+    apply();
+  }
+  window.addEventListener('hashchange', apply);
+})();
 </script>
 </body>
 </html>
