@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Disha · MCA Predictor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"/>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #000;
+      --surface: #0a0a0a;
+      --surface-2: #111;
+      --surface-3: #161616;
+      --border: rgba(255,255,255,0.07);
+      --border-strong: rgba(255,255,255,0.14);
+      --border-focus: rgba(255,255,255,0.5);
+      --text-0: #fff;
+      --text-1: #e8e8e8;
+      --text-2: #888;
+      --text-3: #444;
+      --danger: #ff3b3b;
+      --success: #00cc66;
+      --font-display: 'Space Grotesk', sans-serif;
+      --font-mono: 'DM Mono', monospace;
+      --r: 14px;
+      --r-sm: 10px;
+      --r-xs: 6px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text-1);
+      font-family: var(--font-display);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 24px 16px 60px;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 9999; opacity: 0.4;
+    }
+
+    .panel {
+      width: 100%; max-width: 500px;
+      position: relative; z-index: 1;
+      animation: panelIn 0.5s cubic-bezier(0.16,1,0.3,1) both;
+    }
+    @keyframes panelIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+
+    /* ── HEADER ── */
+    .header {
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 32px;
+    }
+    .header-wordmark {
+      font-family: var(--font-mono);
+      font-size: 0.55rem; color: var(--text-3);
+      letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 10px;
+    }
+    .header h1 {
+      font-size: 1.35rem; font-weight: 700;
+      color: var(--text-0); letter-spacing: -0.03em; line-height: 1;
+    }
+    .header-sub {
+      font-family: var(--font-mono);
+      font-size: 0.58rem; color: var(--text-3); margin-top: 8px; letter-spacing: 0.05em;
+    }
+
+    /* ── FIELD ── */
+    .field { margin-bottom: 24px; position: relative; }
+    .field-label { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .field-step {
+      width: 20px; height: 20px; border: 1px solid var(--border-strong);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-mono); font-size: 0.52rem; color: var(--text-2); flex-shrink: 0;
+    }
+    .field-label-text {
+      font-family: var(--font-mono); font-size: 0.58rem; color: var(--text-2);
+      letter-spacing: 0.12em; text-transform: uppercase;
+    }
+
+    .xos-input {
+      width: 100%; background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r-sm); padding: 14px 16px; color: var(--text-0);
+      font-family: var(--font-display); font-size: 0.88rem; font-weight: 500;
+      outline: none; transition: border-color 0.2s;
+    }
+    .xos-input::placeholder { color: var(--text-3); }
+    .xos-input:hover { border-color: var(--border-strong); }
+    .xos-input:focus { border-color: var(--border-focus); }
+
+    /* ── DROPDOWN ── */
+    .xos-dropdown { position: relative; }
+    .dd-trigger {
+      width: 100%; background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r-sm); padding: 14px 16px; color: var(--text-0);
+      font-family: var(--font-display); font-size: 0.88rem; font-weight: 500;
+      outline: none; cursor: pointer; display: flex; align-items: center;
+      justify-content: space-between; gap: 10px; transition: border-color 0.2s; user-select: none;
+    }
+    .dd-trigger:hover { border-color: var(--border-strong); }
+    .dd-trigger.open { border-color: var(--border-focus); }
+    .dd-trigger .dd-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .dd-trigger .dd-text.placeholder { color: var(--text-3); }
+    .dd-chevron { font-size: 0.5rem; color: var(--text-3); transition: transform 0.2s; }
+    .dd-trigger.open .dd-chevron { transform: rotate(180deg); color: var(--text-2); }
+
+    .dd-menu {
+      position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+      background: var(--surface-2); border: 1px solid var(--border-strong);
+      border-radius: var(--r-sm); z-index: 200; display: none;
+      max-height: 280px; overflow-y: auto;
+      animation: dropIn 0.15s ease;
+    }
+    .dd-menu.show { display: block; }
+    @keyframes dropIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
+    .dd-menu::-webkit-scrollbar { width: 3px; }
+    .dd-menu::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+
+    .dd-search {
+      position: sticky; top: 0; background: var(--surface-2);
+      padding: 10px 12px; border-bottom: 1px solid var(--border);
+    }
+    .dd-search input {
+      width: 100%; background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r-xs); padding: 8px 12px; color: var(--text-1);
+      font-family: var(--font-mono); font-size: 0.7rem; outline: none; transition: border-color 0.2s;
+    }
+    .dd-search input::placeholder { color: var(--text-3); }
+    .dd-search input:focus { border-color: var(--border-focus); }
+
+    .dd-item {
+      padding: 12px 16px; font-size: 0.75rem; font-weight: 500; color: var(--text-2);
+      cursor: pointer; border-bottom: 1px solid var(--border);
+      transition: background 0.12s, color 0.12s;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .dd-item:last-child { border-bottom: none; }
+    .dd-item:hover { background: var(--surface-3); color: var(--text-0); }
+    .dd-item.selected { color: var(--text-0); }
+    .dd-item .dd-check { font-size: 0.5rem; color: var(--text-0); opacity: 0; }
+    .dd-item.selected .dd-check { opacity: 1; }
+
+    /* ── BUTTON ── */
+    .btn-primary {
+      width: 100%; background: var(--text-0); color: var(--bg); border: none;
+      border-radius: var(--r-sm); padding: 15px 28px; font-family: var(--font-display);
+      font-size: 0.7rem; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase;
+      cursor: pointer; margin-top: 8px; display: flex; align-items: center;
+      justify-content: center; gap: 10px; transition: opacity 0.15s, transform 0.15s;
+    }
+    .btn-primary:hover { opacity: 0.9; }
+    .btn-primary:active { transform: scale(0.98); }
+
+    /* ── RESULTS ── */
+    .results-container {
+      margin-top: 32px; border-top: 1px solid var(--border);
+      padding-top: 28px; display: none;
+      animation: fadeUp 0.3s ease;
+    }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+    .result-stats {
+      font-family: var(--font-mono); font-size: 0.58rem; color: var(--text-3);
+      letter-spacing: 0.08em; margin-bottom: 20px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .result-stats::before {
+      content: ''; display: inline-block; width: 6px; height: 6px;
+      border-radius: 50%; background: var(--text-0); flex-shrink: 0;
+    }
+
+    .result-card {
+      border: 1px solid var(--border); border-radius: var(--r);
+      overflow: hidden; margin-bottom: 10px; background: var(--surface);
+      transition: border-color 0.2s;
+    }
+    .result-card:hover { border-color: var(--border-strong); }
+
+    .result-card-top { padding: 16px 18px 0; }
+    .result-id {
+      font-family: var(--font-mono); font-size: 0.52rem; color: var(--text-3);
+      letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 6px;
+    }
+    .result-name {
+      font-size: 0.88rem; font-weight: 700; color: var(--text-0);
+      letter-spacing: -0.02em; line-height: 1.3; margin-bottom: 14px;
+    }
+
+    .result-metrics {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 1px; background: var(--border); border-top: 1px solid var(--border);
+    }
+    .metric-block { background: var(--surface); padding: 13px 18px; }
+    .metric-label {
+      font-family: var(--font-mono); font-size: 0.5rem; color: var(--text-3);
+      letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 4px;
+    }
+    .metric-value {
+      font-size: 1.25rem; font-weight: 700; color: var(--text-0);
+      letter-spacing: -0.04em; line-height: 1;
+    }
+    .metric-value.null-val { font-size: 0.75rem; color: var(--text-3); font-weight: 400; }
+
+    .result-actions {
+      padding: 10px 18px; display: flex; align-items: center; gap: 8px;
+      border-top: 1px solid var(--border);
+    }
+    .btn-add {
+      background: transparent; border: 1px solid var(--border-strong);
+      border-radius: 20px; padding: 7px 14px; font-family: var(--font-mono);
+      font-size: 0.58rem; font-weight: 500; color: var(--text-1); cursor: pointer;
+      display: flex; align-items: center; gap: 6px; transition: all 0.2s; letter-spacing: 0.05em;
+    }
+    .btn-add i { font-size: 0.45rem; }
+    .btn-add:hover { background: var(--text-0); color: var(--bg); border-color: var(--text-0); }
+    .btn-add.added { color: var(--success); border-color: rgba(0,204,102,0.2); pointer-events: none; }
+
+    /* ── ALL CUTOFFS EXPAND ── */
+    .btn-cutoffs {
+      background: transparent; border: 1px solid var(--border); border-radius: 20px;
+      padding: 7px 14px; font-family: var(--font-mono); font-size: 0.58rem; color: var(--text-2);
+      cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;
+    }
+    .btn-cutoffs i { font-size: 0.45rem; transition: transform 0.2s; }
+    .btn-cutoffs:hover { border-color: var(--border-strong); color: var(--text-1); }
+    .btn-cutoffs.active i { transform: rotate(180deg); }
+
+    .cutoffs-table {
+      display: none; padding: 12px 18px 14px; border-top: 1px solid var(--border);
+      animation: fadeUp 0.2s ease;
+    }
+    .cutoffs-table.show { display: block; }
+    .cutoffs-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+      background: var(--border); border: 1px solid var(--border); border-radius: var(--r-xs); overflow: hidden;
+    }
+    .cutoff-cell { background: var(--surface-2); padding: 10px 12px; }
+    .cutoff-cell-label {
+      font-family: var(--font-mono); font-size: 0.48rem; color: var(--text-3);
+      letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 3px;
+    }
+    .cutoff-cell-val { font-family: var(--font-mono); font-size: 0.75rem; font-weight: 500; color: var(--text-1); }
+    .cutoff-cell-val.null { color: var(--text-3); }
+
+    /* ── PRIORITY SIDEBAR ── */
+    .priority-panel {
+      margin-top: 32px; border-top: 1px solid var(--border); padding-top: 24px;
+    }
+    .priority-panel-header {
+      display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 16px;
+    }
+    .priority-panel-title { font-size: 0.82rem; font-weight: 700; color: var(--text-0); letter-spacing: -0.01em; }
+    .priority-panel-count { font-family: var(--font-mono); font-size: 0.55rem; color: var(--text-3); }
+
+    .priority-empty {
+      text-align: center; padding: 32px 0; color: var(--text-3);
+    }
+    .priority-empty i { font-size: 1rem; display: block; margin-bottom: 8px; opacity: 0.3; }
+    .priority-empty p { font-size: 0.72rem; font-family: var(--font-mono); }
+
+    .p-item {
+      display: flex; align-items: center; gap: 10px; padding: 11px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .p-item:last-child { border-bottom: none; }
+    .p-item-mono {
+      width: 30px; height: 30px; border-radius: 50%; background: var(--text-0);
+      color: var(--bg); display: flex; align-items: center; justify-content: center;
+      font-size: 0.7rem; font-weight: 800; flex-shrink: 0;
+    }
+    .p-item-info { flex: 1; min-width: 0; }
+    .p-item-name { font-size: 0.72rem; font-weight: 600; color: var(--text-1); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .p-item-meta { font-family: var(--font-mono); font-size: 0.52rem; color: var(--text-3); margin-top: 2px; }
+    .p-remove {
+      background: transparent; border: none; color: var(--text-3); cursor: pointer;
+      font-size: 0.55rem; padding: 4px; transition: color 0.15s; flex-shrink: 0;
+    }
+    .p-remove:hover { color: var(--danger); }
+
+    /* ── NO RESULTS ── */
+    .no-results { text-align: center; padding: 40px 20px; color: var(--text-3); }
+    .no-results i { font-size: 1.2rem; display: block; margin-bottom: 10px; opacity: 0.4; }
+    .no-results p { font-size: 0.75rem; }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
+
+    @media (max-width: 520px) {
+      body { padding: 16px 12px 60px; }
+      .cutoffs-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="panel">
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-wordmark">x0s · Disha</div>
+    <h1>MCA Predictor</h1>
+    <div class="header-sub">Masters in Computer Applications · All categories</div>
+  </div>
+
+  <!-- STEP 1: CATEGORY -->
+  <div class="field">
+    <div class="field-label">
+      <div class="field-step">1</div>
+      <span class="field-label-text">Category</span>
+    </div>
+    <div class="xos-dropdown" id="catDropdown">
+      <div class="dd-trigger" id="catTrigger" tabindex="0">
+        <span class="dd-text placeholder" id="catTriggerText">Select your category</span>
+        <i class="fa-solid fa-chevron-down dd-chevron"></i>
+      </div>
+      <div class="dd-menu" id="catMenu">
+        <div class="dd-search">
+          <input type="text" id="catSearch" placeholder="Search categories..." autocomplete="off" spellcheck="false">
+        </div>
+        <div id="catMenuItems"></div>
+      </div>
+    </div>
+    <input type="hidden" id="selectedCategory" value="">
+  </div>
+
+  <!-- STEP 2: RANK -->
+  <div class="field">
+    <div class="field-label">
+      <div class="field-step">2</div>
+      <span class="field-label-text">Your Rank</span>
+    </div>
+    <input type="number" id="inputRank" class="xos-input" placeholder="Enter your PGCET rank" min="1" autocomplete="off">
+  </div>
+
+  <button class="btn-primary" id="searchBtn">
+    Run Match <i class="fa-solid fa-arrow-right" style="font-size:0.6rem;"></i>
+  </button>
+
+  <!-- RESULTS -->
+  <div id="resultsArea" class="results-container"></div>
+
+  <!-- PRIORITY LIST -->
+  <div class="priority-panel" id="priorityPanel" style="display:none;">
+    <div class="priority-panel-header">
+      <span class="priority-panel-title">Priority List</span>
+      <span class="priority-panel-count" id="priorityCount">0 saved</span>
+    </div>
+    <div id="priorityContainer"></div>
+  </div>
+</div>
+
+<script src="./Mca.js"></script>
+<script>
+  /* ── DATA ── */
+  // Support both export formats: named export, default export, or global
+  let MCA_DATA = [];
+  if (typeof collegeRegistry !== 'undefined') MCA_DATA = collegeRegistry;
+  else if (typeof mcaData !== 'undefined') MCA_DATA = mcaData;
+
+  // Extract all unique category keys from data
+  const CATEGORY_LABELS = {
+    'GM':  'General Merit',
+    '1G':  '1G – SC (General)',
+    '2AG': '2AG – SC Muslim',
+    '2BG': '2BG – Backward Muslim',
+    '3AG': '3AG – OBC Vokkaliga',
+    '3BG': '3BG – OBC Lingayat',
+    'NKN': 'NKN – Non-Karnataka',
+    'SCG': 'SCG – SC General',
+    'STG': 'STG – ST General',
+    '1K':  '1K – SC (Kannada)',
+    '2AK': '2AK – SC Muslim (K)',
+    '2BK': '2BK – BM (K)',
+    '3AK': '3AK – OBC Vokkaliga (K)',
+    '3BK': '3BK – OBC Lingayat (K)',
+    'NKR': 'NKR – Rural Non-KA',
+    'SCR': 'SCR – SC Rural',
+    'STR': 'STR – ST Rural',
+    'SCK': 'SCK – SC Kannada',
+    'STK': 'STK – ST Kannada',
+  };
+
+  function getCategories() {
+    const catSet = new Set();
+    for (const college of MCA_DATA) {
+      if (college.cutoffs) { for (const k of Object.keys(college.cutoffs)) { if (college.cutoffs[k] !== null) catSet.add(k); } }
+    }
+    // Sort: GM first, then alphabetical
+    const all = Array.from(catSet).sort((a,b) => { if(a==='GM') return -1; if(b==='GM') return 1; return a.localeCompare(b); });
+    return all;
+  }
+
+  const CATEGORIES = getCategories();
+
+  /* ── PRIORITY STATE ── */
+  let priorityList = [];
+  try { priorityList = JSON.parse(localStorage.getItem('xos_mca_priority') || '[]'); } catch { priorityList = []; }
+  function savePriority() { localStorage.setItem('xos_mca_priority', JSON.stringify(priorityList)); }
+  function isInPriority(id) { return priorityList.some(p => p.id === id); }
+  function addToPriorityStore(college, category, cutoff) {
+    if (isInPriority(college.id)) return false;
+    priorityList.push({ id: college.id, name: college.name, category, cutoff });
+    savePriority(); renderPriority(); return true;
+  }
+  function removeFromPriority(id) {
+    priorityList = priorityList.filter(p => p.id !== id);
+    savePriority(); renderPriority();
+    // Re-mark buttons
+    const btn = document.querySelector(`[data-priority-id="${id}"]`);
+    if (btn) { btn.classList.remove('added'); btn.innerHTML = '<i class="fa-solid fa-plus"></i> Save'; }
+  }
+
+  function renderPriority() {
+    const panel = document.getElementById('priorityPanel');
+    const container = document.getElementById('priorityContainer');
+    document.getElementById('priorityCount').textContent = `${priorityList.length} saved`;
+    if (!priorityList.length) {
+      panel.style.display = 'none'; return;
+    }
+    panel.style.display = 'block';
+    container.innerHTML = priorityList.map(p => {
+      const letter = p.name.charAt(0).toUpperCase();
+      return `<div class="p-item">
+        <div class="p-item-mono">${letter}</div>
+        <div class="p-item-info">
+          <div class="p-item-name">${escapeHtml(p.name)}</div>
+          <div class="p-item-meta">${p.id} · ${p.category} · ${p.cutoff ? p.cutoff.toLocaleString('en-IN') : '—'}</div>
+        </div>
+        <button class="p-remove" onclick="removeFromPriority('${p.id}')" title="Remove"><i class="fa-solid fa-xmark"></i></button>
+      </div>`;
+    }).join('');
+  }
+
+  /* ── CATEGORY DROPDOWN ── */
+  function initCategoryDropdown() {
+    const hidden = document.getElementById('selectedCategory');
+    const trigger = document.getElementById('catTrigger');
+    const trigText = document.getElementById('catTriggerText');
+    const menu = document.getElementById('catMenu');
+    const itemsEl = document.getElementById('catMenuItems');
+    const search = document.getElementById('catSearch');
+
+    function renderItems(f) {
+      const q = (f||'').toUpperCase();
+      const filtered = q ? CATEGORIES.filter(c => c.toUpperCase().includes(q) || (CATEGORY_LABELS[c]||'').toUpperCase().includes(q)) : CATEGORIES;
+      if (!filtered.length) { itemsEl.innerHTML = '<div class="dd-item" style="pointer-events:none;color:var(--text-3);">No results</div>'; return; }
+      itemsEl.innerHTML = filtered.map(cat => {
+        const sel = hidden.value === cat;
+        const label = CATEGORY_LABELS[cat] ? `${cat} — ${CATEGORY_LABELS[cat]}` : cat;
+        return `<div class="dd-item${sel?' selected':''}" data-val="${escapeHtml(cat)}">${escapeHtml(label)}<i class="fa-solid fa-check dd-check"></i></div>`;
+      }).join('');
+      itemsEl.querySelectorAll('.dd-item').forEach(el => {
+        el.addEventListener('click', () => {
+          hidden.value = el.getAttribute('data-val');
+          trigText.textContent = el.getAttribute('data-val') + (CATEGORY_LABELS[el.getAttribute('data-val')] ? ' — ' + CATEGORY_LABELS[el.getAttribute('data-val')] : '');
+          trigText.classList.remove('placeholder');
+          closeDD();
+        });
+      });
+    }
+
+    function openDD() { menu.classList.add('show'); trigger.classList.add('open'); search.value=''; renderItems(''); setTimeout(()=>search.focus(),50); }
+    function closeDD() { menu.classList.remove('show'); trigger.classList.remove('open'); }
+    trigger.addEventListener('click', (e) => { e.stopPropagation(); menu.classList.contains('show') ? closeDD() : openDD(); });
+    trigger.addEventListener('keydown', (e) => { if(e.key==='Enter'||e.key===' '){e.preventDefault(); menu.classList.contains('show')?closeDD():openDD();}else if(e.key==='Escape')closeDD(); });
+    search.addEventListener('input', (e) => renderItems(e.target.value));
+    search.addEventListener('click', (e) => e.stopPropagation());
+    document.addEventListener('click', (e) => { if(!document.getElementById('catDropdown').contains(e.target)) closeDD(); });
+    renderItems('');
+  }
+
+  /* ── SEARCH ── */
+  function runSearch() {
+    const cat = document.getElementById('selectedCategory').value;
+    const rank = parseInt(document.getElementById('inputRank').value, 10);
+    const area = document.getElementById('resultsArea');
+
+    if (!cat) {
+      area.innerHTML = '<div class="no-results"><i class="fa-solid fa-triangle-exclamation"></i><p>Please select a category</p></div>';
+      area.style.display = 'block'; return;
+    }
+    if (isNaN(rank) || rank < 1) {
+      area.innerHTML = '<div class="no-results"><i class="fa-solid fa-triangle-exclamation"></i><p>Enter a valid rank</p></div>';
+      area.style.display = 'block'; return;
+    }
+
+    // Show all colleges where cutoff >= rank (user can get in), sorted ascending
+    const results = MCA_DATA
+      .filter(c => c.cutoffs && c.cutoffs[cat] != null && c.cutoffs[cat] >= rank)
+      .sort((a,b) => a.cutoffs[cat] - b.cutoffs[cat]);
+
+    area.style.display = 'block';
+
+    if (!results.length) {
+      area.innerHTML = '<div class="no-results"><i class="fa-regular fa-folder-open"></i><p>No colleges found for this rank and category</p></div>';
+      return;
+    }
+
+    let html = `<div class="result-stats">${results.length} college${results.length!==1?'s':''} · ${escapeHtml(cat)} cutoff ≥ ${rank.toLocaleString('en-IN')}</div>`;
+
+    results.forEach((college, idx) => {
+      const cutoff = college.cutoffs[cat];
+      const diff = cutoff - rank;
+      const alreadyAdded = isInPriority(college.id);
+      // All cutoff keys for this college (non-null)
+      const allCutoffs = Object.entries(college.cutoffs).filter(([k,v]) => v !== null);
+
+      html += `<div class="result-card" id="rc_${idx}">
+        <div class="result-card-top">
+          <div class="result-id">${college.id}</div>
+          <div class="result-name">${escapeHtml(college.name)}</div>
+        </div>
+        <div class="result-metrics">
+          <div class="metric-block">
+            <div class="metric-label">Cutoff · ${escapeHtml(cat)}</div>
+            <div class="metric-value">${cutoff.toLocaleString('en-IN')}</div>
+          </div>
+          <div class="metric-block">
+            <div class="metric-label">Margin</div>
+            <div class="metric-value" style="color:var(--text-2);">+${diff.toLocaleString('en-IN')}</div>
+          </div>
+        </div>
+        <div class="result-actions">
+          <button class="btn-add${alreadyAdded?' added':''}" data-priority-id="${college.id}" id="addbtn_${idx}"
+            onclick="handleAdd(${idx}, '${college.id}')">
+            <i class="fa-solid ${alreadyAdded?'fa-check':'fa-plus'}"></i> ${alreadyAdded?'Saved':'Save'}
+          </button>
+          ${allCutoffs.length > 1 ? `<button class="btn-cutoffs" id="ctbtn_${idx}" onclick="toggleCutoffs(${idx}, this)"><i class="fa-solid fa-chevron-down"></i> All cutoffs</button>` : ''}
+        </div>
+        <div class="cutoffs-table" id="ct_${idx}">
+          <div class="cutoffs-grid">
+            ${Object.entries(college.cutoffs).map(([k,v]) =>
+              `<div class="cutoff-cell">
+                <div class="cutoff-cell-label">${escapeHtml(k)}</div>
+                <div class="cutoff-cell-val${v===null?' null':''}">${v !== null ? v.toLocaleString('en-IN') : '—'}</div>
+              </div>`
+            ).join('')}
+          </div>
+        </div>
+      </div>`;
+    });
+
+    area.innerHTML = html;
+
+    // Store results for add handler
+    window._mcaResults = results;
+  }
+
+  window.handleAdd = function(idx, id) {
+    const btn = document.getElementById(`addbtn_${idx}`);
+    if (!btn || btn.classList.contains('added')) return;
+    const college = window._mcaResults && window._mcaResults[idx];
+    if (!college) return;
+    const cat = document.getElementById('selectedCategory').value;
+    const cutoff = college.cutoffs[cat];
+    if (addToPriorityStore(college, cat, cutoff)) {
+      btn.classList.add('added'); btn.innerHTML = '<i class="fa-solid fa-check"></i> Saved';
+    }
+  };
+
+  window.toggleCutoffs = function(idx, btn) {
+    const panel = document.getElementById(`ct_${idx}`);
+    if (panel) { panel.classList.toggle('show'); if(btn) btn.classList.toggle('active'); }
+  };
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+
+  /* ── INIT ── */
+  initCategoryDropdown();
+  renderPriority();
+  document.getElementById('searchBtn').addEventListener('click', runSearch);
+  document.getElementById('inputRank').addEventListener('keypress', (e) => { if(e.key==='Enter') runSearch(); });
+
+  // If no data loaded, show fallback
+  if (!MCA_DATA.length) {
+    document.getElementById('resultsArea').innerHTML = '<div class="no-results"><i class="fa-solid fa-circle-exclamation"></i><p>Connect Mca.js data file to load colleges</p></div>';
+    document.getElementById('resultsArea').style.display = 'block';
+  }
+</script>
+</body>
+</html>
