@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Disha · MCA Predictor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"/>
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --bg:#000;--surface:#0a0a0a;--surface-2:#111;--surface-3:#161616;
+      --border:rgba(255,255,255,0.07);--border-strong:rgba(255,255,255,0.14);
+      --border-focus:rgba(255,255,255,0.5);
+      --text-0:#fff;--text-1:#e8e8e8;--text-2:#888;--text-3:#444;
+      --danger:#ff3b3b;--success:#00cc66;
+      --font-display:'Space Grotesk',sans-serif;--font-mono:'DM Mono',monospace;
+      --r:14px;--r-sm:10px;--r-xs:6px;
+    }
+    body{background:var(--bg);color:var(--text-1);font-family:var(--font-display);min-height:100vh;
+      display:flex;justify-content:center;align-items:flex-start;padding:24px 16px 60px;
+      -webkit-font-smoothing:antialiased;overflow-x:hidden}
+    body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.4;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E")}
+
+    /* ── PANEL ── */
+    .panel{width:100%;max-width:500px;position:relative;z-index:1;animation:panelIn .5s cubic-bezier(.16,1,.3,1) both}
+    @keyframes panelIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    @keyframes scaleIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes dropIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+
+    /* ── ONBOARDING ── */
+    .onboard-overlay{position:fixed;inset:0;background:rgba(0,0,0,.97);z-index:9000;
+      display:flex;align-items:center;justify-content:center;animation:fadeIn .25s ease}
+    .onboard-overlay.hidden{display:none}
+    .onboard-card{width:90%;max-width:360px;border:1px solid var(--border-strong);border-radius:var(--r);
+      background:var(--surface);padding:44px 32px;animation:scaleIn .35s cubic-bezier(.16,1,.3,1) both}
+    .onboard-eyebrow{font-family:var(--font-mono);font-size:.6rem;color:var(--text-3);
+      letter-spacing:.2em;text-transform:uppercase;margin-bottom:20px}
+    .onboard-card h2{font-size:1.6rem;font-weight:700;color:var(--text-0);
+      letter-spacing:-.03em;line-height:1.1;margin-bottom:32px}
+    .onboard-card h2 span{color:var(--text-3)}
+    .onboard-input{width:100%;background:transparent;border:none;border-bottom:1px solid var(--border-strong);
+      padding:12px 0;color:var(--text-0);font-family:var(--font-display);font-size:1.1rem;
+      font-weight:500;outline:none;transition:border-color .2s;margin-bottom:32px}
+    .onboard-input::placeholder{color:var(--text-3)}
+    .onboard-input:focus{border-color:var(--text-0)}
+    .onboard-btn{background:var(--text-0);color:var(--bg);border:none;border-radius:var(--r-sm);
+      padding:14px 28px;font-family:var(--font-display);font-size:.7rem;font-weight:700;
+      letter-spacing:.15em;text-transform:uppercase;cursor:pointer;transition:opacity .2s,transform .15s}
+    .onboard-btn:hover{opacity:.88}
+    .onboard-btn:active{transform:scale(.97)}
+    .onboard-btn:disabled{opacity:.2;cursor:not-allowed;transform:none}
+
+    /* ── HEADER ── */
+    .header{display:flex;justify-content:space-between;align-items:flex-start;
+      padding:0 0 24px;border-bottom:1px solid var(--border);margin-bottom:32px}
+    .header-wordmark{font-family:var(--font-mono);font-size:.55rem;color:var(--text-3);
+      letter-spacing:.2em;text-transform:uppercase;margin-bottom:10px}
+    .header h1{font-size:1.35rem;font-weight:700;color:var(--text-0);letter-spacing:-.03em;line-height:1}
+    .header-sub{font-family:var(--font-mono);font-size:.58rem;color:var(--text-3);
+      margin-top:8px;letter-spacing:.05em}
+    .menu-btn{width:38px;height:38px;border:1px solid var(--border);border-radius:var(--r-sm);
+      background:transparent;color:var(--text-2);cursor:pointer;display:flex;
+      align-items:center;justify-content:center;font-size:.75rem;
+      transition:border-color .2s,color .2s;flex-shrink:0}
+    .menu-btn:hover{border-color:var(--border-strong);color:var(--text-0)}
+
+    /* ── SIDEBAR ── */
+    .sidebar-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:4000;
+      opacity:0;pointer-events:none;transition:opacity .25s}
+    .sidebar-backdrop.open{opacity:1;pointer-events:all}
+    .sidebar{position:fixed;top:0;right:-290px;width:270px;height:100vh;
+      background:var(--surface);border-left:1px solid var(--border);z-index:4001;
+      transition:right .35s cubic-bezier(.16,1,.3,1);display:flex;flex-direction:column}
+    .sidebar.open{right:0}
+    .sidebar-top{padding:24px 20px 20px;border-bottom:1px solid var(--border);cursor:pointer}
+    .sidebar-top:hover .sidebar-name{opacity:.8}
+    .sidebar-profile-row{display:flex;align-items:center;gap:12px}
+    .sidebar-profile-text{display:flex;flex-direction:column;justify-content:center;min-width:0}
+    .sidebar-monogram{width:40px;height:40px;border-radius:50%;background:var(--text-0);
+      color:var(--bg);display:flex;align-items:center;justify-content:center;
+      font-size:1rem;font-weight:800;flex-shrink:0}
+    .sidebar-name{font-size:.9rem;font-weight:700;color:var(--text-0)}
+    .sidebar-role{font-family:var(--font-mono);font-size:.55rem;color:var(--text-3);margin-top:3px;letter-spacing:.1em}
+    .sidebar-nav{flex:1;padding:16px;display:flex;flex-direction:column;gap:2px}
+    .nav-item{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;
+      border-radius:var(--r-sm);cursor:pointer;transition:background .15s,color .15s;
+      color:var(--text-2);font-size:.78rem;font-weight:500}
+    .nav-item:hover{background:var(--surface-2);color:var(--text-1)}
+    .nav-item.active{background:var(--text-0);color:var(--bg)}
+    .nav-item .nav-label{display:flex;align-items:center;gap:10px}
+    .nav-item .nav-label i{font-size:.65rem;width:14px;text-align:center}
+    .nav-badge{font-family:var(--font-mono);font-size:.52rem;font-weight:500;
+      background:var(--text-0);color:var(--bg);padding:2px 7px;border-radius:20px;display:none}
+    .nav-item.active .nav-badge{background:var(--bg);color:var(--text-0)}
+    .sidebar-footer{padding:20px 24px;border-top:1px solid var(--border)}
+    .sidebar-footer-text{font-family:var(--font-mono);font-size:.5rem;color:var(--text-3);
+      letter-spacing:.15em;text-transform:uppercase}
+
+    /* ── VIEWS ── */
+    .view{display:none}
+    .view.active{display:block}
+    .view-header{display:flex;align-items:baseline;justify-content:space-between;
+      margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+    .view-header h3{font-size:1rem;font-weight:700;color:var(--text-0);letter-spacing:-.02em}
+    .view-count{font-family:var(--font-mono);font-size:.55rem;color:var(--text-3);letter-spacing:.08em}
+    .view-header-right{display:flex;align-items:center;gap:8px}
+
+    /* ── FORM ── */
+    .field{margin-bottom:24px;position:relative}
+    .field-label{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+    .field-step{width:20px;height:20px;border:1px solid var(--border-strong);border-radius:50%;
+      display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);
+      font-size:.52rem;color:var(--text-2);flex-shrink:0}
+    .field-label-text{font-family:var(--font-mono);font-size:.58rem;color:var(--text-2);
+      letter-spacing:.12em;text-transform:uppercase}
+    .xos-input{width:100%;background:var(--surface);border:1px solid var(--border);
+      border-radius:var(--r-sm);padding:14px 16px;color:var(--text-0);
+      font-family:var(--font-display);font-size:.88rem;font-weight:500;outline:none;
+      transition:border-color .2s}
+    .xos-input::placeholder{color:var(--text-3)}
+    .xos-input:hover{border-color:var(--border-strong)}
+    .xos-input:focus{border-color:var(--border-focus)}
+
+    /* ── DROPDOWN ── */
+    .xos-dropdown{position:relative}
+    .dd-trigger{width:100%;background:var(--surface);border:1px solid var(--border);
+      border-radius:var(--r-sm);padding:14px 16px;color:var(--text-0);
+      font-family:var(--font-display);font-size:.88rem;font-weight:500;outline:none;
+      cursor:pointer;display:flex;align-items:center;justify-content:space-between;
+      gap:10px;transition:border-color .2s;user-select:none}
+    .dd-trigger:hover{border-color:var(--border-strong)}
+    .dd-trigger.open{border-color:var(--border-focus)}
+    .dd-trigger .dd-text{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .dd-trigger .dd-text.placeholder{color:var(--text-3)}
+    .dd-chevron{font-size:.5rem;color:var(--text-3);transition:transform .2s}
+    .dd-trigger.open .dd-chevron{transform:rotate(180deg);color:var(--text-2)}
+    .dd-menu{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--surface-2);
+      border:1px solid var(--border-strong);border-radius:var(--r-sm);z-index:200;display:none;
+      max-height:260px;overflow-y:auto;animation:dropIn .15s ease}
+    .dd-menu.show{display:block}
+    .dd-menu::-webkit-scrollbar{width:3px}
+    .dd-menu::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:3px}
+    .dd-search{position:sticky;top:0;background:var(--surface-2);
+      padding:10px 12px;border-bottom:1px solid var(--border)}
+    .dd-search input{width:100%;background:var(--surface);border:1px solid var(--border);
+      border-radius:var(--r-xs);padding:8px 12px;color:var(--text-1);
+      font-family:var(--font-mono);font-size:.7rem;outline:none;transition:border-color .2s}
+    .dd-search input::placeholder{color:var(--text-3)}
+    .dd-search input:focus{border-color:var(--border-focus)}
+    .dd-item{padding:12px 16px;font-size:.75rem;font-weight:500;color:var(--text-2);
+      cursor:pointer;border-bottom:1px solid var(--border);
+      transition:background .12s,color .12s;display:flex;align-items:center;justify-content:space-between}
+    .dd-item:last-child{border-bottom:none}
+    .dd-item:hover{background:var(--surface-3);color:var(--text-0)}
+    .dd-item.selected{color:var(--text-0)}
+    .dd-item .dd-check{font-size:.5rem;color:var(--text-0);opacity:0}
+    .dd-item.selected .dd-check{opacity:1}
+
+    /* ── BUTTONS ── */
+    .btn-primary{width:100%;background:var(--text-0);color:var(--bg);border:none;
+      border-radius:var(--r-sm);padding:15px 28px;font-family:var(--font-display);
+      font-size:.7rem;font-weight:800;letter-spacing:.15em;text-transform:uppercase;
+      cursor:pointer;margin-top:8px;display:flex;align-items:center;justify-content:center;
+      gap:10px;transition:opacity .15s,transform .15s}
+    .btn-primary:hover{opacity:.9}
+    .btn-primary:active{transform:scale(.98)}
+    .btn-add{background:transparent;border:1px solid var(--border-strong);border-radius:20px;
+      padding:7px 14px;font-family:var(--font-mono);font-size:.58rem;font-weight:500;
+      color:var(--text-1);cursor:pointer;display:flex;align-items:center;gap:6px;
+      transition:all .2s;letter-spacing:.05em}
+    .btn-add i{font-size:.45rem}
+    .btn-add:hover{background:var(--text-0);color:var(--bg);border-color:var(--text-0)}
+    .btn-add.added{color:var(--success);border-color:rgba(0,204,102,.2);pointer-events:none}
+    .btn-share-list{width:28px;height:28px;border-radius:var(--r-xs);background:transparent;
+      border:1px solid var(--border-strong);color:var(--text-2);cursor:pointer;
+      display:flex;align-items:center;justify-content:center;font-size:.55rem;transition:all .15s}
+    .btn-share-list:hover{background:var(--text-0);color:var(--bg);border-color:var(--text-0)}
+    .btn-cutoffs{background:transparent;border:1px solid var(--border);border-radius:20px;
+      padding:7px 14px;font-family:var(--font-mono);font-size:.58rem;color:var(--text-2);
+      cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s}
+    .btn-cutoffs i{font-size:.45rem;transition:transform .2s}
+    .btn-cutoffs:hover{border-color:var(--border-strong);color:var(--text-1)}
+    .btn-cutoffs.active i{transform:rotate(180deg)}
+
+    /* ── RESULTS ── */
+    .results-container{margin-top:32px;border-top:1px solid var(--border);
+      padding-top:28px;display:none;animation:fadeUp .3s ease}
+    .result-stats{font-family:var(--font-mono);font-size:.58rem;color:var(--text-3);
+      letter-spacing:.08em;margin-bottom:20px;display:flex;align-items:center;gap:8px}
+    .result-stats::before{content:'';display:inline-block;width:6px;height:6px;
+      border-radius:50%;background:var(--text-0);flex-shrink:0}
+    .result-card{border:1px solid var(--border);border-radius:var(--r);overflow:hidden;
+      margin-bottom:12px;background:var(--surface);transition:border-color .2s}
+    .result-card:hover{border-color:var(--border-strong)}
+    .result-card-top{padding:18px 18px 0}
+    .result-id{font-family:var(--font-mono);font-size:.52rem;color:var(--text-3);
+      letter-spacing:.15em;text-transform:uppercase;margin-bottom:8px}
+    .result-name{font-size:.92rem;font-weight:700;color:var(--text-0);
+      letter-spacing:-.02em;line-height:1.3;margin-bottom:14px}
+    .result-metrics{display:grid;grid-template-columns:1fr 1fr;gap:1px;
+      background:var(--border);border-top:1px solid var(--border)}
+    .metric-block{background:var(--surface);padding:14px 18px}
+    .metric-label{font-family:var(--font-mono);font-size:.5rem;color:var(--text-3);
+      letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px}
+    .metric-value{font-size:1.3rem;font-weight:800;color:var(--text-0);
+      letter-spacing:-.04em;line-height:1}
+    .metric-value.dim{color:var(--text-2)}
+    .result-actions{padding:12px 18px;display:flex;align-items:center;gap:8px;
+      flex-wrap:wrap;border-top:1px solid var(--border)}
+
+    /* ── ALL CUTOFFS GRID ── */
+    .cutoffs-table{display:none;padding:12px 18px 14px;border-top:1px solid var(--border);animation:fadeUp .2s ease}
+    .cutoffs-table.show{display:block}
+    .cutoffs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+      background:var(--border);border:1px solid var(--border);border-radius:var(--r-xs);overflow:hidden}
+    .cutoff-cell{background:var(--surface-2);padding:10px 12px}
+    .cutoff-cell-label{font-family:var(--font-mono);font-size:.48rem;color:var(--text-3);
+      letter-spacing:.12em;text-transform:uppercase;margin-bottom:3px}
+    .cutoff-cell-val{font-family:var(--font-mono);font-size:.75rem;font-weight:500;color:var(--text-1)}
+    .cutoff-cell-val.null-val{color:var(--text-3)}
+    .cutoff-cell.selected-cat{background:var(--surface-3)}
+    .cutoff-cell.selected-cat .cutoff-cell-label{color:var(--text-0)}
+    .cutoff-cell.selected-cat .cutoff-cell-val{color:var(--text-0);font-weight:700}
+
+    /* ── NO RESULTS / EMPTY ── */
+    .no-results{text-align:center;padding:48px 20px;color:var(--text-3)}
+    .no-results i{font-size:1.2rem;display:block;margin-bottom:12px;opacity:.4}
+    .no-results p{font-size:.75rem}
+    .empty-state{text-align:center;padding:60px 20px;color:var(--text-3)}
+    .empty-state i{font-size:1.2rem;display:block;margin-bottom:12px;opacity:.3}
+    .empty-state p{font-size:.75rem}
+    .empty-state .hint{font-size:.62rem;margin-top:6px;opacity:.6;font-family:var(--font-mono)}
+
+    /* ── PRIORITY CARDS ── */
+    .priority-card{border:1px solid var(--border);border-radius:var(--r);overflow:hidden;
+      margin-bottom:8px;background:var(--surface);transition:border-color .2s}
+    .priority-card:hover{border-color:var(--border-strong)}
+    .priority-card-row{display:flex;align-items:center;gap:14px;padding:14px 16px;cursor:pointer}
+    .p-mono{width:36px;height:36px;border-radius:50%;background:var(--text-0);color:var(--bg);
+      display:flex;align-items:center;justify-content:center;font-size:.9rem;
+      font-weight:800;flex-shrink:0}
+    .p-info{flex:1;min-width:0}
+    .p-name{font-size:.78rem;font-weight:600;color:var(--text-0);
+      overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .p-branch{font-family:var(--font-mono);font-size:.58rem;color:var(--text-3);
+      margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .p-chevron{font-size:.45rem;color:var(--text-3);transition:transform .2s;flex-shrink:0}
+    .priority-card.expanded .p-chevron{transform:rotate(180deg);color:var(--text-2)}
+    .p-details{display:none;padding:0 16px 16px;border-top:1px solid var(--border);animation:fadeUp .2s ease}
+    .priority-card.expanded .p-details{display:block}
+    .p-detail-row{display:flex;justify-content:space-between;align-items:center;
+      padding:10px 0;border-bottom:1px solid var(--border)}
+    .p-detail-row:last-of-type{border-bottom:none}
+    .p-detail-label{font-family:var(--font-mono);font-size:.55rem;color:var(--text-3);
+      letter-spacing:.08em;text-transform:uppercase}
+    .p-detail-value{font-size:.8rem;font-weight:600;color:var(--text-0)}
+    .btn-remove{width:100%;margin-top:12px;padding:10px;background:transparent;
+      border:1px solid rgba(255,59,59,.2);border-radius:var(--r-sm);color:var(--danger);
+      font-family:var(--font-mono);font-size:.6rem;font-weight:500;letter-spacing:.08em;
+      cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .2s}
+    .btn-remove:hover{background:rgba(255,59,59,.07)}
+
+    /* ── COLLEGES LIST ── */
+    .college-row{display:flex;align-items:center;gap:14px;padding:14px 0;
+      border-bottom:1px solid var(--border)}
+    .college-row:last-child{border-bottom:none}
+    .college-mono{width:36px;height:36px;border-radius:50%;border:1px solid var(--border-strong);
+      display:flex;align-items:center;justify-content:center;font-size:.75rem;
+      font-weight:800;color:var(--text-1);flex-shrink:0}
+    .college-info{flex:1;min-width:0}
+    .college-row-name{font-size:.78rem;font-weight:600;color:var(--text-1);
+      overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .college-row-id{font-family:var(--font-mono);font-size:.55rem;color:var(--text-3);margin-top:3px}
+
+    /* ── PROFILE SHEET ── */
+    .profile-overlay{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:6000;
+      display:flex;align-items:flex-end;justify-content:center;
+      opacity:0;pointer-events:none;transition:opacity .25s}
+    .profile-overlay.open{opacity:1;pointer-events:all}
+    .profile-sheet{width:100%;max-width:500px;background:var(--surface);
+      border:1px solid var(--border-strong);border-bottom:none;border-radius:20px 20px 0 0;
+      padding:0 0 40px;transform:translateY(100%);
+      transition:transform .35s cubic-bezier(.16,1,.3,1);
+      max-height:92vh;overflow-y:auto;overflow-x:hidden}
+    .profile-overlay.open .profile-sheet{transform:translateY(0)}
+    .profile-sheet::-webkit-scrollbar{width:3px}
+    .profile-sheet::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:3px}
+    .profile-sheet-handle{width:36px;height:4px;border-radius:2px;background:var(--border-strong);
+      margin:14px auto 0;cursor:pointer}
+    .profile-sheet-header{display:flex;align-items:center;justify-content:space-between;
+      padding:20px 24px 16px;border-bottom:1px solid var(--border)}
+    .profile-sheet-title{font-size:.88rem;font-weight:700;color:var(--text-0);letter-spacing:-.02em}
+    .profile-close-btn{width:28px;height:28px;border-radius:50%;background:var(--surface-2);
+      border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;
+      justify-content:center;font-size:.55rem;color:var(--text-2);transition:all .15s}
+    .profile-close-btn:hover{background:var(--text-0);color:var(--bg);border-color:var(--text-0)}
+    .profile-identity{display:flex;align-items:center;gap:16px;padding:20px 24px;
+      border-bottom:1px solid var(--border)}
+    .profile-big-mono{width:52px;height:52px;border-radius:50%;background:var(--text-0);
+      color:var(--bg);display:flex;align-items:center;justify-content:center;
+      font-size:1.4rem;font-weight:800;flex-shrink:0}
+    .profile-identity-name{font-size:1rem;font-weight:700;color:var(--text-0);letter-spacing:-.02em}
+    .profile-identity-tag{font-family:var(--font-mono);font-size:.55rem;color:var(--text-3);margin-top:3px;letter-spacing:.08em}
+    .profile-section{padding:20px 24px;border-bottom:1px solid var(--border)}
+    .profile-section-label{font-family:var(--font-mono);font-size:.52rem;color:var(--text-3);
+      letter-spacing:.15em;text-transform:uppercase;margin-bottom:12px}
+    /* profile category select (same as main dropdown but smaller) */
+    .profile-cat-dd{position:relative;width:100%}
+    .profile-cat-trigger{width:100%;background:var(--surface-2);border:1px solid var(--border);
+      border-radius:var(--r-sm);padding:11px 14px;color:var(--text-0);
+      font-family:var(--font-display);font-size:.8rem;font-weight:500;cursor:pointer;
+      display:flex;align-items:center;justify-content:space-between;
+      transition:border-color .2s;user-select:none}
+    .profile-cat-trigger:hover{border-color:var(--border-strong)}
+    .profile-cat-trigger.open{border-color:var(--border-focus)}
+    .profile-cat-trigger .dd-text.placeholder{color:var(--text-3)}
+    .profile-cat-menu{position:absolute;top:calc(100% + 4px);left:0;right:0;
+      background:var(--surface-3);border:1px solid var(--border-strong);
+      border-radius:var(--r-sm);z-index:500;display:none;max-height:200px;
+      overflow-y:auto;animation:dropIn .15s ease}
+    .profile-cat-menu.show{display:block}
+    .profile-cat-search{position:sticky;top:0;background:var(--surface-3);
+      padding:8px 10px;border-bottom:1px solid var(--border)}
+    .profile-cat-search input{width:100%;background:var(--surface-2);border:1px solid var(--border);
+      border-radius:var(--r-xs);padding:6px 10px;color:var(--text-1);
+      font-family:var(--font-mono);font-size:.65rem;outline:none;transition:border-color .2s}
+    .profile-cat-search input:focus{border-color:var(--border-focus)}
+    /* profile results list */
+    .profile-results-section{padding:0 24px}
+    .profile-results-label{font-family:var(--font-mono);font-size:.52rem;color:var(--text-3);
+      letter-spacing:.12em;text-transform:uppercase;margin:20px 0 12px;
+      display:flex;align-items:center;gap:8px}
+    .profile-results-label::before{content:'';display:inline-block;width:5px;height:5px;
+      border-radius:50%;background:var(--text-0);flex-shrink:0}
+    .profile-college-card{border:1px solid var(--border);border-radius:var(--r);
+      overflow:hidden;margin-bottom:8px;background:var(--surface);
+      transition:border-color .2s;cursor:pointer}
+    .profile-college-card:hover{border-color:var(--border-strong)}
+    .profile-college-row{display:flex;align-items:center;gap:12px;padding:13px 14px}
+    .profile-college-mono{width:34px;height:34px;border-radius:50%;border:1px solid var(--border-strong);
+      display:flex;align-items:center;justify-content:center;
+      font-size:.72rem;font-weight:800;color:var(--text-1);flex-shrink:0}
+    .profile-college-info{flex:1;min-width:0}
+    .profile-college-name{font-size:.76rem;font-weight:600;color:var(--text-0);
+      overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .profile-college-id{font-family:var(--font-mono);font-size:.55rem;color:var(--text-3);margin-top:2px}
+    .profile-college-cutoff{font-family:var(--font-mono);font-size:.65rem;font-weight:600;
+      color:var(--text-1);flex-shrink:0}
+    .profile-college-details{display:none;padding:0 14px 14px;border-top:1px solid var(--border);animation:fadeUp .2s ease}
+    .profile-college-card.expanded .profile-college-details{display:block}
+
+    /* ── SHARE TOAST ── */
+    .share-toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);
+      background:var(--surface-2);border:1px solid var(--border-strong);
+      border-radius:var(--r-sm);padding:12px 20px;font-family:var(--font-mono);
+      font-size:.62rem;color:var(--text-1);letter-spacing:.05em;z-index:9998;
+      opacity:0;transition:all .25s cubic-bezier(.16,1,.3,1);
+      display:flex;align-items:center;gap:8px;pointer-events:none}
+    .share-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    .share-toast i{color:var(--success);font-size:.6rem}
+
+    /* ── SHARED LISTS ── */
+    .shared-list-card{border:1px solid var(--border);border-radius:var(--r);overflow:hidden;
+      margin-bottom:10px;background:var(--surface);transition:border-color .2s}
+    .shared-list-card:hover{border-color:var(--border-strong)}
+    .shared-list-header{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer}
+    .shared-list-mono{width:36px;height:36px;border-radius:50%;background:var(--text-0);
+      color:var(--bg);display:flex;align-items:center;justify-content:center;
+      font-size:.9rem;font-weight:800;flex-shrink:0}
+    .shared-list-info{flex:1;min-width:0}
+    .shared-list-name{font-size:.82rem;font-weight:700;color:var(--text-0);letter-spacing:-.02em}
+    .shared-list-meta{font-family:var(--font-mono);font-size:.55rem;color:var(--text-3);margin-top:3px}
+    .shared-list-chevron{font-size:.45rem;color:var(--text-3);transition:transform .2s}
+    .shared-list-card.expanded .shared-list-chevron{transform:rotate(180deg)}
+    .shared-list-body{display:none;border-top:1px solid var(--border);padding:0 16px 14px}
+    .shared-list-card.expanded .shared-list-body{display:block}
+    .shared-college-row{display:flex;align-items:center;gap:10px;padding:10px 0;
+      border-bottom:1px solid var(--border)}
+    .shared-college-row:last-child{border-bottom:none}
+    .shared-college-mono{width:28px;height:28px;border-radius:50%;border:1px solid var(--border-strong);
+      display:flex;align-items:center;justify-content:center;font-size:.6rem;
+      font-weight:800;color:var(--text-2);flex-shrink:0}
+    .shared-college-info{flex:1;min-width:0}
+    .shared-college-name{font-size:.72rem;font-weight:600;color:var(--text-1);
+      overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .shared-college-sub{font-family:var(--font-mono);font-size:.52rem;color:var(--text-3);
+      margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .shared-open-btn{width:100%;margin-top:12px;padding:10px;background:var(--text-0);
+      border:none;border-radius:var(--r-sm);color:var(--bg);font-family:var(--font-display);
+      font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+      cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .15s}
+    .shared-open-btn:hover{opacity:.85}
+    .shared-delete-btn{width:100%;margin-top:6px;padding:8px;background:transparent;
+      border:1px solid rgba(255,59,59,.2);border-radius:var(--r-sm);color:var(--danger);
+      font-family:var(--font-mono);font-size:.58rem;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;gap:6px;transition:background .15s}
+    .shared-delete-btn:hover{background:rgba(255,59,59,.07)}
+
+    /* ── INCOMING SHARE MODAL ── */
+    .incoming-overlay{position:fixed;inset:0;background:rgba(0,0,0,.96);z-index:8500;
+      display:flex;align-items:center;justify-content:center;animation:fadeIn .25s ease}
+    .incoming-overlay.hidden{display:none}
+    .incoming-card{width:90%;max-width:360px;background:var(--surface);
+      border:1px solid var(--border-strong);border-radius:var(--r);padding:36px 28px;
+      animation:scaleIn .35s cubic-bezier(.16,1,.3,1) both}
+    .incoming-eyebrow{font-family:var(--font-mono);font-size:.55rem;color:var(--text-3);
+      letter-spacing:.2em;text-transform:uppercase;margin-bottom:16px}
+    .incoming-title{font-size:1.3rem;font-weight:700;color:var(--text-0);
+      letter-spacing:-.03em;line-height:1.2;margin-bottom:6px}
+    .incoming-title span{color:var(--text-3)}
+    .incoming-meta{font-family:var(--font-mono);font-size:.6rem;color:var(--text-3);margin-bottom:24px}
+    .incoming-preview{background:var(--surface-2);border:1px solid var(--border);
+      border-radius:var(--r-sm);padding:12px 14px;margin-bottom:24px;
+      max-height:140px;overflow-y:auto}
+    .incoming-preview-item{font-size:.7rem;color:var(--text-2);padding:5px 0;
+      border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+    .incoming-preview-item:last-child{border-bottom:none}
+    .incoming-preview-item i{font-size:.4rem;color:var(--text-3);flex-shrink:0}
+    .incoming-actions{display:flex;flex-direction:column;gap:8px}
+    .incoming-save-btn{background:var(--text-0);color:var(--bg);border:none;border-radius:var(--r-sm);
+      padding:14px;font-family:var(--font-display);font-size:.7rem;font-weight:700;
+      letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:opacity .15s}
+    .incoming-save-btn:hover{opacity:.85}
+    .incoming-skip-btn{background:transparent;color:var(--text-3);border:1px solid var(--border);
+      border-radius:var(--r-sm);padding:12px;font-family:var(--font-mono);
+      font-size:.6rem;cursor:pointer;transition:all .15s;letter-spacing:.08em}
+    .incoming-skip-btn:hover{color:var(--text-1);border-color:var(--border-strong)}
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar{width:4px}
+    ::-webkit-scrollbar-track{background:transparent}
+    ::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:4px}
+    @media(max-width:520px){body{padding:16px 12px 60px}}
+  </style>
+</head>
+<body>
+
+<!-- ONBOARDING -->
+<div class="onboard-overlay" id="onboardModal">
+  <div class="onboard-card">
+    <div class="onboard-eyebrow">x0s · Disha MCA</div>
+    <h2>What's<br><span>your name?</span></h2>
+    <input class="onboard-input" id="onboardInput" type="text" placeholder="Enter your name" autocomplete="off" spellcheck="false" maxlength="30">
+    <button class="onboard-btn" id="onboardBtn" disabled>Continue</button>
+  </div>
+</div>
+
+<!-- INCOMING SHARE MODAL -->
+<div class="incoming-overlay hidden" id="incomingOverlay">
+  <div class="incoming-card">
+    <div class="incoming-eyebrow">x0s · Disha MCA</div>
+    <div class="incoming-title" id="incomingTitle">Shared List</div>
+    <div class="incoming-meta" id="incomingMeta"></div>
+    <div class="incoming-preview" id="incomingPreview"></div>
+    <div class="incoming-actions">
+      <button class="incoming-save-btn" id="incomingSaveBtn">Save to Shared Lists</button>
+      <button class="incoming-skip-btn" onclick="dismissIncoming()">Skip, just browse</button>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE SHEET -->
+<div class="profile-overlay" id="profileOverlay">
+  <div class="profile-sheet">
+    <div class="profile-sheet-handle" onclick="closeProfile()"></div>
+    <div class="profile-sheet-header">
+      <span class="profile-sheet-title">Profile</span>
+      <button class="profile-close-btn" onclick="closeProfile()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="profile-identity">
+      <div class="profile-big-mono" id="profileMono">?</div>
+      <div>
+        <div class="profile-identity-name" id="profileName">User</div>
+        <div class="profile-identity-tag">x0s · MCA Explorer</div>
+      </div>
+    </div>
+    <div class="profile-section">
+      <div class="profile-section-label">Quick Filter by Category</div>
+      <div class="profile-cat-dd" id="profileCatDd">
+        <div class="profile-cat-trigger" id="profileCatTrigger" tabindex="0">
+          <span class="dd-text placeholder" id="profileCatText">Select category</span>
+          <i class="fa-solid fa-chevron-down dd-chevron" style="font-size:.45rem;color:var(--text-3);transition:transform .2s"></i>
+        </div>
+        <div class="profile-cat-menu" id="profileCatMenu">
+          <div class="profile-cat-search"><input type="text" id="profileCatSearch" placeholder="Search..." autocomplete="off" spellcheck="false"></div>
+          <div id="profileCatItems"></div>
+        </div>
+      </div>
+    </div>
+    <div class="profile-results-section">
+      <div id="profileResultsList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-top" onclick="openProfile()">
+    <div class="sidebar-profile-row">
+      <div class="sidebar-monogram" id="sidebarMono">?</div>
+      <div class="sidebar-profile-text">
+        <div class="sidebar-name" id="sidebarName">User</div>
+        <div class="sidebar-role">MCA Explorer · tap to view</div>
+      </div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-item active" data-view="match"><span class="nav-label"><i class="fa-solid fa-crosshairs"></i> MCA Match</span></div>
+    <div class="nav-item" data-view="priority"><span class="nav-label"><i class="fa-regular fa-bookmark"></i> Priority List</span><span class="nav-badge" id="navPriorityCount">0</span></div>
+    <div class="nav-item" data-view="colleges"><span class="nav-label"><i class="fa-regular fa-building"></i> All Colleges</span></div>
+    <div class="nav-item" data-view="smartsearch"><span class="nav-label"><i class="fa-solid fa-magnifying-glass"></i> Smart Search</span></div>
+    <div class="nav-item" data-view="sharedlists"><span class="nav-label"><i class="fa-solid fa-share-nodes"></i> Shared Lists</span><span class="nav-badge" id="navSharedCount">0</span></div>
+  </nav>
+  <div class="sidebar-footer"><div class="sidebar-footer-text">x0s · Disha MCA v1.0</div></div>
+</div>
+
+<!-- MAIN PANEL -->
+<div class="panel">
+  <div class="header">
+    <div>
+      <div class="header-wordmark">x0s · Disha</div>
+      <h1 id="headerTitle">MCA Match</h1>
+      <div class="header-sub" id="headerSub">Masters in Computer Applications · all categories</div>
+    </div>
+    <button class="menu-btn" id="menuBtn"><i class="fa-solid fa-bars-staggered"></i></button>
+  </div>
+
+  <!-- VIEW: MATCH -->
+  <div class="view active" id="view-match">
+    <div class="field">
+      <div class="field-label"><div class="field-step">1</div><span class="field-label-text">Category</span></div>
+      <div class="xos-dropdown" id="catDropdown">
+        <div class="dd-trigger" id="catTrigger" tabindex="0">
+          <span class="dd-text placeholder" id="catTriggerText">Select your category</span>
+          <i class="fa-solid fa-chevron-down dd-chevron"></i>
+        </div>
+        <div class="dd-menu" id="catMenu">
+          <div class="dd-search"><input type="text" id="catSearch" placeholder="Search categories..." autocomplete="off" spellcheck="false"></div>
+          <div id="catMenuItems"></div>
+        </div>
+      </div>
+      <input type="hidden" id="selectedCategory" value="">
+    </div>
+    <div class="field">
+      <div class="field-label"><div class="field-step">2</div><span class="field-label-text">Your Rank</span></div>
+      <input type="number" id="inputRank" class="xos-input" placeholder="Enter your PGCET rank" min="1" autocomplete="off">
+    </div>
+    <button class="btn-primary" id="searchBtn">Run Match <i class="fa-solid fa-arrow-right" style="font-size:.6rem"></i></button>
+    <div id="resultsArea" class="results-container"></div>
+  </div>
+
+  <!-- VIEW: PRIORITY -->
+  <div class="view" id="view-priority">
+    <div class="view-header">
+      <h3 id="priorityTitle">Priority List</h3>
+      <div class="view-header-right">
+        <span class="view-count" id="priorityCount">0 saved</span>
+        <button class="btn-share-list" onclick="sharePriorityList()" title="Share list"><i class="fa-solid fa-arrow-up-from-bracket"></i></button>
+      </div>
+    </div>
+    <div id="priorityContainer"></div>
+  </div>
+
+  <!-- VIEW: ALL COLLEGES -->
+  <div class="view" id="view-colleges">
+    <div class="view-header">
+      <h3>All Colleges</h3>
+      <span class="view-count" id="collegesCount">0 colleges</span>
+    </div>
+    <div id="collegesContainer"></div>
+  </div>
+
+  <!-- VIEW: SMART SEARCH -->
+  <div class="view" id="view-smartsearch">
+    <div class="field">
+      <div class="field-label"><div class="field-step">1</div><span class="field-label-text">Category</span></div>
+      <div class="xos-dropdown" id="ssCatDropdown">
+        <div class="dd-trigger" id="ssCatTrigger" tabindex="0">
+          <span class="dd-text placeholder" id="ssCatText">Select category</span>
+          <i class="fa-solid fa-chevron-down dd-chevron"></i>
+        </div>
+        <div class="dd-menu" id="ssCatMenu">
+          <div class="dd-search"><input type="text" id="ssCatSearch" placeholder="Search categories..." autocomplete="off" spellcheck="false"></div>
+          <div id="ssCatItems"></div>
+        </div>
+      </div>
+      <input type="hidden" id="ssCategory" value="">
+    </div>
+    <div id="ssResultsArea"></div>
+  </div>
+
+  <!-- VIEW: SHARED LISTS -->
+  <div class="view" id="view-sharedlists">
+    <div class="view-header">
+      <h3>Shared Lists</h3>
+      <span class="view-count" id="sharedCount">0 lists</span>
+    </div>
+    <div id="sharedContainer"></div>
+  </div>
+</div>
+
+<script src="./Mca.js"></script>
+<script>
+/* ════════════════════════════════════════
+   DATA SETUP
+════════════════════════════════════════ */
+let MCA_DATA = [];
+if (typeof collegeRegistry !== 'undefined') MCA_DATA = collegeRegistry;
+else if (typeof mcaData !== 'undefined') MCA_DATA = mcaData;
+
+const CAT_LABELS = {
+  'GM':'General Merit','1G':'1G – SC General','2AG':'2AG – SC Muslim',
+  '2BG':'2BG – Backward Muslim','3AG':'3AG – OBC Vokkaliga','3BG':'3BG – OBC Lingayat',
+  'NKN':'NKN – Non-Karnataka','SCG':'SCG – SC General','STG':'STG – ST General',
+  '1K':'1K – SC Kannada','2AK':'2AK – SC Muslim K','2BK':'2BK – BM K',
+  '3AK':'3AK – OBC Vokkaliga K','3BK':'3BK – OBC Lingayat K','SCK':'SCK – SC Kannada',
+  'STK':'STK – ST Kannada','NKR':'NKR – Rural Non-KA','SCR':'SCR – SC Rural','STR':'STR – ST Rural'
+};
+
+function getAllCategories() {
+  const s = new Set();
+  for (const c of MCA_DATA) if (c.cutoffs) for (const [k,v] of Object.entries(c.cutoffs)) if (v !== null) s.add(k);
+  return Array.from(s).sort((a,b) => a==='GM'?-1:b==='GM'?1:a.localeCompare(b));
+}
+const ALL_CATS = getAllCategories();
+
+function catLabel(k) { return CAT_LABELS[k] ? `${k} — ${CAT_LABELS[k]}` : k; }
+function escapeHtml(s) {
+  if (!s) return '';
+  return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+function getShortName(name) { if(!name)return''; const i=name.indexOf(','); return i>0?name.slice(0,i).trim():name.trim(); }
+
+/* ════════════════════════════════════════
+   HISTORY API
+════════════════════════════════════════ */
+const VALID_VIEWS = ['match','priority','colleges','smartsearch','sharedlists'];
+const VIEW_TITLES = { match:'MCA Match',priority:'Priority List',colleges:'All Colleges',smartsearch:'Smart Search',sharedlists:'Shared Lists' };
+const VIEW_SUBS = { match:'Masters in Computer Applications · all categories',priority:'Your saved colleges',colleges:'Browse all MCA institutions',smartsearch:'Browse all colleges by category',sharedlists:'Priority lists shared with you' };
+
+function pushView(name) { if (history.state && history.state.view === name) return; history.pushState({view:name},'','#'+name); }
+function replaceView(name) { history.replaceState({view:name},'','#'+name); }
+
+window.addEventListener('popstate', e => {
+  const v = (e.state && e.state.view) ? e.state.view : 'match';
+  if (v === 'profile') { closeProfile(); return; }
+  switchViewInternal(v); toggleSidebar(false); closeProfile();
+});
+
+/* ════════════════════════════════════════
+   VIEW SWITCHING
+════════════════════════════════════════ */
+function switchViewInternal(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  const el = document.getElementById('view-'+name);
+  if (el) el.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+  const ni = document.querySelector('.nav-item[data-view="'+name+'"]');
+  if (ni) ni.classList.add('active');
+  document.getElementById('headerTitle').textContent = VIEW_TITLES[name] || '';
+  document.getElementById('headerSub').textContent = VIEW_SUBS[name] || '';
+  if (name==='priority') renderPriority();
+  if (name==='colleges') renderColleges();
+  if (name==='sharedlists') renderSharedLists();
+}
+function switchView(name) { switchViewInternal(name); pushView(name); }
+
+/* ════════════════════════════════════════
+   ONBOARDING
+════════════════════════════════════════ */
+function initOnboarding() {
+  const saved = localStorage.getItem('xos_mca_username');
+  if (saved) { document.getElementById('onboardModal').classList.add('hidden'); applyUser(saved); return; }
+  const inp = document.getElementById('onboardInput');
+  const btn = document.getElementById('onboardBtn');
+  inp.addEventListener('input', () => btn.disabled = !inp.value.trim());
+  inp.addEventListener('keydown', e => { if (e.key==='Enter' && inp.value.trim()) submitOnboard(); });
+  btn.addEventListener('click', submitOnboard);
+  function submitOnboard() {
+    const n = inp.value.trim(); if (!n) return;
+    localStorage.setItem('xos_mca_username', n);
+    document.getElementById('onboardModal').classList.add('hidden');
+    applyUser(n);
+  }
+  setTimeout(() => inp.focus(), 400);
+}
+function applyUser(name) {
+  const l = name.charAt(0).toUpperCase();
+  document.getElementById('sidebarMono').textContent = l;
+  document.getElementById('sidebarName').textContent = name;
+  document.getElementById('profileMono').textContent = l;
+  document.getElementById('profileName').textContent = name;
+}
+
+/* ════════════════════════════════════════
+   SIDEBAR
+════════════════════════════════════════ */
+function initSidebar() {
+  document.getElementById('menuBtn').addEventListener('click', () => toggleSidebar(true));
+  document.getElementById('sidebarBackdrop').addEventListener('click', () => toggleSidebar(false));
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', () => { switchView(item.dataset.view); toggleSidebar(false); });
+  });
+}
+function toggleSidebar(open) {
+  document.getElementById('sidebar').classList.toggle('open', open);
+  document.getElementById('sidebarBackdrop').classList.toggle('open', open);
+}
+
+/* ════════════════════════════════════════
+   DROPDOWN FACTORY
+════════════════════════════════════════ */
+function makeDropdown(triggerId, menuId, searchId, itemsId, hiddenId, triggerTextId, onSelect) {
+  const trigger = document.getElementById(triggerId);
+  const menu = document.getElementById(menuId);
+  const search = document.getElementById(searchId);
+  const itemsEl = document.getElementById(itemsId);
+  const hidden = document.getElementById(hiddenId);
+  const trigText = document.getElementById(triggerTextId);
+
+  function renderItems(f) {
+    const q = (f||'').toUpperCase();
+    const filtered = q ? ALL_CATS.filter(c => c.toUpperCase().includes(q)||(CAT_LABELS[c]||'').toUpperCase().includes(q)) : ALL_CATS;
+    if (!filtered.length) { itemsEl.innerHTML='<div class="dd-item" style="pointer-events:none;color:var(--text-3)">No results</div>'; return; }
+    itemsEl.innerHTML = filtered.map(cat => {
+      const sel = hidden.value === cat;
+      return `<div class="dd-item${sel?' selected':''}" data-val="${escapeHtml(cat)}">${escapeHtml(catLabel(cat))}<i class="fa-solid fa-check dd-check"></i></div>`;
+    }).join('');
+    itemsEl.querySelectorAll('.dd-item').forEach(el => el.addEventListener('click', () => {
+      const val = el.getAttribute('data-val');
+      hidden.value = val;
+      trigText.textContent = catLabel(val);
+      trigText.classList.remove('placeholder');
+      closeDD(); onSelect && onSelect(val);
+    }));
+  }
+  function openDD() { menu.classList.add('show'); trigger.classList.add('open'); search.value=''; renderItems(''); setTimeout(()=>search.focus(),50); }
+  function closeDD() { menu.classList.remove('show'); trigger.classList.remove('open'); }
+  trigger.addEventListener('click', e => { e.stopPropagation(); menu.classList.contains('show')?closeDD():openDD(); });
+  trigger.addEventListener('keydown', e => { if(e.key==='Enter'||e.key===' '){e.preventDefault();menu.classList.contains('show')?closeDD():openDD();}else if(e.key==='Escape')closeDD(); });
+  search.addEventListener('input', e => renderItems(e.target.value));
+  search.addEventListener('click', e => e.stopPropagation());
+  document.addEventListener('click', e => { if (!trigger.closest('.xos-dropdown, .profile-cat-dd')?.contains(e.target) && !menu.contains(e.target)) closeDD(); });
+  renderItems('');
+}
+
+/* ════════════════════════════════════════
+   PRIORITY STORAGE
+════════════════════════════════════════ */
+function getPriority() { try { return JSON.parse(localStorage.getItem('xos_mca_priority')||'[]'); } catch { return []; } }
+function savePriority(list) { localStorage.setItem('xos_mca_priority', JSON.stringify(list)); updatePriorityBadge(); }
+function isInPriority(id) { return getPriority().some(p => p.id === id); }
+function addToPriority(item) {
+  const list = getPriority();
+  if (list.find(p => p.id === item.id)) return false;
+  list.push(item); savePriority(list); return true;
+}
+function removeFromPriority(id) {
+  savePriority(getPriority().filter(p => p.id !== id));
+  renderPriority();
+  document.querySelectorAll(`[data-pid="${id}"]`).forEach(btn => {
+    btn.classList.remove('added'); btn.innerHTML='<i class="fa-solid fa-plus"></i> Save';
+  });
+}
+function updatePriorityBadge() {
+  const n = getPriority().length;
+  const b = document.getElementById('navPriorityCount');
+  b.textContent=n; b.style.display=n>0?'inline-block':'none';
+}
+
+/* ════════════════════════════════════════
+   RENDER PRIORITY
+════════════════════════════════════════ */
+function renderPriority(overrideList, overrideTitle) {
+  const container = document.getElementById('priorityContainer');
+  const titleEl = document.getElementById('priorityTitle');
+  const countEl = document.getElementById('priorityCount');
+  const shareBtn = document.querySelector('.btn-share-list');
+  const list = overrideList || getPriority();
+  if (titleEl) titleEl.textContent = overrideTitle || 'Priority List';
+  if (shareBtn) shareBtn.style.display = overrideList ? 'none' : '';
+  countEl.textContent = `${list.length} saved`;
+  if (!list.length) {
+    container.innerHTML='<div class="empty-state"><i class="fa-regular fa-bookmark"></i><p>No colleges saved yet</p><div class="hint">Run a search and save colleges</div></div>';
+    return;
+  }
+  container.innerHTML = list.map((item, idx) => {
+    const letter = item.name.charAt(0).toUpperCase();
+    return `<div class="priority-card" id="pcard_${idx}">
+      <div class="priority-card-row" onclick="togglePCard(${idx})">
+        <div class="p-mono">${letter}</div>
+        <div class="p-info">
+          <div class="p-name">${escapeHtml(item.name)}</div>
+          <div class="p-branch">${item.id} · ${escapeHtml(item.category||'')}</div>
+        </div>
+        <i class="fa-solid fa-chevron-down p-chevron"></i>
+      </div>
+      <div class="p-details">
+        <div class="p-detail-row"><span class="p-detail-label">College ID</span><span class="p-detail-value">${item.id}</span></div>
+        <div class="p-detail-row"><span class="p-detail-label">Category</span><span class="p-detail-value">${escapeHtml(item.category||'')}</span></div>
+        <div class="p-detail-row"><span class="p-detail-label">Cutoff</span><span class="p-detail-value">${item.cutoff?item.cutoff.toLocaleString('en-IN'):'—'}</span></div>
+        ${!overrideList?`<button class="btn-remove" onclick="removeFromPriority('${item.id}')"><i class="fa-regular fa-trash-can"></i> Remove</button>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+window.togglePCard = idx => {
+  const c = document.getElementById('pcard_'+idx); if(!c) return;
+  const was = c.classList.contains('expanded');
+  document.querySelectorAll('.priority-card.expanded').forEach(x => x.classList.remove('expanded'));
+  if (!was) c.classList.add('expanded');
+};
+
+/* ════════════════════════════════════════
+   RENDER ALL COLLEGES
+════════════════════════════════════════ */
+function renderColleges() {
+  const container = document.getElementById('collegesContainer');
+  document.getElementById('collegesCount').textContent = `${MCA_DATA.length} colleges`;
+  if (!MCA_DATA.length) { container.innerHTML='<div class="empty-state"><p>No data loaded</p></div>'; return; }
+  container.innerHTML = MCA_DATA.map(c => {
+    const letter = c.name.charAt(0).toUpperCase();
+    return `<div class="college-row">
+      <div class="college-mono">${letter}</div>
+      <div class="college-info">
+        <div class="college-row-name">${escapeHtml(c.name)}</div>
+        <div class="college-row-id">${c.id} · ${c.course||'MCA'}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ════════════════════════════════════════
+   MATCH ENGINE
+════════════════════════════════════════ */
+let lastResults = [];
+function runMatch() {
+  const cat = document.getElementById('selectedCategory').value;
+  const rank = parseInt(document.getElementById('inputRank').value, 10);
+  const area = document.getElementById('resultsArea');
+  if (!cat) { area.innerHTML='<div class="no-results"><i class="fa-solid fa-triangle-exclamation"></i><p>Please select a category</p></div>'; area.style.display='block'; return; }
+  if (isNaN(rank)||rank<1) { area.innerHTML='<div class="no-results"><i class="fa-solid fa-triangle-exclamation"></i><p>Enter a valid rank</p></div>'; area.style.display='block'; return; }
+
+  const results = MCA_DATA.filter(c => c.cutoffs && c.cutoffs[cat] != null && c.cutoffs[cat] >= rank)
+    .sort((a,b) => a.cutoffs[cat]-b.cutoffs[cat]);
+  lastResults = results;
+  area.style.display='block';
+  if (!results.length) { area.innerHTML='<div class="no-results"><i class="fa-regular fa-folder-open"></i><p>No colleges found for this rank and category</p></div>'; return; }
+
+  let html = `<div class="result-stats">${results.length} college${results.length!==1?'s':''} · ${escapeHtml(cat)} cutoff ≥ ${rank.toLocaleString('en-IN')}</div>`;
+  results.forEach((college, idx) => {
+    const cutoff = college.cutoffs[cat];
+    const diff = cutoff - rank;
+    const already = isInPriority(college.id);
+    const allCutoffs = Object.entries(college.cutoffs);
+    html += `<div class="result-card" id="rc_${idx}">
+      <div class="result-card-top">
+        <div class="result-id">${college.id}</div>
+        <div class="result-name">${escapeHtml(college.name)}</div>
+      </div>
+      <div class="result-metrics">
+        <div class="metric-block">
+          <div class="metric-label">Cutoff · ${escapeHtml(cat)}</div>
+          <div class="metric-value">${cutoff.toLocaleString('en-IN')}</div>
+        </div>
+        <div class="metric-block">
+          <div class="metric-label">Margin</div>
+          <div class="metric-value dim">+${diff.toLocaleString('en-IN')}</div>
+        </div>
+      </div>
+      <div class="result-actions">
+        <button class="btn-add${already?' added':''}" data-pid="${college.id}" id="addbtn_${idx}"
+          onclick="handleAdd(${idx},'${college.id}')">
+          <i class="fa-solid ${already?'fa-check':'fa-plus'}"></i> ${already?'Saved':'Save'}
+        </button>
+        ${allCutoffs.length>1?`<button class="btn-cutoffs" id="ctbtn_${idx}" onclick="toggleCutoffs(${idx},this)"><i class="fa-solid fa-chevron-down"></i> All cutoffs</button>`:''}
+      </div>
+      <div class="cutoffs-table" id="ct_${idx}">
+        <div class="cutoffs-grid">
+          ${allCutoffs.map(([k,v]) =>
+            `<div class="cutoff-cell${k===cat?' selected-cat':''}">
+              <div class="cutoff-cell-label">${escapeHtml(k)}</div>
+              <div class="cutoff-cell-val${v===null?' null-val':''}">${v!==null?v.toLocaleString('en-IN'):'—'}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+  });
+  area.innerHTML = html;
+}
+
+window.handleAdd = (idx, id) => {
+  const btn = document.getElementById('addbtn_'+idx);
+  if (!btn || btn.classList.contains('added')) return;
+  const college = lastResults[idx]; if (!college) return;
+  const cat = document.getElementById('selectedCategory').value;
+  const cutoff = college.cutoffs[cat];
+  if (addToPriority({ id: college.id, name: college.name, category: cat, cutoff })) {
+    btn.classList.add('added'); btn.innerHTML='<i class="fa-solid fa-check"></i> Saved';
+  }
+};
+window.toggleCutoffs = (idx, btn) => {
+  const p = document.getElementById('ct_'+idx);
+  if (p) { p.classList.toggle('show'); if(btn) btn.classList.toggle('active'); }
+};
+
+/* ════════════════════════════════════════
+   SMART SEARCH (all colleges by category)
+════════════════════════════════════════ */
+let ssResults = [];
+function runSmartSearch(cat) {
+  const area = document.getElementById('ssResultsArea');
+  if (!cat) { area.innerHTML=''; ssResults=[]; return; }
+  const results = MCA_DATA.filter(c => c.cutoffs && c.cutoffs[cat] != null)
+    .sort((a,b) => a.cutoffs[cat]-b.cutoffs[cat]);
+  ssResults = results;
+  if (!results.length) { area.innerHTML='<div class="no-results"><i class="fa-regular fa-folder-open"></i><p>No data for this category</p></div>'; return; }
+  area.innerHTML = `<div class="result-stats">${results.length} colleges · ${escapeHtml(cat)}</div>` +
+    results.map((college, idx) => {
+      const cutoff = college.cutoffs[cat];
+      const already = isInPriority(college.id);
+      const allCutoffs = Object.entries(college.cutoffs);
+      return `<div class="result-card" id="ss_${idx}">
+        <div class="result-card-top">
+          <div class="result-id">${college.id}</div>
+          <div class="result-name">${escapeHtml(college.name)}</div>
+        </div>
+        <div class="result-metrics">
+          <div class="metric-block">
+            <div class="metric-label">Cutoff · ${escapeHtml(cat)}</div>
+            <div class="metric-value">${cutoff.toLocaleString('en-IN')}</div>
+          </div>
+        </div>
+        <div class="result-actions">
+          <button class="btn-add${already?' added':''}" data-pid="${college.id}" id="ssadd_${idx}"
+            onclick="handleSSAdd(${idx},'${college.id}','${escapeHtml(cat)}')">
+            <i class="fa-solid ${already?'fa-check':'fa-plus'}"></i> ${already?'Saved':'Save'}
+          </button>
+          ${allCutoffs.length>1?`<button class="btn-cutoffs" id="ssct_${idx}" onclick="toggleSSCutoffs(${idx},this)"><i class="fa-solid fa-chevron-down"></i> All cutoffs</button>`:''}
+        </div>
+        <div class="cutoffs-table" id="ssct_panel_${idx}">
+          <div class="cutoffs-grid">
+            ${allCutoffs.map(([k,v]) =>
+              `<div class="cutoff-cell${k===cat?' selected-cat':''}">
+                <div class="cutoff-cell-label">${escapeHtml(k)}</div>
+                <div class="cutoff-cell-val${v===null?' null-val':''}">${v!==null?v.toLocaleString('en-IN'):'—'}</div>
+              </div>`).join('')}
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+}
+window.handleSSAdd = (idx, id, cat) => {
+  const btn = document.getElementById('ssadd_'+idx);
+  if (!btn||btn.classList.contains('added')) return;
+  const college = ssResults[idx]; if (!college) return;
+  if (addToPriority({ id: college.id, name: college.name, category: cat, cutoff: college.cutoffs[cat] })) {
+    btn.classList.add('added'); btn.innerHTML='<i class="fa-solid fa-check"></i> Saved';
+  }
+};
+window.toggleSSCutoffs = (idx, btn) => {
+  const p = document.getElementById('ssct_panel_'+idx);
+  if (p) { p.classList.toggle('show'); if(btn) btn.classList.toggle('active'); }
+};
+
+/* ════════════════════════════════════════
+   PROFILE SHEET
+════════════════════════════════════════ */
+let profileResults = [];
+function openProfile() {
+  const name = localStorage.getItem('xos_mca_username') || 'User';
+  document.getElementById('profileMono').textContent = name.charAt(0).toUpperCase();
+  document.getElementById('profileName').textContent = name;
+  document.getElementById('profileOverlay').classList.add('open');
+  toggleSidebar(false);
+  history.pushState({view:'profile'},'','#profile');
+  renderProfileResults(document.getElementById('profileCatItems').dataset.selected||'');
+}
+function closeProfile() { document.getElementById('profileOverlay').classList.remove('open'); }
+
+function initProfileDropdown() {
+  const trigger = document.getElementById('profileCatTrigger');
+  const menu = document.getElementById('profileCatMenu');
+  const search = document.getElementById('profileCatSearch');
+  const items = document.getElementById('profileCatItems');
+  const trigText = document.getElementById('profileCatText');
+  const chevron = trigger.querySelector('.dd-chevron');
+  let selected = '';
+
+  function renderItems(f) {
+    const q=(f||'').toUpperCase();
+    const filtered=q?ALL_CATS.filter(c=>c.toUpperCase().includes(q)||(CAT_LABELS[c]||'').toUpperCase().includes(q)):ALL_CATS;
+    if(!filtered.length){items.innerHTML='<div class="dd-item" style="pointer-events:none;color:var(--text-3)">No results</div>';return;}
+    items.innerHTML=filtered.map(cat=>{
+      const sel=selected===cat;
+      return `<div class="dd-item${sel?' selected':''}" data-val="${escapeHtml(cat)}">${escapeHtml(catLabel(cat))}<i class="fa-solid fa-check dd-check"></i></div>`;
+    }).join('');
+    items.querySelectorAll('.dd-item').forEach(el=>el.addEventListener('click',()=>{
+      selected=el.getAttribute('data-val');
+      items.dataset.selected=selected;
+      trigText.textContent=catLabel(selected);
+      trigText.classList.remove('placeholder');
+      menu.classList.remove('show');trigger.classList.remove('open');
+      chevron.style.transform='';
+      renderProfileResults(selected);
+    }));
+  }
+  function openDD(){menu.classList.add('show');trigger.classList.add('open');chevron.style.transform='rotate(180deg)';search.value='';renderItems('');setTimeout(()=>search.focus(),50);}
+  function closeDD(){menu.classList.remove('show');trigger.classList.remove('open');chevron.style.transform='';}
+  trigger.addEventListener('click',e=>{e.stopPropagation();menu.classList.contains('show')?closeDD():openDD();});
+  search.addEventListener('input',e=>renderItems(e.target.value));
+  search.addEventListener('click',e=>e.stopPropagation());
+  document.addEventListener('click',e=>{if(!document.getElementById('profileCatDd').contains(e.target))closeDD();});
+  renderItems('');
+  document.getElementById('profileOverlay').addEventListener('click',e=>{if(e.target===document.getElementById('profileOverlay'))closeProfile();});
+}
+
+function renderProfileResults(cat) {
+  const container = document.getElementById('profileResultsList');
+  if (!cat) { container.innerHTML='<div style="padding:24px 0;text-align:center;font-family:var(--font-mono);font-size:.6rem;color:var(--text-3);letter-spacing:.1em">SELECT A CATEGORY TO BROWSE COLLEGES</div>'; return; }
+  const results = MCA_DATA.filter(c=>c.cutoffs&&c.cutoffs[cat]!=null).sort((a,b)=>a.cutoffs[cat]-b.cutoffs[cat]);
+  profileResults = results;
+  if (!results.length) { container.innerHTML='<div style="padding:20px 0;text-align:center;font-family:var(--font-mono);font-size:.6rem;color:var(--text-3)">NO DATA FOR THIS CATEGORY</div>'; return; }
+  container.innerHTML = `<div class="profile-results-label">${results.length} colleges · ${escapeHtml(cat)}</div>` +
+    results.map((college,idx) => {
+      const letter=college.name.charAt(0).toUpperCase();
+      const cutoff=college.cutoffs[cat];
+      const inPrio=isInPriority(college.id);
+      return `<div class="profile-college-card" id="pcc_${idx}" onclick="toggleProfileCard(${idx})">
+        <div class="profile-college-row">
+          <div class="profile-college-mono">${letter}</div>
+          <div class="profile-college-info">
+            <div class="profile-college-name">${escapeHtml(college.name)}</div>
+            <div class="profile-college-id">${college.id}</div>
+          </div>
+          <div class="profile-college-cutoff">${cutoff.toLocaleString('en-IN')}</div>
+        </div>
+        <div class="profile-college-details">
+          <div style="padding-top:10px;">
+            <div class="p-detail-row"><span class="p-detail-label">College ID</span><span class="p-detail-value">${college.id}</span></div>
+            <div class="p-detail-row"><span class="p-detail-label">Cutoff (${escapeHtml(cat)})</span><span class="p-detail-value">${cutoff.toLocaleString('en-IN')}</span></div>
+            <div class="p-detail-row"><span class="p-detail-label">Course</span><span class="p-detail-value" style="font-size:.7rem">${escapeHtml(college.course||'MCA')}</span></div>
+            <button class="btn-add${inPrio?' added':''}" data-pid="${college.id}" id="pcabtn_${idx}" style="margin-top:10px;" onclick="event.stopPropagation();handleProfileAdd(${idx},'${college.id}','${escapeHtml(cat)}')">
+              <i class="fa-solid ${inPrio?'fa-check':'fa-plus'}"></i> ${inPrio?'Saved':'Save to Priority'}
+            </button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+}
+window.toggleProfileCard = idx => {
+  const c = document.getElementById('pcc_'+idx); if(!c) return;
+  const was=c.classList.contains('expanded');
+  document.querySelectorAll('.profile-college-card.expanded').forEach(x=>x.classList.remove('expanded'));
+  if(!was) c.classList.add('expanded');
+};
+window.handleProfileAdd = (idx, id, cat) => {
+  const btn = document.getElementById('pcabtn_'+idx);
+  if (!btn||btn.classList.contains('added')) return;
+  const college = profileResults[idx]; if (!college) return;
+  if (addToPriority({id:college.id,name:college.name,category:cat,cutoff:college.cutoffs[cat]})) {
+    btn.classList.add('added'); btn.innerHTML='<i class="fa-solid fa-check"></i> Saved';
+  }
+};
+
+/* ════════════════════════════════════════
+   SHARE SYSTEM
+════════════════════════════════════════ */
+function buildShareURL() {
+  const list = getPriority(); if (!list.length) return null;
+  const username = localStorage.getItem('xos_mca_username') || 'User';
+  const grouped = {};
+  for (const item of list) {
+    const key = (item.category||'GM');
+    if (!grouped[key]) grouped[key] = {cat:item.category||'GM',ids:[]};
+    grouped[key].ids.push(item.id);
+  }
+  const base = location.origin + location.pathname;
+  const segs = [encodeURIComponent(username)];
+  for (const g of Object.values(grouped)) {
+    segs.push(encodeURIComponent(g.cat));
+    segs.push(g.ids.join(','));
+  }
+  return base + '#SHARE/' + segs.join('/');
+}
+
+function sharePriorityList() {
+  const list = getPriority();
+  if (!list.length) { showToast('Nothing to share yet'); return; }
+  const url = buildShareURL();
+  if (navigator.share) { navigator.share({title:"My MCA Priority List",url}).catch(()=>{}); }
+  else if (navigator.clipboard) { navigator.clipboard.writeText(url).then(()=>showToast('Link copied!')); }
+  else { prompt('Copy this link:', url); }
+}
+
+function showToast(msg) {
+  let t = document.getElementById('shareToast');
+  if (!t) { t=document.createElement('div'); t.id='shareToast'; t.className='share-toast'; document.body.appendChild(t); }
+  t.innerHTML=`<i class="fa-solid fa-check-circle"></i> ${escapeHtml(msg)}`;
+  t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+function parseShareHash(hash) {
+  if (!hash.startsWith('SHARE/')) return null;
+  const parts = hash.slice(6).split('/');
+  if (parts.length < 3) return null;
+  const username = decodeURIComponent(parts[0]);
+  const items = [];
+  let i=1;
+  while (i < parts.length-1) {
+    const cat = decodeURIComponent(parts[i]);
+    const ids = parts[i+1] ? parts[i+1].split(',') : [];
+    for (const id of ids) if (id) {
+      const college = MCA_DATA.find(c=>c.id===id.trim());
+      items.push({id:id.trim(),name:college?college.name:id,category:cat,cutoff:college&&college.cutoffs?college.cutoffs[cat]:null});
+    }
+    i+=2;
+  }
+  return {username, items};
+}
+
+let pendingIncoming = null;
+function checkIncomingShare() {
+  const hash = location.hash.replace('#','');
+  if (!hash.startsWith('SHARE/')) return false;
+  const parsed = parseShareHash(hash);
+  if (!parsed||!parsed.items.length) return false;
+  pendingIncoming = parsed;
+  document.getElementById('incomingTitle').innerHTML = `${escapeHtml(parsed.username)}'s<br><span>Priority List</span>`;
+  document.getElementById('incomingMeta').textContent = `${parsed.items.length} college${parsed.items.length!==1?'s':''} shared`;
+  document.getElementById('incomingPreview').innerHTML = parsed.items.map(it=>
+    `<div class="incoming-preview-item"><i class="fa-solid fa-circle-dot"></i> ${escapeHtml(it.name)} <span style="color:var(--text-3);margin-left:auto;font-size:.52rem">${escapeHtml(it.category)}</span></div>`
+  ).join('');
+  document.getElementById('incomingSaveBtn').onclick = saveIncoming;
+  document.getElementById('incomingOverlay').classList.remove('hidden');
+  return true;
+}
+function dismissIncoming() {
+  document.getElementById('incomingOverlay').classList.add('hidden');
+  history.replaceState({view:'match'},'',location.pathname);
+  pendingIncoming=null;
+}
+function saveIncoming() {
+  if (!pendingIncoming) return;
+  const stored = getSharedLists();
+  stored.push({id:Date.now(),sharedBy:pendingIncoming.username,savedAt:new Date().toISOString(),items:pendingIncoming.items});
+  localStorage.setItem('xos_mca_shared',JSON.stringify(stored));
+  document.getElementById('incomingOverlay').classList.add('hidden');
+  pendingIncoming=null;
+  updateSharedBadge();
+  history.replaceState({view:'sharedlists'},'','#sharedlists');
+  switchViewInternal('sharedlists');
+  showToast('List saved');
+}
+
+/* ════════════════════════════════════════
+   SHARED LISTS
+════════════════════════════════════════ */
+function getSharedLists() { try { return JSON.parse(localStorage.getItem('xos_mca_shared')||'[]'); } catch { return []; } }
+function updateSharedBadge() {
+  const n=getSharedLists().length;
+  const b=document.getElementById('navSharedCount');
+  if(b){b.textContent=n;b.style.display=n>0?'inline-block':'none';}
+}
+function renderSharedLists() {
+  const container=document.getElementById('sharedContainer');
+  const lists=getSharedLists();
+  document.getElementById('sharedCount').textContent=`${lists.length} list${lists.length!==1?'s':''}`;
+  if (!lists.length) { container.innerHTML='<div class="empty-state"><i class="fa-solid fa-share-nodes"></i><p>No shared lists yet</p><div class="hint">When someone shares their priority list,<br>it appears here</div></div>'; return; }
+  container.innerHTML = lists.map((list,idx) => {
+    const letter=list.sharedBy.charAt(0).toUpperCase();
+    const date=new Date(list.savedAt).toLocaleDateString('en-IN',{day:'numeric',month:'short'});
+    return `<div class="shared-list-card" id="slcard_${idx}">
+      <div class="shared-list-header" onclick="toggleSharedCard(${idx})">
+        <div class="shared-list-mono">${letter}</div>
+        <div class="shared-list-info">
+          <div class="shared-list-name">${escapeHtml(list.sharedBy)}'s Priority List</div>
+          <div class="shared-list-meta">${list.items.length} colleges · saved ${date}</div>
+        </div>
+        <i class="fa-solid fa-chevron-down shared-list-chevron"></i>
+      </div>
+      <div class="shared-list-body">
+        ${list.items.map(it=>`<div class="shared-college-row">
+          <div class="shared-college-mono">${it.name.charAt(0).toUpperCase()}</div>
+          <div class="shared-college-info">
+            <div class="shared-college-name">${escapeHtml(it.name)}</div>
+            <div class="shared-college-sub">${it.id} · ${escapeHtml(it.category)}</div>
+          </div>
+        </div>`).join('')}
+        <button class="shared-open-btn" onclick="openSharedInPriority(${idx})">
+          <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:.55rem"></i> View as Priority List
+        </button>
+        <button class="shared-delete-btn" onclick="deleteSharedList(${idx})">
+          <i class="fa-regular fa-trash-can"></i> Remove
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+window.toggleSharedCard = idx => {
+  const c=document.getElementById('slcard_'+idx); if(!c)return;
+  const was=c.classList.contains('expanded');
+  document.querySelectorAll('.shared-list-card.expanded').forEach(x=>x.classList.remove('expanded'));
+  if(!was) c.classList.add('expanded');
+};
+window.openSharedInPriority = idx => {
+  const lists=getSharedLists(); const list=lists[idx]; if(!list)return;
+  switchView('priority');
+  renderPriority(list.items, `${list.sharedBy}'s List`);
+};
+window.deleteSharedList = idx => {
+  const lists=getSharedLists(); lists.splice(idx,1);
+  localStorage.setItem('xos_mca_shared',JSON.stringify(lists));
+  updateSharedBadge(); renderSharedLists();
+};
+
+/* ════════════════════════════════════════
+   INIT
+════════════════════════════════════════ */
+initOnboarding();
+initSidebar();
+initProfileDropdown();
+updatePriorityBadge();
+updateSharedBadge();
+
+// Main category dropdown
+makeDropdown('catTrigger','catMenu','catSearch','catMenuItems','selectedCategory','catTriggerText', null);
+// Smart search dropdown
+makeDropdown('ssCatTrigger','ssCatMenu','ssCatSearch','ssCatItems','ssCategory','ssCatText', cat => runSmartSearch(cat));
+
+document.getElementById('searchBtn').addEventListener('click', runMatch);
+document.getElementById('inputRank').addEventListener('keypress', e => { if(e.key==='Enter') runMatch(); });
+
+// History API init
+const rawHash = location.hash.replace('#','');
+if (rawHash.startsWith('SHARE/')) {
+  history.replaceState({view:'match'},'',location.pathname+'#match');
+  switchViewInternal('match');
+  setTimeout(() => checkIncomingShare(), 100);
+} else {
+  const initView = VALID_VIEWS.includes(rawHash) ? rawHash : 'match';
+  replaceView(initView);
+  switchViewInternal(initView);
+}
+
+if (!MCA_DATA.length) {
+  const area=document.getElementById('resultsArea');
+  area.innerHTML='<div class="no-results"><i class="fa-solid fa-circle-exclamation"></i><p>Add Mca.js next to this file to load data</p></div>';
+  area.style.display='block';
+}
+</script>
+</body>
+</html>
