@@ -159,6 +159,83 @@
     .dd-item.selected{color:var(--text-0)}
     .dd-item .dd-check{font-size:.5rem;color:var(--text-0);opacity:0}
     .dd-item.selected .dd-check{opacity:1}
+    /* ─── DARK MODE TOGGLE ─── */
+.theme-toggle-section {
+  padding: 16px 16px 20px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.theme-toggle-label {
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  color: var(--text-3);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.theme-toggle-label i {
+  font-size: 0.55rem;
+}
+
+.theme-pill {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  background: var(--surface-3);
+  border: 1px solid var(--border-strong);
+  border-radius: 24px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+  flex-shrink: 0;
+}
+
+.theme-pill.active {
+  background: var(--text-0);
+  border-color: var(--text-0);
+}
+
+.theme-pill-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  background: var(--text-2);
+  border-radius: 50%;
+  transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.theme-pill.active .theme-pill-knob {
+  left: 22px;
+  background: var(--bg);
+}
+    /* ─── LIGHT MODE ─── */
+body.light-mode {
+  --bg: #f5f5f5;
+  --surface: #ffffff;
+  --surface-2: #f0f0f0;
+  --surface-3: #e8e8e8;
+  --border: rgba(0,0,0,0.08);
+  --border-strong: rgba(0,0,0,0.15);
+  --border-focus: rgba(0,0,0,0.4);
+  --text-0: #000;
+  --text-1: #1a1a1a;
+  --text-2: #666;
+  --text-3: #999;
+}
+
+/* Adjust noise overlay for light mode */
+body.light-mode::after {
+  opacity: 0.15;
+}
 
     /* ── BUTTONS ── */
     .btn-primary{width:100%;background:var(--text-0);color:var(--bg);border:none;
@@ -438,6 +515,19 @@
   </style>
 </head>
 <body>
+  <div class="sidebar-footer">
+  <div class="sidebar-footer-text">x0s · Disha MCA v1.0</div>
+</div>
+
+<!-- DARK MODE TOGGLE -->
+<div class="theme-toggle-section">
+  <div class="theme-toggle-label">
+    <i class="fa-solid fa-moon"></i> Dark Mode
+  </div>
+  <div class="theme-pill active" id="themePill" onclick="toggleTheme()">
+    <div class="theme-pill-knob"></div>
+  </div>
+</div>
 
 <!-- ONBOARDING -->
 <div class="onboard-overlay" id="onboardModal">
@@ -1067,6 +1157,34 @@ window.handleProfileAdd = (idx, id, cat) => {
     btn.classList.add('added'); btn.innerHTML='<i class="fa-solid fa-check"></i> Saved';
   }
 };
+  /* ── DARK MODE TOGGLE ── */
+function initTheme() {
+  const saved = localStorage.getItem('xos_mca_theme');
+  // Default to dark mode if not set
+  if (saved === null || saved === 'dark') {
+    document.body.classList.remove('light-mode');
+    document.getElementById('themePill').classList.add('active');
+  } else {
+    document.body.classList.add('light-mode');
+    document.getElementById('themePill').classList.remove('active');
+  }
+}
+
+window.toggleTheme = function() {
+  const body = document.body;
+  const pill = document.getElementById('themePill');
+  const isDark = !body.classList.contains('light-mode');
+  
+  if (isDark) {
+    body.classList.add('light-mode');
+    pill.classList.remove('active');
+    localStorage.setItem('xos_mca_theme', 'light');
+  } else {
+    body.classList.remove('light-mode');
+    pill.classList.add('active');
+    localStorage.setItem('xos_mca_theme', 'dark');
+  }
+};
 
 /* ════════════════════════════════════════
    SHARE SYSTEM
@@ -1225,6 +1343,8 @@ window.deleteSharedList = idx => {
 initOnboarding();
 initSidebar();
 initProfileDropdown();
+initOnboarding();
+initTheme();  // ← ADD THIS
 updatePriorityBadge();
 updateSharedBadge();
 
