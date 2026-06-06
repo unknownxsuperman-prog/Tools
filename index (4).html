@@ -17,10 +17,30 @@
       --font-display:'Space Grotesk',sans-serif;--font-mono:'DM Mono',monospace;
       --r:14px;--r-sm:10px;--r-xs:6px;
     }
+
+    /* ─── LIGHT MODE ─── */
+    body.light-mode {
+      --bg: #f5f5f5;
+      --surface: #ffffff;
+      --surface-2: #f0f0f0;
+      --surface-3: #e8e8e8;
+      --border: rgba(0,0,0,0.08);
+      --border-strong: rgba(0,0,0,0.15);
+      --border-focus: rgba(0,0,0,0.4);
+      --text-0: #000;
+      --text-1: #1a1a1a;
+      --text-2: #666;
+      --text-3: #999;
+    }
+
+    body.light-mode::after {
+      opacity: 0.15;
+    }
+
     body{background:var(--bg);color:var(--text-1);font-family:var(--font-display);min-height:100vh;
       display:flex;justify-content:center;align-items:flex-start;padding:24px 16px 60px;
       -webkit-font-smoothing:antialiased;overflow-x:hidden}
-    body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.4;
+    body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9998;opacity:.4;
       background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E")}
 
     /* ── PANEL ── */
@@ -96,9 +116,62 @@
     .nav-badge{font-family:var(--font-mono);font-size:.52rem;font-weight:500;
       background:var(--text-0);color:var(--bg);padding:2px 7px;border-radius:20px;display:none}
     .nav-item.active .nav-badge{background:var(--bg);color:var(--text-0)}
-    .sidebar-footer{padding:20px 24px;border-top:1px solid var(--border)}
+    .sidebar-footer{padding:16px 24px;border-top:1px solid var(--border)}
     .sidebar-footer-text{font-family:var(--font-mono);font-size:.5rem;color:var(--text-3);
       letter-spacing:.15em;text-transform:uppercase}
+
+    /* ── DARK MODE TOGGLE ── */
+    .theme-toggle-section {
+      padding: 16px 24px 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .theme-toggle-label {
+      font-family: var(--font-mono);
+      font-size: 0.5rem;
+      color: var(--text-3);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .theme-toggle-label i {
+      font-size: 0.55rem;
+    }
+    .theme-pill {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      background: var(--surface-3);
+      border: 1px solid var(--border-strong);
+      border-radius: 24px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+      flex-shrink: 0;
+    }
+    .theme-pill.active {
+      background: var(--text-0);
+      border-color: var(--text-0);
+    }
+    .theme-pill-knob {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 18px;
+      height: 18px;
+      background: var(--text-2);
+      border-radius: 50%;
+      transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .theme-pill.active .theme-pill-knob {
+      left: 22px;
+      background: var(--bg);
+    }
 
     /* ── VIEWS ── */
     .view{display:none}
@@ -159,83 +232,6 @@
     .dd-item.selected{color:var(--text-0)}
     .dd-item .dd-check{font-size:.5rem;color:var(--text-0);opacity:0}
     .dd-item.selected .dd-check{opacity:1}
-    /* ─── DARK MODE TOGGLE ─── */
-.theme-toggle-section {
-  padding: 16px 16px 20px;
-  border-top: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.theme-toggle-label {
-  font-family: var(--font-mono);
-  font-size: 0.5rem;
-  color: var(--text-3);
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.theme-toggle-label i {
-  font-size: 0.55rem;
-}
-
-.theme-pill {
-  position: relative;
-  width: 44px;
-  height: 24px;
-  background: var(--surface-3);
-  border: 1px solid var(--border-strong);
-  border-radius: 24px;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
-  flex-shrink: 0;
-}
-
-.theme-pill.active {
-  background: var(--text-0);
-  border-color: var(--text-0);
-}
-
-.theme-pill-knob {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 18px;
-  height: 18px;
-  background: var(--text-2);
-  border-radius: 50%;
-  transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-}
-
-.theme-pill.active .theme-pill-knob {
-  left: 22px;
-  background: var(--bg);
-}
-    /* ─── LIGHT MODE ─── */
-body.light-mode {
-  --bg: #f5f5f5;
-  --surface: #ffffff;
-  --surface-2: #f0f0f0;
-  --surface-3: #e8e8e8;
-  --border: rgba(0,0,0,0.08);
-  --border-strong: rgba(0,0,0,0.15);
-  --border-focus: rgba(0,0,0,0.4);
-  --text-0: #000;
-  --text-1: #1a1a1a;
-  --text-2: #666;
-  --text-3: #999;
-}
-
-/* Adjust noise overlay for light mode */
-body.light-mode::after {
-  opacity: 0.15;
-}
 
     /* ── BUTTONS ── */
     .btn-primary{width:100%;background:var(--text-0);color:var(--bg);border:none;
@@ -385,7 +381,6 @@ body.light-mode::after {
     .profile-section{padding:20px 24px;border-bottom:1px solid var(--border)}
     .profile-section-label{font-family:var(--font-mono);font-size:.52rem;color:var(--text-3);
       letter-spacing:.15em;text-transform:uppercase;margin-bottom:12px}
-    /* profile category select (same as main dropdown but smaller) */
     .profile-cat-dd{position:relative;width:100%}
     .profile-cat-trigger{width:100%;background:var(--surface-2);border:1px solid var(--border);
       border-radius:var(--r-sm);padding:11px 14px;color:var(--text-0);
@@ -406,7 +401,6 @@ body.light-mode::after {
       border-radius:var(--r-xs);padding:6px 10px;color:var(--text-1);
       font-family:var(--font-mono);font-size:.65rem;outline:none;transition:border-color .2s}
     .profile-cat-search input:focus{border-color:var(--border-focus)}
-    /* profile results list */
     .profile-results-section{padding:0 24px}
     .profile-results-label{font-family:var(--font-mono);font-size:.52rem;color:var(--text-3);
       letter-spacing:.12em;text-transform:uppercase;margin:20px 0 12px;
@@ -515,19 +509,6 @@ body.light-mode::after {
   </style>
 </head>
 <body>
-  <div class="sidebar-footer">
-  <div class="sidebar-footer-text">x0s · Disha MCA v1.0</div>
-</div>
-
-<!-- DARK MODE TOGGLE -->
-<div class="theme-toggle-section">
-  <div class="theme-toggle-label">
-    <i class="fa-solid fa-moon"></i> Dark Mode
-  </div>
-  <div class="theme-pill active" id="themePill" onclick="toggleTheme()">
-    <div class="theme-pill-knob"></div>
-  </div>
-</div>
 
 <!-- ONBOARDING -->
 <div class="onboard-overlay" id="onboardModal">
@@ -607,6 +588,16 @@ body.light-mode::after {
     <div class="nav-item" data-view="sharedlists"><span class="nav-label"><i class="fa-solid fa-share-nodes"></i> Shared Lists</span><span class="nav-badge" id="navSharedCount">0</span></div>
   </nav>
   <div class="sidebar-footer"><div class="sidebar-footer-text">x0s · Disha MCA v1.0</div></div>
+  
+  <!-- DARK MODE TOGGLE -->
+  <div class="theme-toggle-section">
+    <div class="theme-toggle-label">
+      <i class="fa-solid fa-moon"></i> Dark Mode
+    </div>
+    <div class="theme-pill active" id="themePill" onclick="toggleTheme()">
+      <div class="theme-pill-knob"></div>
+    </div>
+  </div>
 </div>
 
 <!-- MAIN PANEL -->
@@ -725,6 +716,38 @@ function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 }
 function getShortName(name) { if(!name)return''; const i=name.indexOf(','); return i>0?name.slice(0,i).trim():name.trim(); }
+
+/* ════════════════════════════════════════
+   DARK MODE TOGGLE
+════════════════════════════════════════ */
+function initTheme() {
+  const saved = localStorage.getItem('xos_mca_theme');
+  if (saved === null || saved === 'dark') {
+    document.body.classList.remove('light-mode');
+    const pill = document.getElementById('themePill');
+    if (pill) pill.classList.add('active');
+  } else {
+    document.body.classList.add('light-mode');
+    const pill = document.getElementById('themePill');
+    if (pill) pill.classList.remove('active');
+  }
+}
+
+window.toggleTheme = function() {
+  const body = document.body;
+  const pill = document.getElementById('themePill');
+  const isDark = !body.classList.contains('light-mode');
+  
+  if (isDark) {
+    body.classList.add('light-mode');
+    if (pill) pill.classList.remove('active');
+    localStorage.setItem('xos_mca_theme', 'light');
+  } else {
+    body.classList.remove('light-mode');
+    if (pill) pill.classList.add('active');
+    localStorage.setItem('xos_mca_theme', 'dark');
+  }
+};
 
 /* ════════════════════════════════════════
    HISTORY API
@@ -1157,34 +1180,6 @@ window.handleProfileAdd = (idx, id, cat) => {
     btn.classList.add('added'); btn.innerHTML='<i class="fa-solid fa-check"></i> Saved';
   }
 };
-  /* ── DARK MODE TOGGLE ── */
-function initTheme() {
-  const saved = localStorage.getItem('xos_mca_theme');
-  // Default to dark mode if not set
-  if (saved === null || saved === 'dark') {
-    document.body.classList.remove('light-mode');
-    document.getElementById('themePill').classList.add('active');
-  } else {
-    document.body.classList.add('light-mode');
-    document.getElementById('themePill').classList.remove('active');
-  }
-}
-
-window.toggleTheme = function() {
-  const body = document.body;
-  const pill = document.getElementById('themePill');
-  const isDark = !body.classList.contains('light-mode');
-  
-  if (isDark) {
-    body.classList.add('light-mode');
-    pill.classList.remove('active');
-    localStorage.setItem('xos_mca_theme', 'light');
-  } else {
-    body.classList.remove('light-mode');
-    pill.classList.add('active');
-    localStorage.setItem('xos_mca_theme', 'dark');
-  }
-};
 
 /* ════════════════════════════════════════
    SHARE SYSTEM
@@ -1338,13 +1333,12 @@ window.deleteSharedList = idx => {
 };
 
 /* ════════════════════════════════════════
-   INIT – FIXED SHARE HANDLING
+   INIT
 ════════════════════════════════════════ */
 initOnboarding();
+initTheme();
 initSidebar();
 initProfileDropdown();
-initOnboarding();
-initTheme();  // ← ADD THIS
 updatePriorityBadge();
 updateSharedBadge();
 
@@ -1356,21 +1350,18 @@ makeDropdown('ssCatTrigger','ssCatMenu','ssCatSearch','ssCatItems','ssCategory',
 document.getElementById('searchBtn').addEventListener('click', runMatch);
 document.getElementById('inputRank').addEventListener('keypress', e => { if(e.key==='Enter') runMatch(); });
 
-// ─── Handle shared links immediately ───
+// Handle initial hash
 (function handleInitialHash() {
   const rawHash = location.hash.replace('#','');
   if (!rawHash) {
-    // Normal start – no hash
     replaceView('match');
     switchViewInternal('match');
     return;
   }
 
   if (rawHash.startsWith('SHARE/')) {
-    // 1. Parse while hash is still intact
     const parsed = parseShareHash(rawHash);
     if (parsed && parsed.items.length) {
-      // 2. Set up the incoming share modal
       pendingIncoming = parsed;
       document.getElementById('incomingTitle').innerHTML = `${escapeHtml(parsed.username)}'s<br><span>Priority List</span>`;
       document.getElementById('incomingMeta').textContent = `${parsed.items.length} college${parsed.items.length!==1?'s':''} shared`;
@@ -1379,19 +1370,15 @@ document.getElementById('inputRank').addEventListener('keypress', e => { if(e.ke
       ).join('');
       document.getElementById('incomingSaveBtn').onclick = saveIncoming;
       document.getElementById('incomingOverlay').classList.remove('hidden');
-
-      // 3. Remove the hash so the modal doesn’t appear again on refresh
       history.replaceState({view:'match'},'',location.pathname);
       switchViewInternal('match');
     } else {
-      // Invalid share data – clean up
       history.replaceState({view:'match'},'',location.pathname+'#match');
       switchViewInternal('match');
     }
     return;
   }
 
-  // Normal hash (e.g. #priority, #colleges)
   const initView = VALID_VIEWS.includes(rawHash) ? rawHash : 'match';
   replaceView(initView);
   switchViewInternal(initView);
@@ -1401,7 +1388,7 @@ if (!MCA_DATA.length) {
   const area=document.getElementById('resultsArea');
   area.innerHTML='<div class="no-results"><i class="fa-solid fa-circle-exclamation"></i><p>Add Mca.js next to this file to load data</p></div>';
   area.style.display='block';
-                                                               }
+}
 </script>
 </body>
 </html>
