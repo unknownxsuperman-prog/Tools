@@ -44,7 +44,6 @@
       overflow-x: hidden;
     }
 
-    /* ─── NOISE TEXTURE ─── */
     body::after {
       content: '';
       position: fixed;
@@ -55,7 +54,6 @@
       opacity: 0.4;
     }
 
-    /* ─── PANEL ─── */
     .panel {
       width: 100%;
       max-width: 500px;
@@ -65,7 +63,6 @@
     }
     @keyframes panelIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
 
-    /* ─── ONBOARDING ─── */
     .onboard-overlay {
       position: fixed;
       inset: 0;
@@ -141,7 +138,6 @@
     .onboard-btn:active { transform: scale(0.97); }
     .onboard-btn:disabled { opacity: 0.2; cursor: not-allowed; transform: none; }
 
-    /* ─── HEADER ─── */
     .header {
       display: flex;
       justify-content: space-between;
@@ -189,7 +185,6 @@
     }
     .menu-btn:hover { border-color: var(--border-strong); color: var(--text-0); }
 
-    /* ─── SIDEBAR ─── */
     .sidebar-backdrop {
       position: fixed;
       inset: 0;
@@ -273,11 +268,9 @@
     .sidebar-footer { padding: 20px 24px; border-top: 1px solid var(--border); }
     .sidebar-footer-text { font-family: var(--font-mono); font-size: 0.5rem; color: var(--text-3); letter-spacing: 0.15em; text-transform: uppercase; }
 
-    /* ─── VIEWS ─── */
     .view { display: none; }
     .view.active { display: block; }
 
-    /* ─── VIEW HEADER ─── */
     .view-header {
       display: flex;
       align-items: baseline;
@@ -289,7 +282,6 @@
     .view-header h3 { font-size: 1rem; font-weight: 700; color: var(--text-0); letter-spacing: -0.02em; }
     .view-count { font-family: var(--font-mono); font-size: 0.55rem; color: var(--text-3); letter-spacing: 0.08em; }
 
-    /* ─── FORM ─── */
     .field { margin-bottom: 24px; }
     .field-label {
       display: flex;
@@ -336,7 +328,6 @@
     .xos-input:hover { border-color: var(--border-strong); }
     .xos-input:focus { border-color: var(--border-focus); }
 
-    /* ─── DROPDOWN ─── */
     .xos-dropdown { position: relative; }
     .dd-trigger {
       width: 100%;
@@ -423,7 +414,6 @@
     .dd-item .dd-check { font-size: 0.5rem; color: var(--text-0); opacity: 0; }
     .dd-item.selected .dd-check { opacity: 1; }
 
-    /* ─── SUGGEST BOX ─── */
     .suggest-box {
       position: absolute;
       top: calc(100% + 4px);
@@ -456,7 +446,6 @@
     .suggest-item .suggest-arrow { font-size: 0.45rem; color: var(--text-3); }
     .suggest-item:hover .suggest-arrow { color: var(--text-0); }
 
-    /* ─── PRIMARY BUTTON ─── */
     .btn-primary {
       width: 100%;
       background: var(--text-0);
@@ -482,7 +471,6 @@
     .btn-primary:hover { opacity: 0.9; }
     .btn-primary:active { transform: scale(0.98); }
 
-    /* ─── RESULTS ─── */
     .results-container {
       margin-top: 32px;
       border-top: 1px solid var(--border);
@@ -626,7 +614,6 @@
     .btn-add i { font-size: 0.45rem; }
     .btn-add:hover { background: var(--text-0); color: var(--bg); border-color: var(--text-0); }
     .btn-add.added { color: var(--success); border-color: rgba(0,204,102,0.2); pointer-events: none; }
-    .btn-add.added:hover { background: transparent; color: var(--success); border-color: rgba(0,204,102,0.2); }
 
     .btn-specs {
       background: transparent;
@@ -673,7 +660,6 @@
     .spec-chip:hover { background: var(--surface-3); border-color: var(--border-strong); color: var(--text-0); }
     .spec-cutoff { color: var(--text-1); font-weight: 500; }
 
-    /* ─── NO RESULTS ─── */
     .no-results {
       text-align: center;
       padding: 48px 20px;
@@ -682,7 +668,6 @@
     .no-results i { font-size: 1.2rem; display: block; margin-bottom: 12px; opacity: 0.4; }
     .no-results p { font-size: 0.75rem; }
 
-    /* ─── PRIORITY LIST ─── */
     .empty-state {
       text-align: center;
       padding: 60px 20px;
@@ -779,7 +764,6 @@
     }
     .btn-remove:hover { background: rgba(255,59,59,0.07); }
 
-    /* ─── COLLEGES LIST ─── */
     .college-row {
       display: flex;
       align-items: center;
@@ -805,7 +789,6 @@
     .college-row-name { font-size: 0.78rem; font-weight: 600; color: var(--text-1); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .college-row-loc { font-family: var(--font-mono); font-size: 0.58rem; color: var(--text-3); margin-top: 3px; }
 
-    /* ─── BRANCHES LIST ─── */
     .branch-group { margin-bottom: 4px; }
     .branch-core {
       display: flex;
@@ -840,7 +823,6 @@
     }
     .branch-sub:hover { color: var(--text-2); border-color: var(--border-strong); }
 
-    /* ─── RANK PREDICTOR ─── */
     .pred-three-grid {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
@@ -970,7 +952,6 @@
     }
     .btn-predict-college i { font-size: 0.6rem; }
 
-    /* ─── PROFILE MODAL ─── */
     .profile-overlay {
       position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 6000;
       display: flex; align-items: flex-end; justify-content: center;
@@ -1029,7 +1010,6 @@
       border-radius: var(--r-xs); padding: 6px 10px;
     }
     .profile-saved-val.set { color: var(--text-0); border-color: var(--border-strong); }
-    /* profile dropdown inside sheet */
     .profile-dd { position: relative; }
     .profile-dd-trigger {
       width: 100%; background: var(--surface-2); border: 1px solid var(--border);
@@ -1068,7 +1048,6 @@
     .profile-dd-item.selected { color: var(--text-0); }
     .profile-dd-item .dd-check { font-size: 0.45rem; opacity: 0; }
     .profile-dd-item.selected .dd-check { opacity: 1; }
-    /* branch search input */
     .profile-branch-input {
       width: 100%; background: var(--surface-2); border: 1px solid var(--border);
       border-radius: var(--r-sm); padding: 11px 14px; color: var(--text-0);
@@ -1084,7 +1063,6 @@
       max-height: 180px; overflow-y: auto; animation: dropIn 0.15s ease;
     }
     .profile-branch-suggest.show { display: block; }
-    /* profile smart search results */
     .profile-results-section { padding: 0 24px 0; }
     .profile-results-label {
       font-family: var(--font-mono); font-size: 0.52rem; color: var(--text-3);
@@ -1120,7 +1098,6 @@
     .profile-college-card.expanded .profile-college-details { display: block; }
     .profile-college-card.expanded .profile-college-row { background: rgba(255,255,255,0.02); }
 
-    /* ─── SHARE BTN ─── */
     .btn-share-list {
       width: 28px; height: 28px; border-radius: var(--r-xs); background: transparent;
       border: 1px solid var(--border-strong); color: var(--text-2); cursor: pointer;
@@ -1129,7 +1106,6 @@
     }
     .btn-share-list:hover { background: var(--text-0); color: var(--bg); border-color: var(--text-0); }
 
-    /* ─── SHARE TOAST ─── */
     .share-toast {
       position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px);
       background: var(--surface-2); border: 1px solid var(--border-strong);
@@ -1142,7 +1118,6 @@
     .share-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
     .share-toast i { color: var(--success); font-size: 0.6rem; }
 
-    /* ─── SHARED LIST CARDS ─── */
     .shared-list-card {
       border: 1px solid var(--border); border-radius: var(--r);
       overflow: hidden; margin-bottom: 10px; background: var(--surface);
@@ -1195,7 +1170,6 @@
     }
     .shared-delete-btn:hover { background: rgba(255,59,59,0.07); }
 
-    /* ─── INCOMING SHARE MODAL ─── */
     .incoming-overlay {
       position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 8500;
       display: flex; align-items: center; justify-content: center;
@@ -1232,7 +1206,6 @@
     }
     .incoming-skip-btn:hover { color: var(--text-1); border-color: var(--border-strong); }
 
-    /* ─── SCROLLBAR ─── */
     ::-webkit-scrollbar { width: 4px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
@@ -1428,6 +1401,7 @@
     </div>
     <div id="branchesListContainer"></div>
   </div>
+  
   <!-- VIEW: PREDICTOR -->
   <div class="view" id="view-predictor">
     <div class="view-header">
@@ -1435,7 +1409,6 @@
       <span class="view-count">2PU + KCET</span>
     </div>
 
-    <!-- 2PU Marks -->
     <div class="field">
       <div class="field-label">
         <div class="field-step">1</div>
@@ -1464,7 +1437,6 @@
       </div>
     </div>
 
-    <!-- KCET Marks -->
     <div class="field">
       <div class="field-label">
         <div class="field-step">2</div>
@@ -1477,7 +1449,6 @@
       Predict Rank <i class="fa-solid fa-arrow-right" style="font-size:0.6rem;"></i>
     </button>
 
-    <!-- Result -->
     <div id="predictorResult" class="predictor-result" style="display:none;"></div>
   </div>
 </div>
@@ -1583,12 +1554,6 @@
   function replaceView(name) {
     history.replaceState({ view: name }, '', '#' + name);
   }
-  window.addEventListener('popstate', (e) => {
-    const view = (e.state && e.state.view) ? e.state.view : 'match';
-    switchViewInternal(view);
-    toggleSidebar(false);
-    closeProfile();
-  });
 
   /* ── SIDEBAR ── */
   function initSidebar() {
@@ -1606,22 +1571,7 @@
     document.getElementById('sidebarBackdrop').classList.toggle('open', open);
   }
 
-  /* ── VIEW SWITCH ── */
-  function switchView(name) {
-    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    document.getElementById(`view-${name}`).classList.add('active');
-    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-    document.querySelector(`.nav-item[data-view="${name}"]`).classList.add('active');
-    const titles = { match: 'Match Engine', priority: 'Priority List', colleges: 'Colleges', branches: 'Branches', predictor: 'Rank Predictor' };
-    const subs = { match: 'Core + Specializations · from your rank', priority: 'Your saved colleges', colleges: 'Browse all institutions', branches: 'Core & specializations', predictor: '2PU + KCET → Estimated rank' };
-    document.getElementById('headerTitle').textContent = titles[name] || '';
-    document.getElementById('headerSub').textContent = subs[name] || '';
-    if (name === 'priority') renderPriorityList();
-    if (name === 'colleges') renderCollegesList();
-    if (name === 'branches') renderBranchesList();
-  }
-
-  /* ── RANK PREDICTOR ENGINE ── */
+  /* ── RANK PREDICTOR ── */
   class KCETRankPredictor {
     constructor() {
       this.totalCandidates = 315000;
@@ -1755,21 +1705,16 @@
   let profilePrefs = { category: '', branch: '' };
 
   function openProfile() {
-    // Sync identity
     const name = localStorage.getItem('xos_username') || 'User';
     document.getElementById('profileBigMono').textContent = name.charAt(0).toUpperCase();
     document.getElementById('profileName').textContent = name;
-    // Load saved prefs
     try { profilePrefs = JSON.parse(localStorage.getItem('xos_profile_prefs') || '{}'); } catch { profilePrefs = {}; }
     profilePrefs.category = profilePrefs.category || '';
     profilePrefs.branch = profilePrefs.branch || '';
-    // Set category UI
     const catText = document.getElementById('profileCatText');
     if (profilePrefs.category) { catText.textContent = profilePrefs.category; catText.classList.remove('placeholder'); }
     else { catText.textContent = 'Select category'; catText.classList.add('placeholder'); }
-    // Set branch UI
     document.getElementById('profileBranchInput').value = profilePrefs.branch || '';
-    // Render results if prefs set
     renderProfileResults();
     toggleSidebar(false);
     document.getElementById('profileOverlay').classList.add('open');
@@ -1781,12 +1726,10 @@
   }
 
   function initProfileSheet() {
-    // Close on backdrop click
     document.getElementById('profileOverlay').addEventListener('click', (e) => {
       if (e.target === document.getElementById('profileOverlay')) closeProfile();
     });
 
-    // Category dropdown
     const trigger = document.getElementById('profileCatTrigger');
     const menu = document.getElementById('profileCatMenu');
     const search = document.getElementById('profileCatSearch');
@@ -1831,7 +1774,6 @@
     });
     renderCatItems('');
 
-    // Branch autocomplete
     const branchInput = document.getElementById('profileBranchInput');
     const branchSuggest = document.getElementById('profileBranchSuggest');
     branchInput.addEventListener('input', (e) => {
@@ -1873,7 +1815,6 @@
       return;
     }
     if (!window.XOS_CUTOFF) return;
-    // Find matching branch
     let matchingBranch = null;
     for (const b of Engine.branches) { if (b === branch || b.includes(branch)) { matchingBranch = b; break; } }
     if (!matchingBranch) {
@@ -1939,8 +1880,7 @@
   window.handleProfileAdd = function(idx, id, name, location, branch, cutoff, category) {
     const btn = document.getElementById(`pca_${idx}`);
     if (!btn || btn.classList.contains('added')) return;
-    const diff = 0; // profile view doesn't have user rank context
-    if (addToPriority({ id, name, location, branch, cutoff, diff, category })) {
+    if (addToPriority({ id, name, location, branch, cutoff, diff: 0, category })) {
       btn.classList.add('added');
       btn.innerHTML = '<i class="fa-solid fa-check"></i> Saved';
     }
@@ -2223,7 +2163,6 @@
       area.innerHTML = `<div class="no-results"><i class="fa-regular fa-folder-open"></i><p>No colleges found for this rank and branch</p></div>`;
       return;
     }
-    const specs = Engine.specializationMap.get(matchingCore) || [];
     let html = `<div class="result-stats">${finalResults.length} college${finalResults.length > 1 ? 's' : ''} · ${branchesToSearch.length} branch${branchesToSearch.length > 1 ? 'es' : ''} searched</div>`;
     finalResults.forEach((college, idx) => {
       const core = college.coreMatch;
@@ -2281,11 +2220,8 @@
     return str.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
   }
 
-  /* ══════════════════════════════════════════
-     SMART SEARCH VIEW
-  ══════════════════════════════════════════ */
+  /* ── SMART SEARCH ── */
   function initSmartSearch() {
-    // Branch autocomplete
     const branchInput = document.getElementById('ssInputBranch');
     const branchBox = document.getElementById('ssBranchSuggest');
     branchInput.addEventListener('input', (e) => {
@@ -2301,7 +2237,6 @@
     branchInput.addEventListener('blur', () => setTimeout(() => branchBox.style.display = 'none', 200));
     branchInput.addEventListener('change', () => runSmartSearch());
 
-    // Category dropdown (mirror of main one)
     const hidden = document.getElementById('ssInputCategory');
     const trigger = document.getElementById('ssCategoryTrigger');
     const menu = document.getElementById('ssCategoryMenu');
@@ -2407,23 +2342,27 @@
     const list = getPriority();
     if (!list.length) return null;
     const username = localStorage.getItem('xos_username') || 'User';
-    // Format: BASE#SHARE/username/ITEM1/ITEM2...
-    // Each item: id:branch:category (url-encoded)
     const base = location.origin + location.pathname;
-    const items = list.map(item =>
-      encodeURIComponent(item.id) + ':' + encodeURIComponent(item.branch||'') + ':' + encodeURIComponent(item.category||'')
-    ).join('|');
-    return base + '#SHARE/' + encodeURIComponent(username) + '/' + encodeURIComponent(items);
+    const encodedUsername = encodeURIComponent(username);
+    const items = list.map(item => {
+      return encodeURIComponent(item.id) + ',' + 
+             encodeURIComponent(item.branch || '') + ',' + 
+             encodeURIComponent(item.category || '') + ',' +
+             encodeURIComponent(item.name || '') + ',' +
+             encodeURIComponent(item.location || '') + ',' +
+             (item.cutoff || 0);
+    }).join(';');
+    return base + '#SHARE=' + encodedUsername + '=' + items;
   }
 
   function sharePriorityList() {
     const list = getPriority();
     if (!list.length) { showToast('Nothing to share yet'); return; }
     const url = buildShareURL();
-    if (navigator.share) {
-      navigator.share({ title: 'My Disha Priority List', url }).catch(()=>{});
-    } else if (navigator.clipboard) {
-      navigator.clipboard.writeText(url).then(() => showToast('Link copied to clipboard'));
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(() => showToast('Link copied!')).catch(() => {
+        prompt('Copy this link:', url);
+      });
     } else {
       prompt('Copy this link:', url);
     }
@@ -2441,57 +2380,31 @@
     setTimeout(() => t.classList.remove('show'), 2800);
   }
 
-  /* ── PARSE INCOMING SHARE ── */
   function parseShareHash(hash) {
-    if (!hash.startsWith('SHARE/')) return null;
-    const rest = hash.slice(6);
-    const slashIdx = rest.indexOf('/');
-    if (slashIdx === -1) return null;
-    const username = decodeURIComponent(rest.slice(0, slashIdx));
-    const itemsRaw = decodeURIComponent(rest.slice(slashIdx + 1));
+    if (!hash.startsWith('SHARE=')) return null;
+    const content = hash.substring(6);
+    const eqIndex = content.indexOf('=');
+    if (eqIndex === -1) return null;
+    const username = decodeURIComponent(content.substring(0, eqIndex));
+    const itemsRaw = content.substring(eqIndex + 1);
+    if (!itemsRaw) return null;
     const items = [];
-    for (const part of itemsRaw.split('|')) {
+    const parts = itemsRaw.split(';');
+    for (const part of parts) {
       if (!part) continue;
-      const [id, branch, cat] = part.split(':').map(s => { try { return decodeURIComponent(s||''); } catch { return s||''; } });
-      if (id) items.push({ id, branch: branch||'', cat: cat||'' });
+      const fields = part.split(',');
+      if (fields.length >= 3) {
+        items.push({
+          id: decodeURIComponent(fields[0] || ''),
+          branch: decodeURIComponent(fields[1] || ''),
+          category: decodeURIComponent(fields[2] || ''),
+          name: fields[3] ? decodeURIComponent(fields[3]) : decodeURIComponent(fields[0]),
+          location: fields[4] ? decodeURIComponent(fields[4]) : 'Karnataka',
+          cutoff: fields[5] ? parseInt(fields[5]) : null
+        });
+      }
     }
     return { username, items };
-  }
-
-  function checkIncomingShare() {
-  const hash = location.hash.replace('#', '');
-  if (!hash.startsWith('SHARE/')) return false;
-  const parsed = parseShareHash(hash);
-  if (!parsed || !parsed.items.length) return false;
-  
-  // Ensure data is loaded
-  if (!window.XOS_CUTOFF || Engine.branches.length === 0) {
-    setTimeout(checkIncomingShare, 100);
-    return true; // will retry
-  }
-  
-  // Resolve college names from IDs
-  const resolved = [];
-  for (const item of parsed.items) {
-    const college = window.XOS_CUTOFF.find(c => c.id === item.id);
-    resolved.push({
-      id: item.id,
-      name: college ? college.name : item.id,
-      location: college ? (college.location||'Karnataka') : '',
-      branch: item.branch,
-      category: item.cat,
-      cutoff: college ? getCutoffForBranch(college, item.branch, item.cat) : null
-    });
-  }
-  showIncomingModal(parsed.username, resolved);
-  return true;
-  }
-
-  function getCutoffForBranch(college, branchName, cat) {
-    if (!college.branches) return null;
-    const code = Engine.branchToCode.get(branchName);
-    if (!code || !college.branches[code]) return null;
-    return college.branches[code][cat] || null;
   }
 
   let pendingIncomingData = null;
@@ -2499,10 +2412,19 @@
   function showIncomingModal(sharedBy, items) {
     pendingIncomingData = { sharedBy, items };
     document.getElementById('incomingTitle').innerHTML = `${escapeHtml(sharedBy)}'s<br><span>Priority List</span>`;
-    document.getElementById('incomingMeta').textContent = `${items.length} college${items.length!==1?'s':''} shared`;
-    document.getElementById('incomingPreview').innerHTML = items.map(it =>
-      `<div class="incoming-preview-item"><i class="fa-solid fa-circle-dot"></i> ${escapeHtml(getShortName(it.name))} <span style="color:var(--text-3);margin-left:auto;font-size:0.52rem;">${escapeHtml(it.branch.length>20?it.branch.slice(0,20)+'…':it.branch)}</span></div>`
-    ).join('');
+    document.getElementById('incomingMeta').textContent = `${items.length} college${items.length !== 1 ? 's' : ''} shared`;
+    document.getElementById('incomingPreview').innerHTML = items.slice(0, 8).map(it => {
+      const shortName = getShortName(it.name);
+      const shortBranch = it.branch && it.branch.length > 25 ? it.branch.slice(0, 25) + '…' : (it.branch || '');
+      return `<div class="incoming-preview-item">
+        <i class="fa-solid fa-circle-dot"></i> ${escapeHtml(shortName)} 
+        <span style="color:var(--text-3);margin-left:auto;font-size:0.52rem;">${escapeHtml(shortBranch)}</span>
+      </div>`;
+    }).join('');
+    if (items.length > 8) {
+      document.getElementById('incomingPreview').innerHTML += 
+        `<div class="incoming-preview-item" style="color:var(--text-3);justify-content:center;">+ ${items.length - 8} more colleges</div>`;
+    }
     document.getElementById('incomingSaveBtn').onclick = saveIncomingList;
     document.getElementById('incomingOverlay').classList.remove('hidden');
   }
@@ -2510,6 +2432,7 @@
   function dismissIncoming() {
     document.getElementById('incomingOverlay').classList.add('hidden');
     history.replaceState({ view: 'match' }, '', location.pathname + '#match');
+    switchViewInternal('match');
     pendingIncomingData = null;
   }
 
@@ -2527,14 +2450,15 @@
     document.getElementById('incomingOverlay').classList.add('hidden');
     pendingIncomingData = null;
     updateSharedBadge();
-    // clear the share hash so refreshing doesn't re-show modal
     history.replaceState({ view: 'sharedlists' }, '', location.pathname + '#sharedlists');
     switchViewInternal('sharedlists');
-    showToast(`Saved ${entry.sharedBy}\'s list`);
+    showToast(`Saved ${entry.sharedBy}'s list`);
   }
 
-  /* ── SHARED LISTS STORAGE ── */
-  function getSharedLists() { try { return JSON.parse(localStorage.getItem('xos_shared_lists')||'[]'); } catch { return []; } }
+  function getSharedLists() { 
+    try { return JSON.parse(localStorage.getItem('xos_shared_lists') || '[]'); } 
+    catch { return []; } 
+  }
 
   function updateSharedBadge() {
     const n = getSharedLists().length;
@@ -2545,14 +2469,18 @@
   function renderSharedLists() {
     const container = document.getElementById('sharedListsContainer');
     const lists = getSharedLists();
-    document.getElementById('sharedListsCount').textContent = `${lists.length} list${lists.length!==1?'s':''}`;
+    document.getElementById('sharedListsCount').textContent = `${lists.length} list${lists.length !== 1 ? 's' : ''}`;
     if (!lists.length) {
-      container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-share-nodes"></i><p>No shared lists yet</p><div class="hint">When someone shares their priority list with you,<br>it appears here</div></div>`;
+      container.innerHTML = `<div class="empty-state">
+        <i class="fa-solid fa-share-nodes"></i>
+        <p>No shared lists yet</p>
+        <div class="hint">When someone shares their priority list,<br>it appears here</div>
+      </div>`;
       return;
     }
     container.innerHTML = lists.map((list, idx) => {
       const letter = list.sharedBy.charAt(0).toUpperCase();
-      const date = new Date(list.savedAt).toLocaleDateString('en-IN', {day:'numeric',month:'short'});
+      const date = new Date(list.savedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
       return `<div class="shared-list-card" id="slcard_${idx}">
         <div class="shared-list-card-header" onclick="toggleSharedCard(${idx})">
           <div class="shared-list-mono">${letter}</div>
@@ -2568,7 +2496,7 @@
               <div class="shared-college-mono">${getShortName(it.name).charAt(0).toUpperCase()}</div>
               <div class="shared-college-info">
                 <div class="shared-college-name">${escapeHtml(getShortName(it.name))}</div>
-                <div class="shared-college-sub">${escapeHtml(it.branch.length>30?it.branch.slice(0,30)+'…':it.branch)} · ${escapeHtml(it.category)}</div>
+                <div class="shared-college-sub">${escapeHtml((it.branch && it.branch.length > 30) ? it.branch.slice(0,30)+'…' : (it.branch || ''))} · ${escapeHtml(it.category || '')}</div>
               </div>
             </div>`).join('')}
           <button class="shared-open-btn" onclick="openSharedListInPriority(${idx})">
@@ -2595,7 +2523,9 @@
     const list = lists[idx];
     if (!list) return;
     switchView('priority');
-    _renderPriorityListCore(list.items, `${list.sharedBy}'s List`);
+    if (typeof renderPriorityList === 'function') {
+      renderPriorityList(list.items, `${list.sharedBy}'s List`);
+    }
   };
 
   window.deleteSharedList = function(idx) {
@@ -2606,456 +2536,135 @@
     renderSharedLists();
   };
 
-  /* ── renderPriorityList is already handled by _renderPriorityListCore ── */
+  /* ══════════════════════════════════════════
+     INIT
+  ══════════════════════════════════════════ */
+  initOnboarding();
+  if (buildMasterData()) {
+    populateCategoryDropdown();
+    setupAutocomplete();
+    initSidebar();
+    initProfileSheet();
+    initSmartSearch();
+    updatePriorityBadge();
+    updateSharedBadge();
+    initPredictor();
+    document.getElementById('searchBtn').addEventListener('click', searchColleges);
+    document.getElementById('inputRank').addEventListener('keypress', (e) => { if (e.key === 'Enter') searchColleges(); });
 
-  /* ── INIT ── */
-initOnboarding();
-if (buildMasterData()) {
-  populateCategoryDropdown();
-  setupAutocomplete();
-  initSidebar();
-  initProfileSheet();
-  initSmartSearch();
-  updatePriorityBadge();
-  updateSharedBadge();
-  initPredictor();
-  document.getElementById('searchBtn').addEventListener('click', searchColleges);
-  document.getElementById('inputRank').addEventListener('keypress', (e) => { if (e.key === 'Enter') searchColleges(); });
-
-  // Define switchViewInternal first
-  window.switchViewInternal = function(name) {
-    const validViews = ['match','priority','colleges','branches','predictor','smartsearch','sharedlists'];
-    const titles = { 
-      match: 'Match Engine', priority: 'Priority List', colleges: 'Colleges', 
-      branches: 'Branches', predictor: 'Rank Predictor',
-      smartsearch: 'Smart Search', sharedlists: 'Shared Lists' 
+    window.switchViewInternal = function(name) {
+      const titles = { 
+        match: 'Match Engine', priority: 'Priority List', colleges: 'Colleges', 
+        branches: 'Branches', predictor: 'Rank Predictor',
+        smartsearch: 'Smart Search', sharedlists: 'Shared Lists' 
+      };
+      const subs = { 
+        match: 'Core + Specializations · from your rank', priority: 'Your saved colleges', 
+        colleges: 'Browse all institutions', branches: 'Core & specializations', 
+        predictor: '2PU + KCET → Estimated rank',
+        smartsearch: 'All colleges by branch & category', sharedlists: 'Priority lists shared with you' 
+      };
+      
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      const vEl = document.getElementById(`view-${name}`);
+      if (vEl) vEl.classList.add('active');
+      
+      document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+      const nEl = document.querySelector(`.nav-item[data-view="${name}"]`);
+      if (nEl) nEl.classList.add('active');
+      
+      if (titles[name]) document.getElementById('headerTitle').textContent = titles[name];
+      if (subs[name]) document.getElementById('headerSub').textContent = subs[name];
+      
+      if (name === 'priority') renderPriorityList();
+      if (name === 'colleges') renderCollegesList();
+      if (name === 'branches') renderBranchesList();
+      if (name === 'sharedlists') renderSharedLists();
     };
-    const subs = { 
-      match: 'Core + Specializations · from your rank', priority: 'Your saved colleges', 
-      colleges: 'Browse all institutions', branches: 'Core & specializations', 
-      predictor: '2PU + KCET → Estimated rank',
-      smartsearch: 'All colleges by branch & category', sharedlists: 'Priority lists shared with you' 
+
+    window.switchView = function(name) {
+      switchViewInternal(name);
+      pushView(name);
     };
-    
-    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    const vEl = document.getElementById(`view-${name}`);
-    if (vEl) vEl.classList.add('active');
-    
-    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-    const nEl = document.querySelector(`.nav-item[data-view="${name}"]`);
-    if (nEl) nEl.classList.add('active');
-    
-    if (titles[name]) document.getElementById('headerTitle').textContent = titles[name];
-    if (subs[name]) document.getElementById('headerSub').textContent = subs[name];
-    
-    if (name === 'priority') renderPriorityList();
-    if (name === 'colleges') renderCollegesList();
-    if (name === 'branches') renderBranchesList();
-    if (name === 'sharedlists') renderSharedLists();
-  };
 
-  // Now define switchView
-  window.switchView = function(name) {
-    switchViewInternal(name);
-    pushView(name);
-  };
+    const _origRenderPriorityList = renderPriorityList;
+    renderPriorityList = function(overrideList, overrideTitle) {
+      if (overrideList && overrideTitle) {
+        const container = document.getElementById('priorityListContainer');
+        document.getElementById('priorityViewTitle').textContent = overrideTitle;
+        document.getElementById('priorityViewCount').textContent = `${overrideList.length} colleges`;
+        document.getElementById('sharePriorityBtn').style.display = 'none';
+        container.innerHTML = overrideList.map((item, i) => {
+          const letter = getShortName(item.name).charAt(0).toUpperCase();
+          return `<div class="priority-card" id="slpc_${i}">
+            <div class="priority-card-row" onclick="togglePriorityCard2(${i})">
+              <div class="p-mono">${letter}</div>
+              <div class="p-info">
+                <div class="p-name">${escapeHtml(item.name)}</div>
+                <div class="p-branch">${escapeHtml(item.branch || '')}</div>
+              </div>
+              <i class="fa-solid fa-chevron-down p-chevron"></i>
+            </div>
+            <div class="p-details" id="slpd_${i}" style="display:none;">
+              <div class="p-detail-row"><span class="p-detail-label">College ID</span><span class="p-detail-value">${item.id}</span></div>
+              <div class="p-detail-row"><span class="p-detail-label">Branch</span><span class="p-detail-value" style="font-size:0.7rem;">${escapeHtml(item.branch || '')}</span></div>
+              <div class="p-detail-row"><span class="p-detail-label">Category</span><span class="p-detail-value">${escapeHtml(item.category || '')}</span></div>
+              ${item.cutoff ? `<div class="p-detail-row"><span class="p-detail-label">Cutoff</span><span class="p-detail-value">${item.cutoff.toLocaleString('en-IN')}</span></div>` : ''}
+              <div class="p-detail-row"><span class="p-detail-label">Location</span><span class="p-detail-value">${escapeHtml(item.location || '—')}</span></div>
+            </div>
+          </div>`;
+        }).join('');
+        return;
+      }
+      document.getElementById('priorityViewTitle').textContent = 'Priority List';
+      document.getElementById('sharePriorityBtn').style.display = '';
+      _origRenderPriorityList();
+    };
 
-  // Override the original renderPriorityList to handle shared list view reset
-  const _origRenderPriorityList = renderPriorityList;
-  renderPriorityList = function(over/* ══════════════════════════════════════════
-   SHARE SYSTEM (FIXED)
-══════════════════════════════════════════ */
-function buildShareURL() {
-  const list = getPriority();
-  if (!list.length) return null;
-  const username = localStorage.getItem('xos_username') || 'User';
-  
-  // Build simple encoded string
-  const base = location.origin + location.pathname;
-  const encodedUsername = encodeURIComponent(username);
-  const items = list.map(item => {
-    return encodeURIComponent(item.id) + ',' + 
-           encodeURIComponent(item.branch || '') + ',' + 
-           encodeURIComponent(item.category || '') + ',' +
-           encodeURIComponent(item.name || '') + ',' +
-           encodeURIComponent(item.location || '') + ',' +
-           (item.cutoff || 0);
-  }).join(';');
-  
-  return base + '#SHARE=' + encodedUsername + '=' + items;
-}
-
-function sharePriorityList() {
-  const list = getPriority();
-  if (!list.length) { showToast('Nothing to share yet'); return; }
-  const url = buildShareURL();
-  
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(url).then(() => showToast('Link copied to clipboard!')).catch(() => {
-      prompt('Copy this link:', url);
-    });
-  } else {
-    prompt('Copy this link:', url);
-  }
-}
-
-function parseShareHash(hash) {
-  // Format: SHARE=username=id,branch,cat,name,location,cutoff;id,branch,cat,name,location,cutoff;...
-  if (!hash.startsWith('SHARE=')) return null;
-  
-  const content = hash.substring(6);
-  const eqIndex = content.indexOf('=');
-  if (eqIndex === -1) return null;
-  
-  const username = decodeURIComponent(content.substring(0, eqIndex));
-  const itemsRaw = content.substring(eqIndex + 1);
-  
-  if (!itemsRaw) return null;
-  
-  const items = [];
-  const parts = itemsRaw.split(';');
-  
-  for (const part of parts) {
-    if (!part) continue;
-    const fields = part.split(',');
-    if (fields.length >= 3) {
-      items.push({
-        id: decodeURIComponent(fields[0] || ''),
-        branch: decodeURIComponent(fields[1] || ''),
-        category: decodeURIComponent(fields[2] || ''),
-        name: fields[3] ? decodeURIComponent(fields[3]) : decodeURIComponent(fields[0]),
-        location: fields[4] ? decodeURIComponent(fields[4]) : 'Karnataka',
-        cutoff: fields[5] ? parseInt(fields[5]) : null
+    window.togglePriorityCard2 = function(idx) {
+      const card = document.getElementById(`slpc_${idx}`);
+      if (!card) return;
+      const det = document.getElementById(`slpd_${idx}`);
+      const was = card.classList.contains('expanded');
+      document.querySelectorAll('[id^="slpc_"].expanded').forEach(c => {
+        c.classList.remove('expanded');
+        const d = document.getElementById('slpd_' + c.id.replace('slpc_',''));
+        if (d) d.style.display = 'none';
       });
-    }
-  }
-  
-  return { username, items };
-}
-
-function checkIncomingShare() {
-  const hash = location.hash.replace('#', '');
-  if (!hash.startsWith('SHARE=')) return false;
-  
-  // Parse immediately
-  const parsed = parseShareHash(hash);
-  if (!parsed || !parsed.items.length) return false;
-  
-  // Show modal with parsed data directly
-  showIncomingModal(parsed.username, parsed.items);
-  return true;
-}
-
-function getCutoffForBranch(college, branchName, cat) {
-  if (!college || !college.branches) return null;
-  // Try to find the branch code
-  for (const [code, name] of Engine.codeToBranch) {
-    if (name === branchName) {
-      const branchData = college.branches[code];
-      if (branchData && branchData[cat] !== undefined) {
-        return branchData[cat];
-      }
-    }
-  }
-  return null;
-}
-
-let pendingIncomingData = null;
-
-function showIncomingModal(sharedBy, items) {
-  pendingIncomingData = { sharedBy, items };
-  document.getElementById('incomingTitle').innerHTML = `${escapeHtml(sharedBy)}'s<br><span>Priority List</span>`;
-  document.getElementById('incomingMeta').textContent = `${items.length} college${items.length !== 1 ? 's' : ''} shared`;
-  
-  document.getElementById('incomingPreview').innerHTML = items.slice(0, 8).map(it => {
-    const shortName = getShortName(it.name);
-    const shortBranch = it.branch && it.branch.length > 25 ? it.branch.slice(0, 25) + '…' : (it.branch || '');
-    return `<div class="incoming-preview-item">
-      <i class="fa-solid fa-circle-dot"></i> ${escapeHtml(shortName)} 
-      <span style="color:var(--text-3);margin-left:auto;font-size:0.52rem;">${escapeHtml(shortBranch)}</span>
-    </div>`;
-  }).join('');
-  
-  if (items.length > 8) {
-    document.getElementById('incomingPreview').innerHTML += 
-      `<div class="incoming-preview-item" style="color:var(--text-3);justify-content:center;">+ ${items.length - 8} more colleges</div>`;
-  }
-  
-  document.getElementById('incomingSaveBtn').onclick = saveIncomingList;
-  document.getElementById('incomingOverlay').classList.remove('hidden');
-}
-
-function dismissIncoming() {
-  document.getElementById('incomingOverlay').classList.add('hidden');
-  history.replaceState({ view: 'match' }, '', location.pathname + '#match');
-  switchViewInternal('match');
-  pendingIncomingData = null;
-}
-
-function saveIncomingList() {
-  if (!pendingIncomingData) return;
-  
-  // Try to enrich items with real cutoff data if data is loaded
-  const enrichedItems = pendingIncomingData.items.map(item => {
-    if (window.XOS_CUTOFF && Engine.branches.length > 0) {
-      const college = window.XOS_CUTOFF.find(c => c.id === item.id);
-      if (college) {
-        const cutoff = getCutoffForBranch(college, item.branch, item.category);
-        return {
-          ...item,
-          name: college.name || item.name,
-          location: college.location || item.location,
-          cutoff: cutoff || item.cutoff
-        };
-      }
-    }
-    return item;
-  });
-  
-  const stored = getSharedLists();
-  const entry = {
-    id: Date.now(),
-    sharedBy: pendingIncomingData.sharedBy,
-    savedAt: new Date().toISOString(),
-    items: enrichedItems
-  };
-  stored.push(entry);
-  localStorage.setItem('xos_shared_lists', JSON.stringify(stored));
-  
-  document.getElementById('incomingOverlay').classList.add('hidden');
-  pendingIncomingData = null;
-  updateSharedBadge();
-  
-  // Clean URL and navigate to shared lists
-  history.replaceState({ view: 'sharedlists' }, '', location.pathname + '#sharedlists');
-  switchViewInternal('sharedlists');
-  showToast(`Saved ${entry.sharedBy}'s list`);
-}
-
-/* ── SHARED LISTS STORAGE ── */
-function getSharedLists() { 
-  try { return JSON.parse(localStorage.getItem('xos_shared_lists') || '[]'); } 
-  catch { return []; } 
-}
-
-function updateSharedBadge() {
-  const n = getSharedLists().length;
-  const b = document.getElementById('navSharedCount');
-  if (b) { b.textContent = n; b.style.display = n > 0 ? 'inline-block' : 'none'; }
-}
-
-function renderSharedLists() {
-  const container = document.getElementById('sharedListsContainer');
-  const lists = getSharedLists();
-  document.getElementById('sharedListsCount').textContent = `${lists.length} list${lists.length !== 1 ? 's' : ''}`;
-  
-  if (!lists.length) {
-    container.innerHTML = `<div class="empty-state">
-      <i class="fa-solid fa-share-nodes"></i>
-      <p>No shared lists yet</p>
-      <div class="hint">When someone shares their priority list,<br>it appears here</div>
-    </div>`;
-    return;
-  }
-  
-  container.innerHTML = lists.map((list, idx) => {
-    const letter = list.sharedBy.charAt(0).toUpperCase();
-    const date = new Date(list.savedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
-    
-    return `<div class="shared-list-card" id="slcard_${idx}">
-      <div class="shared-list-card-header" onclick="toggleSharedCard(${idx})">
-        <div class="shared-list-mono">${letter}</div>
-        <div class="shared-list-info">
-          <div class="shared-list-name">${escapeHtml(list.sharedBy)}'s Priority List</div>
-          <div class="shared-list-meta">${list.items.length} colleges · saved ${date}</div>
-        </div>
-        <i class="fa-solid fa-chevron-down shared-list-chevron"></i>
-      </div>
-      <div class="shared-list-body" id="slbody_${idx}">
-        ${list.items.map(it => `
-          <div class="shared-college-row">
-            <div class="shared-college-mono">${getShortName(it.name).charAt(0).toUpperCase()}</div>
-            <div class="shared-college-info">
-              <div class="shared-college-name">${escapeHtml(getShortName(it.name))}</div>
-              <div class="shared-college-sub">${escapeHtml((it.branch && it.branch.length > 30) ? it.branch.slice(0,30)+'…' : (it.branch || ''))} · ${escapeHtml(it.category || '')}</div>
-            </div>
-          </div>`).join('')}
-        <button class="shared-open-btn" onclick="openSharedListInPriority(${idx})">
-          <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.55rem;"></i> View as Priority List
-        </button>
-        <button class="shared-delete-btn" onclick="deleteSharedList(${idx})">
-          <i class="fa-regular fa-trash-can"></i> Remove
-        </button>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-window.toggleSharedCard = function(idx) {
-  const card = document.getElementById(`slcard_${idx}`);
-  if (!card) return;
-  const was = card.classList.contains('expanded');
-  document.querySelectorAll('.shared-list-card.expanded').forEach(c => c.classList.remove('expanded'));
-  if (!was) card.classList.add('expanded');
-};
-
-window.openSharedListInPriority = function(idx) {
-  const lists = getSharedLists();
-  const list = lists[idx];
-  if (!list) return;
-  switchView('priority');
-  // Use the override capability of renderPriorityList
-  if (typeof renderPriorityList === 'function') {
-    renderPriorityList(list.items, `${list.sharedBy}'s List`);
-  }
-};
-
-window.deleteSharedList = function(idx) {
-  let lists = getSharedLists();
-  lists.splice(idx, 1);
-  localStorage.setItem('xos_shared_lists', JSON.stringify(lists));
-  updateSharedBadge();
-  renderSharedLists();
-};
-
-/* ── INIT ── */
-initOnboarding();
-if (buildMasterData()) {
-  populateCategoryDropdown();
-  setupAutocomplete();
-  initSidebar();
-  initProfileSheet();
-  initSmartSearch();
-  updatePriorityBadge();
-  updateSharedBadge();
-  initPredictor();
-  document.getElementById('searchBtn').addEventListener('click', searchColleges);
-  document.getElementById('inputRank').addEventListener('keypress', (e) => { if (e.key === 'Enter') searchColleges(); });
-
-  // Define switchViewInternal first
-  window.switchViewInternal = function(name) {
-    const titles = { 
-      match: 'Match Engine', priority: 'Priority List', colleges: 'Colleges', 
-      branches: 'Branches', predictor: 'Rank Predictor',
-      smartsearch: 'Smart Search', sharedlists: 'Shared Lists' 
+      if (!was) { card.classList.add('expanded'); if (det) det.style.display = 'block'; }
     };
-    const subs = { 
-      match: 'Core + Specializations · from your rank', priority: 'Your saved colleges', 
-      colleges: 'Browse all institutions', branches: 'Core & specializations', 
-      predictor: '2PU + KCET → Estimated rank',
-      smartsearch: 'All colleges by branch & category', sharedlists: 'Priority lists shared with you' 
-    };
-    
-    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    const vEl = document.getElementById(`view-${name}`);
-    if (vEl) vEl.classList.add('active');
-    
-    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-    const nEl = document.querySelector(`.nav-item[data-view="${name}"]`);
-    if (nEl) nEl.classList.add('active');
-    
-    if (titles[name]) document.getElementById('headerTitle').textContent = titles[name];
-    if (subs[name]) document.getElementById('headerSub').textContent = subs[name];
-    
-    if (name === 'priority') renderPriorityList();
-    if (name === 'colleges') renderCollegesList();
-    if (name === 'branches') renderBranchesList();
-    if (name === 'sharedlists') renderSharedLists();
-  };
 
-  // Now define switchView
-  window.switchView = function(name) {
-    switchViewInternal(name);
-    pushView(name);
-  };
+    (function handleInitialHash() {
+      const rawHash = location.hash.replace('#', '');
+      
+      if (rawHash.startsWith('SHARE=')) {
+        const parsed = parseShareHash(rawHash);
+        if (parsed && parsed.items.length) {
+          showIncomingModal(parsed.username, parsed.items);
+        }
+        history.replaceState({ view: 'match' }, '', location.pathname + '#match');
+        switchViewInternal('match');
+        return;
+      }
+      
+      const validViews = ['match','priority','colleges','branches','predictor','smartsearch','sharedlists'];
+      const initView = validViews.includes(rawHash) ? rawHash : 'match';
+      replaceView(initView);
+      switchViewInternal(initView);
+    })();
 
-  // Override renderPriorityList to handle shared list view
-  const _origRenderPriorityList = renderPriorityList;
-  renderPriorityList = function(overrideList, overrideTitle) {
-    if (overrideList && overrideTitle) {
-      // Called from openSharedListInPriority
-      const container = document.getElementById('priorityListContainer');
-      document.getElementById('priorityViewTitle').textContent = overrideTitle;
-      document.getElementById('priorityViewCount').textContent = `${overrideList.length} colleges`;
-      document.getElementById('sharePriorityBtn').style.display = 'none';
-      container.innerHTML = overrideList.map((item, i) => {
-        const letter = getShortName(item.name).charAt(0).toUpperCase();
-        return `<div class="priority-card" id="slpc_${i}">
-          <div class="priority-card-row" onclick="togglePriorityCard2(${i})">
-            <div class="p-mono">${letter}</div>
-            <div class="p-info">
-              <div class="p-name">${escapeHtml(item.name)}</div>
-              <div class="p-branch">${escapeHtml(item.branch || '')}</div>
-            </div>
-            <i class="fa-solid fa-chevron-down p-chevron"></i>
-          </div>
-          <div class="p-details" id="slpd_${i}" style="display:none;">
-            <div class="p-detail-row"><span class="p-detail-label">College ID</span><span class="p-detail-value">${item.id}</span></div>
-            <div class="p-detail-row"><span class="p-detail-label">Branch</span><span class="p-detail-value" style="font-size:0.7rem;">${escapeHtml(item.branch || '')}</span></div>
-            <div class="p-detail-row"><span class="p-detail-label">Category</span><span class="p-detail-value">${escapeHtml(item.category || '')}</span></div>
-            ${item.cutoff ? `<div class="p-detail-row"><span class="p-detail-label">Cutoff</span><span class="p-detail-value">${item.cutoff.toLocaleString('en-IN')}</span></div>` : ''}
-            <div class="p-detail-row"><span class="p-detail-label">Location</span><span class="p-detail-value">${escapeHtml(item.location || '—')}</span></div>
-          </div>
-        </div>`;
-      }).join('');
-      return;
-    }
-    // Reset to normal priority view
-    document.getElementById('priorityViewTitle').textContent = 'Priority List';
-    document.getElementById('sharePriorityBtn').style.display = '';
-    _origRenderPriorityList();
-  };
-
-  // Toggle for shared list cards
-  window.togglePriorityCard2 = function(idx) {
-    const card = document.getElementById(`slpc_${idx}`);
-    if (!card) return;
-    const det = document.getElementById(`slpd_${idx}`);
-    const was = card.classList.contains('expanded');
-    document.querySelectorAll('[id^="slpc_"].expanded').forEach(c => {
-      c.classList.remove('expanded');
-      const d = document.getElementById('slpd_' + c.id.replace('slpc_',''));
-      if (d) d.style.display = 'none';
+    window.addEventListener('popstate', (e) => {
+      const view = (e.state && e.state.view) ? e.state.view : 'match';
+      if (view === 'profile') { closeProfile(); return; }
+      switchViewInternal(view);
+      toggleSidebar(false);
+      closeProfile();
     });
-    if (!was) { card.classList.add('expanded'); if (det) det.style.display = 'block'; }
-  };
-
-  // Handle initial hash - FIXED for share links
-  (function handleInitialHash() {
-    const rawHash = location.hash.replace('#', '');
     
-    if (rawHash.startsWith('SHARE=')) {
-      // Show share modal immediately, then clean URL
-      const parsed = parseShareHash(rawHash);
-      if (parsed && parsed.items.length) {
-        showIncomingModal(parsed.username, parsed.items);
-      }
-      // Clean the hash so refresh doesn't re-trigger
-      history.replaceState({ view: 'match' }, '', location.pathname + '#match');
-      switchViewInternal('match');
-      return;
-    }
-    
-    // Normal hash routing
-    const validViews = ['match','priority','colleges','branches','predictor','smartsearch','sharedlists'];
-    const initView = validViews.includes(rawHash) ? rawHash : 'match';
-    replaceView(initView);
-    switchViewInternal(initView);
-  })();
-
-  // Popstate handler
-  window.addEventListener('popstate', (e) => {
-    const view = (e.state && e.state.view) ? e.state.view : 'match';
-    if (view === 'profile') { closeProfile(); return; }
-    switchViewInternal(view);
-    toggleSidebar(false);
-    closeProfile();
-  });
-  
-} else {
-  const t = document.getElementById('categoryTrigger');
-  if (t) { t.querySelector('.dd-text').textContent = 'Error loading data'; }
-}
+  } else {
+    const t = document.getElementById('categoryTrigger');
+    if (t) { t.querySelector('.dd-text').textContent = 'Error loading data'; }
+  }
 </script>
 </body>
 </html>
