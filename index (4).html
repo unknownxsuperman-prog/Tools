@@ -121,14 +121,14 @@
       letter-spacing:.15em;text-transform:uppercase}
 
     /* ── DARK MODE TOGGLE ── */
-    .theme-toggle-section {
-      padding: 16px 24px 20px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-    }
+.theme-toggle-section {
+  padding: 12px 24px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
     .theme-toggle-label {
       font-family: var(--font-mono);
       font-size: 0.5rem;
@@ -580,16 +580,8 @@
       </div>
     </div>
   </div>
-  <nav class="sidebar-nav">
-    <div class="nav-item active" data-view="match"><span class="nav-label"><i class="fa-solid fa-crosshairs"></i> MCA Match</span></div>
-    <div class="nav-item" data-view="priority"><span class="nav-label"><i class="fa-regular fa-bookmark"></i> Priority List</span><span class="nav-badge" id="navPriorityCount">0</span></div>
-    <div class="nav-item" data-view="colleges"><span class="nav-label"><i class="fa-regular fa-building"></i> All Colleges</span></div>
-    <div class="nav-item" data-view="smartsearch"><span class="nav-label"><i class="fa-solid fa-magnifying-glass"></i> Smart Search</span></div>
-    <div class="nav-item" data-view="sharedlists"><span class="nav-label"><i class="fa-solid fa-share-nodes"></i> Shared Lists</span><span class="nav-badge" id="navSharedCount">0</span></div>
-  </nav>
-  <div class="sidebar-footer"><div class="sidebar-footer-text">x0s · Disha MCA v1.0</div></div>
   
-  <!-- DARK MODE TOGGLE -->
+  <!-- DARK MODE TOGGLE - Moved here, below profile -->
   <div class="theme-toggle-section">
     <div class="theme-toggle-label">
       <i class="fa-solid fa-moon"></i> Dark Mode
@@ -598,6 +590,15 @@
       <div class="theme-pill-knob"></div>
     </div>
   </div>
+  
+  <nav class="sidebar-nav">
+    <div class="nav-item active" data-view="match"><span class="nav-label"><i class="fa-solid fa-crosshairs"></i> MCA Match</span></div>
+    <div class="nav-item" data-view="priority"><span class="nav-label"><i class="fa-regular fa-bookmark"></i> Priority List</span><span class="nav-badge" id="navPriorityCount">0</span></div>
+    <div class="nav-item" data-view="colleges"><span class="nav-label"><i class="fa-regular fa-building"></i> All Colleges</span></div>
+    <div class="nav-item" data-view="smartsearch"><span class="nav-label"><i class="fa-solid fa-magnifying-glass"></i> Smart Search</span></div>
+    <div class="nav-item" data-view="sharedlists"><span class="nav-label"><i class="fa-solid fa-share-nodes"></i> Shared Lists</span><span class="nav-badge" id="navSharedCount">0</span></div>
+  </nav>
+  <div class="sidebar-footer"><div class="sidebar-footer-text">x0s · Disha MCA v1.0</div></div>
 </div>
 
 <!-- MAIN PANEL -->
