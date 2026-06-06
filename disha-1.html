@@ -2459,24 +2459,32 @@
   }
 
   function checkIncomingShare() {
-    const hash = location.hash.replace('#', '');
-    if (!hash.startsWith('SHARE/')) return false;
-    const parsed = parseShareHash(hash);
-    if (!parsed || !parsed.items.length) return false;
-    // Resolve college names — XOS_CUTOFF must be loaded by now
-    const resolved = parsed.items.map(item => {
-      const college = window.XOS_CUTOFF && window.XOS_CUTOFF.find(c => c.id === item.id);
-      return {
-        id: item.id,
-        name: college ? college.name : item.id,
-        location: college ? (college.location || 'Karnataka') : 'Karnataka',
-        branch: item.branch,
-        category: item.cat,
-        cutoff: college ? getCutoffForBranch(college, item.branch, item.cat) : null
-      };
+  const hash = location.hash.replace('#', '');
+  if (!hash.startsWith('SHARE/')) return false;
+  const parsed = parseShareHash(hash);
+  if (!parsed || !parsed.items.length) return false;
+  
+  // Ensure data is loaded
+  if (!window.XOS_CUTOFF || Engine.branches.length === 0) {
+    setTimeout(checkIncomingShare, 100);
+    return true; // will retry
+  }
+  
+  // Resolve college names from IDs
+  const resolved = [];
+  for (const item of parsed.items) {
+    const college = window.XOS_CUTOFF.find(c => c.id === item.id);
+    resolved.push({
+      id: item.id,
+      name: college ? college.name : item.id,
+      location: college ? (college.location||'Karnataka') : '',
+      branch: item.branch,
+      category: item.cat,
+      cutoff: college ? getCutoffForBranch(college, item.branch, item.cat) : null
     });
-    showIncomingModal(parsed.username, resolved);
-    return true;
+  }
+  showIncomingModal(parsed.username, resolved);
+  return true;
   }
 
   function getCutoffForBranch(college, branchName, cat) {
@@ -2601,74 +2609,150 @@
   /* ── renderPriorityList is already handled by _renderPriorityListCore ── */
 
   /* ── INIT ── */
-  initOnboarding();
-  if (buildMasterData()) {
-    populateCategoryDropdown();
-    setupAutocomplete();
-    initSidebar();
-    initProfileSheet();
-    initSmartSearch();
-    updatePriorityBadge();
-    updateSharedBadge();
-    initPredictor();
-    document.getElementById('searchBtn').addEventListener('click', searchColleges);
-    document.getElementById('inputRank').addEventListener('keypress', (e) => { if (e.key === 'Enter') searchColleges(); });
-    // Extend switchViewInternal for new views
-    const _origSwitch = switchViewInternal;
-    window.switchViewInternal = function(name) {
-      _origSwitch(name);
-      if (name === 'sharedlists') renderSharedLists();
+initOnboarding();
+if (buildMasterData()) {
+  populateCategoryDropdown();
+  setupAutocomplete();
+  initSidebar();
+  initProfileSheet();
+  initSmartSearch();
+  updatePriorityBadge();
+  updateSharedBadge();
+  initPredictor();
+  document.getElementById('searchBtn').addEventListener('click', searchColleges);
+  document.getElementById('inputRank').addEventListener('keypress', (e) => { if (e.key === 'Enter') searchColleges(); });
+
+  // Define switchViewInternal first
+  window.switchViewInternal = function(name) {
+    const validViews = ['match','priority','colleges','branches','predictor','smartsearch','sharedlists'];
+    const titles = { 
+      match: 'Match Engine', priority: 'Priority List', colleges: 'Colleges', 
+      branches: 'Branches', predictor: 'Rank Predictor',
+      smartsearch: 'Smart Search', sharedlists: 'Shared Lists' 
     };
-    // Update titles/subs for new views
-    const _origSwitch2 = switchView;
-    window.switchView = function(name) {
-      const validExtra = ['smartsearch','sharedlists'];
-      const titles2 = { smartsearch: 'Smart Search', sharedlists: 'Shared Lists' };
-      const subs2 = { smartsearch: 'All colleges by branch & category', sharedlists: 'Priority lists shared with you' };
-      if (validExtra.includes(name)) {
-        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-        const vEl = document.getElementById(`view-${name}`);
-        if (vEl) vEl.classList.add('active');
-        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-        const nEl = document.querySelector(`.nav-item[data-view="${name}"]`);
-        if (nEl) nEl.classList.add('active');
-        document.getElementById('headerTitle').textContent = titles2[name]||'';
-        document.getElementById('headerSub').textContent = subs2[name]||'';
-        if (name === 'sharedlists') renderSharedLists();
-        pushView(name);
+    const subs = { 
+      match: 'Core + Specializations · from your rank', priority: 'Your saved colleges', 
+      colleges: 'Browse all institutions', branches: 'Core & specializations', 
+      predictor: '2PU + KCET → Estimated rank',
+      smartsearch: 'All colleges by branch & category', sharedlists: 'Priority lists shared with you' 
+    };
+    
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    const vEl = document.getElementById(`view-${name}`);
+    if (vEl) vEl.classList.add('active');
+    
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+    const nEl = document.querySelector(`.nav-item[data-view="${name}"]`);
+    if (nEl) nEl.classList.add('active');
+    
+    if (titles[name]) document.getElementById('headerTitle').textContent = titles[name];
+    if (subs[name]) document.getElementById('headerSub').textContent = subs[name];
+    
+    if (name === 'priority') renderPriorityList();
+    if (name === 'colleges') renderCollegesList();
+    if (name === 'branches') renderBranchesList();
+    if (name === 'sharedlists') renderSharedLists();
+  };
+
+  // Now define switchView
+  window.switchView = function(name) {
+    switchViewInternal(name);
+    pushView(name);
+  };
+
+  // Override the original renderPriorityList to handle shared list view reset
+  const _origRenderPriorityList = renderPriorityList;
+  renderPriorityList = function(overrideList, overrideTitle) {
+    if (overrideList && overrideTitle) {
+      // This is called from openSharedListInPriority
+      const container = document.getElementById('priorityListContainer');
+      document.getElementById('priorityViewTitle').textContent = overrideTitle;
+      document.getElementById('priorityViewCount').textContent = `${overrideList.length} colleges`;
+      document.getElementById('sharePriorityBtn').style.display = 'none';
+      container.innerHTML = overrideList.map((item, i) => {
+        const letter = getShortName(item.name).charAt(0).toUpperCase();
+        return `<div class="priority-card" id="slpc_${i}">
+          <div class="priority-card-row" onclick="togglePriorityCard2(${i})">
+            <div class="p-mono">${letter}</div>
+            <div class="p-info">
+              <div class="p-name">${escapeHtml(item.name)}</div>
+              <div class="p-branch">${escapeHtml(item.branch)}</div>
+            </div>
+            <i class="fa-solid fa-chevron-down p-chevron"></i>
+          </div>
+          <div class="p-details" id="slpd_${i}" style="display:none;">
+            <div class="p-detail-row"><span class="p-detail-label">College ID</span><span class="p-detail-value">${item.id}</span></div>
+            <div class="p-detail-row"><span class="p-detail-label">Branch</span><span class="p-detail-value" style="font-size:0.7rem;">${escapeHtml(item.branch)}</span></div>
+            <div class="p-detail-row"><span class="p-detail-label">Category</span><span class="p-detail-value">${escapeHtml(item.category)}</span></div>
+            ${item.cutoff ? `<div class="p-detail-row"><span class="p-detail-label">Cutoff</span><span class="p-detail-value">${item.cutoff.toLocaleString('en-IN')}</span></div>` : ''}
+            <div class="p-detail-row"><span class="p-detail-label">Location</span><span class="p-detail-value">${escapeHtml(item.location||'—')}</span></div>
+          </div>
+        </div>`;
+      }).join('');
+      return;
+    }
+    // Reset to normal priority view
+    document.getElementById('priorityViewTitle').textContent = 'Priority List';
+    document.getElementById('sharePriorityBtn').style.display = '';
+    _origRenderPriorityList();
+  };
+
+  // Update togglePriorityCard2 to handle the shared list cards
+  window.togglePriorityCard2 = function(idx) {
+    const card = document.getElementById(`slpc_${idx}`);
+    if (!card) return;
+    const det = document.getElementById(`slpd_${idx}`);
+    const was = card.classList.contains('expanded');
+    document.querySelectorAll('[id^="slpc_"].expanded').forEach(c => {
+      c.classList.remove('expanded');
+      const d = document.getElementById('slpd_' + c.id.replace('slpc_',''));
+      if (d) d.style.display = 'none';
+    });
+    if (!was) { card.classList.add('expanded'); if (det) det.style.display = 'block'; }
+  };
+
+  // Fix shared list open function
+  window.openSharedListInPriority = function(idx) {
+    const lists = getSharedLists();
+    const list = lists[idx];
+    if (!list) return;
+    switchView('priority');
+    renderPriorityList(list.items, `${list.sharedBy}'s List`);
+  };
+
+  // Popstate handler - define once
+  window.addEventListener('popstate', (e) => {
+    const view = (e.state && e.state.view) ? e.state.view : 'match';
+    if (view === 'profile') { closeProfile(); return; }
+    switchViewInternal(view);
+    toggleSidebar(false);
+    closeProfile();
+  });
+
+  // Handle initial hash
+  const rawHash = location.hash.replace('#', '');
+  if (rawHash.startsWith('SHARE/')) {
+    history.replaceState({ view: 'match' }, '', location.pathname);
+    switchViewInternal('match');
+    // Set up incoming share check with retry
+    const checkShare = () => {
+      if (window.XOS_CUTOFF && Engine.branches.length > 0) {
+        checkIncomingShare();
       } else {
-        _origSwitch2(name);
+        setTimeout(checkShare, 50);
       }
     };
-    // History API: check incoming share first, then route
-    const rawHash = location.hash.replace('#', '');
-    if (rawHash.startsWith('SHARE/')) {
-      history.replaceState({ view: 'match' }, '', location.pathname + '#match');
-      switchViewInternal('match');
-      // Data is fully loaded here — safe to parse immediately
-      checkIncomingShare();
-    } else {
-      const validViews = ['match','priority','colleges','branches','predictor','smartsearch','sharedlists'];
-      const initView = validViews.includes(rawHash) ? rawHash : 'match';
-      replaceView(initView);
-      switchViewInternal(initView);
-    }
-    // popstate: extend to handle new views
-    window.addEventListener('popstate', (e) => {
-      const view = (e.state && e.state.view) ? e.state.view : 'match';
-      if (view === 'profile') { closeProfile(); return; }
-      switchViewInternal(view);
-      const tMap = { match:'Match Engine',priority:'Priority List',colleges:'Colleges',branches:'Branches',predictor:'Rank Predictor',smartsearch:'Smart Search',sharedlists:'Shared Lists' };
-      const sMap = { match:'Core + Specializations · from your rank',priority:'Your saved colleges',colleges:'Browse all institutions',branches:'Core & specializations',predictor:'2PU + KCET → Estimated rank',smartsearch:'All colleges by branch & category',sharedlists:'Priority lists shared with you' };
-      if (tMap[view]) document.getElementById('headerTitle').textContent = tMap[view];
-      if (sMap[view]) document.getElementById('headerSub').textContent = sMap[view];
-      toggleSidebar(false);
-      closeProfile();
-    }, false);
+    setTimeout(checkShare, 100);
   } else {
-    const t = document.getElementById('categoryTrigger');
-    if (t) { t.querySelector('.dd-text').textContent = 'Error loading data'; }
+    const validViews = ['match','priority','colleges','branches','predictor','smartsearch','sharedlists'];
+    const initView = validViews.includes(rawHash) ? rawHash : 'match';
+    replaceView(initView);
+    switchViewInternal(initView);
   }
+} else {
+  const t = document.getElementById('categoryTrigger');
+  if (t) { t.querySelector('.dd-text').textContent = 'Error loading data'; }
+} 
 </script>
 </body>
 </html>
