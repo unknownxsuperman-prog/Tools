@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neural Chat | Dynamic Fetch</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #000000;
+            --accent-color: #007aff;
+            --card-bg: rgba(10, 10, 10, 0.7);
+            --border-color: #1a1a1a;
+            --text-main: #ffffff;
+            --text-muted: #888888;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .utility-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 450px;
+            height: 650px;
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            overflow: hidden;
+            transition: transform 0.15s ease-out;
+        }
+
+        .utility-card:active {
+            transform: scale(0.98);
+        }
+
+        .header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dev-badge {
+            font-size: 8px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.05);
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+        }
+
+        .chat-window {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.5;
+            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .user-msg {
+            background-color: var(--border-color);
+            align-self: flex-end;
+        }
+
+        .bot-msg {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            align-self: flex-start;
+        }
+
+        .input-area {
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 10px;
+        }
+
+        input {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 14px;
+            border-radius: 6px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            border-color: var(--accent-color);
+        }
+
+        button {
+            background-color: var(--accent-color);
+            color: #fff;
+            border: none;
+            padding: 0 20px;
+            border-radius: 6px;
+            font-family: inherit;
+            cursor: pointer;
+            font-weight: 600;
+            transition: opacity 0.2s;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+        
+        button:disabled, input:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+<div class="utility-card">
+    <div class="header">
+        <h4 style="font-weight: 400; font-size: 14px; letter-spacing: 1px;">Model_Interface</h4>
+        <div class="dev-badge" id="status-badge">Awaiting Data</div>
+    </div>
+    <div class="chat-window" id="chat-window"></div>
+    <div class="input-area">
+        <input type="text" id="user-input" placeholder="Awaiting model parameters..." disabled>
+        <button id="send-btn" disabled>SEND</button>
+    </div>
+</div>
+
+<script>
+    const chatWindow = document.getElementById('chat-window');
+    const inputEl = document.getElementById('user-input');
+    const btnEl = document.getElementById('send-btn');
+    const badgeEl = document.getElementById('status-badge');
+
+    // Neural Network State
+    let vocab = [];
+    let classes = [];
+    let weights = [];
+    let biases = [];
+
+    function addMessage(text, className) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `message ${className}`;
+        msgDiv.innerText = text;
+        chatWindow.appendChild(msgDiv);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    // Mathematical Core
+    function vectorizeText(text) {
+        const words = text.toLowerCase().split(/\W+/);
+        return vocab.map(v => words.includes(v) ? 1 : 0);
+    }
+
+    function softmax(arr) {
+        const max = Math.max(...arr);
+        const exps = arr.map(x => Math.exp(x - max));
+        const sumExp = exps.reduce((a, b) => a + b, 0);
+        return exps.map(x => x / sumExp);
+    }
+
+    function forwardPass(x) {
+        let logits = biases.slice();
+        for (let i = 0; i < vocab.length; i++) {
+            if (x[i] === 1) {
+                for (let j = 0; j < classes.length; j++) {
+                    logits[j] += weights[i][j];
+                }
+            }
+        }
+        return softmax(logits);
+    }
+
+    // Initialization and Training Engine
+    async function initializeModel() {
+        try {
+            badgeEl.innerText = "Fetching JSON...";
+            
+            // 1. Load external dataset
+            const response = await fetch('trainingset.json');
+            if (!response.ok) throw new Error("JSON not found");
+            const dataset = await response.json();
+
+            badgeEl.innerText = "Extracting Features...";
+
+            // 2. Build Vocabulary and Classes dynamically
+            const vocabSet = new Set();
+            const classesSet = new Set();
+
+            dataset.forEach(item => {
+                item.input.toLowerCase().split(/\W+/).forEach(w => w && vocabSet.add(w));
+                classesSet.add(item.output);
+            });
+
+            vocab = Array.from(vocabSet);
+            classes = Array.from(classesSet);
+
+            // 3. Prepare Tensors
+            const X = dataset.map(item => vectorizeText(item.input));
+            const Y = dataset.map(item => classes.indexOf(item.output));
+
+            // Initialize weights matrix randomly
+            weights = Array.from({ length: vocab.length }, () => 
+                        Array.from({ length: classes.length }, () => Math.random() * 0.2 - 0.1));
+            biases = Array(classes.length).fill(0);
+
+            badgeEl.innerText = "Training Model...";
+            badgeEl.style.color = "var(--accent-color)";
+            badgeEl.style.borderColor = "rgba(0, 122, 255, 0.3)";
+
+            // 4. Gradient Descent Optimization Loop
+            const epochs = 1000;
+            const learningRate = 0.1;
+
+            // Using requestAnimationFrame to prevent blocking the UI completely
+            // For a larger dataset (500), it might take a few seconds
+            let currentEpoch = 0;
+            function trainStep() {
+                for (let step = 0; step < 50; step++) { // Do 50 epochs per frame
+                    if (currentEpoch >= epochs) break;
+                    
+                    for (let i = 0; i < X.length; i++) {
+                        const x = X[i];
+                        const targetIdx = Y[i];
+                        const probs = forwardPass(x);
+
+                        for (let j = 0; j < classes.length; j++) {
+                            const error = probs[j] - (j === targetIdx ? 1 : 0);
+                            biases[j] -= learningRate * error;
+                            for (let k = 0; k < vocab.length; k++) {
+                                if (x[k] === 1) weights[k][j] -= learningRate * error;
+                            }
+                        }
+                    }
+                    currentEpoch++;
+                }
+
+                if (currentEpoch < epochs) {
+                    requestAnimationFrame(trainStep);
+                } else {
+                    // Training Complete
+                    badgeEl.innerText = "ONLINE";
+                    badgeEl.style.color = "#34c759";
+                    badgeEl.style.borderColor = "rgba(52, 199, 89, 0.3)";
+                    inputEl.disabled = false;
+                    btnEl.disabled = false;
+                    inputEl.placeholder = "Query system...";
+                    addMessage(`Model trained on ${dataset.length} samples. Ready.`, 'bot-msg');
+                }
+            }
+            
+            requestAnimationFrame(trainStep);
+
+        } catch (error) {
+            badgeEl.innerText = "ERROR";
+            badgeEl.style.color = "#ff3b30";
+            addMessage(`Failed to load trainingset.json. Make sure the file exists in the same directory.`, 'bot-msg');
+        }
+    }
+
+    // Handle User Queries
+    function handleSend() {
+        const text = inputEl.value.trim();
+        if (!text) return;
+
+        addMessage(text, 'user-msg');
+        inputEl.value = '';
+
+        const vec = vectorizeText(text);
+        
+        // Out of vocabulary check
+        if (vec.every(v => v === 0)) {
+            setTimeout(() => addMessage("Unrecognized sequence.", 'bot-msg'), 300);
+            return;
+        }
+
+        // The model calculates the mathematical probability here
+        const probs = forwardPass(vec);
+        const maxProb = Math.max(...probs);
+        const predictedIdx = probs.indexOf(maxProb);
+        
+        setTimeout(() => addMessage(classes[predictedIdx], 'bot-msg'), 400);
+    }
+
+    btnEl.addEventListener('click', handleSend);
+    inputEl.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleSend();
+    });
+
+    // Boot Sequence
+    window.onload = initializeModel;
+</script>
+
+</body>
+</html>
