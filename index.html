@@ -285,6 +285,210 @@
         .conf-bar-fill.mid  { background: #f5a623; }
         .conf-bar-fill.high { background: #32d74b; }
 
+        /* Feedback row under system bubble */
+        .feedback-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 6px;
+            padding-top: 6px;
+            border-top: 1px solid var(--border-subtle);
+        }
+        .fb-btn {
+            background: none;
+            border: 1px solid var(--border-subtle);
+            border-radius: 20px;
+            padding: 3px 10px;
+            font-size: 13px;
+            cursor: pointer;
+            color: var(--text-dim);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s ease;
+            line-height: 1.4;
+        }
+        .fb-btn:hover { background: var(--bg-base); color: var(--text-main); }
+        .fb-btn.voted-up   { border-color:#32d74b; background:rgba(50,215,75,0.1);  color:#32d74b; }
+        .fb-btn.voted-down { border-color:#ff453a; background:rgba(255,69,58,0.1);  color:#ff453a; }
+        .fb-btn:disabled   { opacity:0.5; cursor:default; pointer-events:none; }
+
+        /* Sidebar tabs */
+        .sidebar-tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 16px;
+            background: var(--bg-base);
+            border-radius: 12px;
+            padding: 4px;
+            border: 1px solid var(--border-subtle);
+        }
+        .sidebar-tab {
+            flex: 1;
+            padding: 7px 0;
+            border: none;
+            background: transparent;
+            color: var(--text-dim);
+            font-family: var(--font-sans);
+            font-size: 11px;
+            font-weight: 600;
+            border-radius: 9px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .sidebar-tab.active { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-subtle); }
+
+        /* Feedback history */
+        .feedback-history-panel { flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:8px; }
+        .feedback-history-panel::-webkit-scrollbar { display:none; }
+        .fb-history-item {
+            padding: 10px 12px;
+            border-radius: 12px;
+            background: var(--bg-base);
+            border: 1px solid var(--border-subtle);
+        }
+        .fb-history-item .fb-q { font-size:11px; color:var(--text-dim); margin-bottom:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .fb-history-item .fb-a { font-size:12px; font-weight:500; color:var(--text-main); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:4px; }
+        .fb-badge { display:inline-flex; align-items:center; gap:3px; font-size:10px; font-weight:600; padding:2px 8px; border-radius:10px; }
+        .fb-badge.up   { background:rgba(50,215,75,0.15);  color:#32d74b; }
+        .fb-badge.down { background:rgba(255,69,58,0.15);  color:#ff453a; }
+        .fb-empty { font-size:12px; color:var(--text-dim); text-align:center; padding:16px 0; }
+
+        /* Feedback row under system bubble */
+        .feedback-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 6px;
+            padding-top: 6px;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .fb-btn {
+            background: none;
+            border: 1px solid var(--border-subtle);
+            border-radius: 20px;
+            padding: 3px 10px;
+            font-size: 13px;
+            cursor: pointer;
+            color: var(--text-dim);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s ease;
+            line-height: 1;
+        }
+
+        .fb-btn:hover { background: var(--bg-base); color: var(--text-main); }
+
+        .fb-btn.voted-up {
+            border-color: #32d74b;
+            background: rgba(50, 215, 75, 0.1);
+            color: #32d74b;
+        }
+
+        .fb-btn.voted-down {
+            border-color: #ff453a;
+            background: rgba(255, 69, 58, 0.1);
+            color: #ff453a;
+        }
+
+        .fb-btn:disabled { opacity: 0.5; cursor: default; pointer-events: none; }
+
+        /* Feedback history in sidebar */
+        .feedback-history-panel {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .feedback-history-panel::-webkit-scrollbar { display: none; }
+
+        .fb-history-item {
+            padding: 10px 12px;
+            border-radius: 12px;
+            background: var(--bg-base);
+            border: 1px solid var(--border-subtle);
+            font-size: 11px;
+            line-height: 1.5;
+            color: var(--text-dim);
+        }
+
+        .fb-history-item .fb-q {
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-bottom: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .fb-history-item .fb-a {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-main);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 4px;
+        }
+
+        .fb-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 10px;
+            letter-spacing: 0.3px;
+        }
+
+        .fb-badge.up   { background: rgba(50,215,75,0.15);  color: #32d74b; }
+        .fb-badge.down { background: rgba(255,69,58,0.15);  color: #ff453a; }
+
+        .fb-empty {
+            font-size: 12px;
+            color: var(--text-dim);
+            text-align: center;
+            padding: 16px 0;
+        }
+
+        /* Sidebar tab strip */
+        .sidebar-tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 16px;
+            background: var(--bg-base);
+            border-radius: 12px;
+            padding: 4px;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .sidebar-tab {
+            flex: 1;
+            padding: 7px 0;
+            border: none;
+            background: transparent;
+            color: var(--text-dim);
+            font-family: var(--font-sans);
+            font-size: 11px;
+            font-weight: 600;
+            border-radius: 9px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            letter-spacing: 0.3px;
+        }
+
+        .sidebar-tab.active {
+            background: var(--bg-card);
+            color: var(--text-main);
+            border: 1px solid var(--border-subtle);
+        }
+
         /* Typing indicator */
         .typing-dots {
             display: flex;
@@ -511,7 +715,14 @@
                 <div>Loss: <strong id="statLoss">—</strong></div>
             </div>
 
-            <div class="slider-menu-list">
+            <!-- Sidebar tab strip -->
+            <div class="sidebar-tabs">
+                <button class="sidebar-tab active" id="tabModel" onclick="switchSidebarTab('model')">Model</button>
+                <button class="sidebar-tab" id="tabFeedback" onclick="switchSidebarTab('feedback')">Feedback <span id="fbCount" style="opacity:0.6;"></span></button>
+            </div>
+
+            <!-- Tab: Model -->
+            <div id="sidebarModel" class="slider-menu-list">
                 <div class="menu-item active">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                     <span>x-bit proton</span>
@@ -519,6 +730,17 @@
                 <div class="menu-item">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
                     <span>global topology</span>
+                </div>
+            </div>
+
+            <!-- Tab: Feedback history -->
+            <div id="sidebarFeedback" style="display:none; flex:1; flex-direction:column; overflow:hidden;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <span style="font-size:11px; color:var(--text-dim); font-weight:600; letter-spacing:0.5px; text-transform:uppercase;">Reply History</span>
+                    <button onclick="clearFeedbackHistory()" style="background:none;border:none;font-size:11px;color:var(--text-dim);cursor:pointer;font-family:var(--font-sans);">clear</button>
+                </div>
+                <div class="feedback-history-panel" id="feedbackHistoryList">
+                    <div class="fb-empty">No feedback yet.<br>👍 👎 on replies to train Proton.</div>
                 </div>
             </div>
 
