@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Disha · Priority Predictor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" crossorigin="anonymous"></script>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #000;
+      --surface: #0a0a0a;
+      --surface-2: #111;
+      --surface-3: #161616;
+      --border: rgba(255,255,255,0.07);
+      --border-strong: rgba(255,255,255,0.14);
+      --border-focus: rgba(255,255,255,0.5);
+      --text-0: #fff;
+      --text-1: #e8e8e8;
+      --text-2: #888;
+      --text-3: #444;
+      --success: #00cc66;
+      --warn: #f5a623;
+      --font-display: 'Space Grotesk', sans-serif;
+      --font-mono: 'DM Mono', monospace;
+      --r: 14px;
+      --r-sm: 10px;
+      --r-xs: 6px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text-1);
+      font-family: var(--font-display);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 32px 16px 80px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.4;
+    }
+
+    .panel {
+      width: 100%;
+      max-width: 520px;
+      animation: panelIn 0.5s cubic-bezier(0.16,1,0.3,1) both;
+    }
+    @keyframes panelIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+
+    /* ── HEADER ── */
+    .header {
+      padding-bottom: 28px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 36px;
+    }
+    .header-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.52rem;
+      color: var(--text-3);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .header h1 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text-0);
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+    }
+    .header-sub {
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      color: var(--text-3);
+      margin-top: 8px;
+      letter-spacing: 0.06em;
+    }
+
+    /* ── STEP LABEL ── */
+    .step-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .step-num {
+      width: 22px; height: 22px;
+      border: 1px solid var(--border-strong);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 0.52rem;
+      color: var(--text-2);
+      flex-shrink: 0;
+    }
+    .step-num.done { background: var(--text-0); color: var(--bg); border-color: var(--text-0); }
+    .step-text {
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      color: var(--text-2);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .field { margin-bottom: 28px; }
+
+    /* ── UPLOAD ZONE ── */
+    .upload-zone {
+      border: 1px dashed var(--border-strong);
+      border-radius: var(--r);
+      padding: 36px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      position: relative;
+    }
+    .upload-zone:hover, .upload-zone.drag { border-color: var(--border-focus); background: var(--surface); }
+    .upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+    .upload-icon { font-size: 1.4rem; color: var(--text-3); margin-bottom: 12px; }
+    .upload-label { font-size: 0.8rem; font-weight: 600; color: var(--text-2); margin-bottom: 4px; }
+    .upload-sub { font-family: var(--font-mono); font-size: 0.55rem; color: var(--text-3); letter-spacing: 0.06em; }
+
+    .upload-done {
+      display: none;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--r);
+      padding: 16px 20px;
+      background: var(--surface);
+    }
+    .upload-done-row { display: flex; align-items: center; gap: 14px; }
+    .upload-done-icon { font-size: 1rem; color: var(--success); flex-shrink: 0; }
+    .upload-done-info { flex: 1; min-width: 0; }
+    .upload-done-name { font-size: 0.78rem; font-weight: 700; color: var(--text-0); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .upload-done-count { font-family: var(--font-mono); font-size: 0.55rem; color: var(--text-3); margin-top: 3px; letter-spacing: 0.06em; }
+    .upload-done-reset {
+      background: transparent; border: 1px solid var(--border);
+      border-radius: var(--r-xs); padding: 6px 10px;
+      font-family: var(--font-mono); font-size: 0.52rem;
+      color: var(--text-3); cursor: pointer; transition: all 0.15s;
+      flex-shrink: 0;
+    }
+    .upload-done-reset:hover { border-color: var(--border-strong); color: var(--text-1); }
+
+    /* ── PARSING STATE ── */
+    .parse-state {
+      display: none;
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 20px;
+      text-align: center;
+      background: var(--surface);
+    }
+    .parse-spinner { font-size: 0.9rem; color: var(--text-3); animation: spin 1.2s linear infinite; display: inline-block; margin-bottom: 10px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .parse-label { font-family: var(--font-mono); font-size: 0.58rem; color: var(--text-3); letter-spacing: 0.1em; }
+
+    /* ── PRIORITY PREVIEW ── */
+    .priority-preview {
+      display: none;
+      margin-top: 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      overflow: hidden;
+      max-height: 220px;
+      overflow-y: auto;
+    }
+    .priority-preview::-webkit-scrollbar { width: 3px; }
+    .priority-preview::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+    .pv-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .pv-item:last-child { border-bottom: none; }
+    .pv-num {
+      font-family: var(--font-mono);
+      font-size: 0.52rem;
+      color: var(--text-3);
+      width: 18px;
+      flex-shrink: 0;
+    }
+    .pv-info { flex: 1; min-width: 0; }
+    .pv-college { font-size: 0.72rem; font-weight: 600; color: var(--text-1); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .pv-branch { font-family: var(--font-mono); font-size: 0.52rem; color: var(--text-3); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    /* ── XOS INPUT ── */
+    .xos-input {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      padding: 14px 16px;
+      color: var(--text-0);
+      font-family: var(--font-display);
+      font-size: 0.9rem;
+      font-weight: 500;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .xos-input::placeholder { color: var(--text-3); }
+    .xos-input:hover { border-color: var(--border-strong); }
+    .xos-input:focus { border-color: var(--border-focus); }
+
+    /* ── CATEGORY DROPDOWN ── */
+    .xos-dropdown { position: relative; }
+    .dd-trigger {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      padding: 14px 16px;
+      color: var(--text-0);
+      font-family: var(--font-display);
+      font-size: 0.88rem;
+      font-weight: 500;
+      outline: none;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      transition: border-color 0.2s;
+      user-select: none;
+    }
+    .dd-trigger:hover { border-color: var(--border-strong); }
+    .dd-trigger.open { border-color: var(--border-focus); }
+    .dd-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .dd-text.placeholder { color: var(--text-3); }
+    .dd-chevron { font-size: 0.5rem; color: var(--text-3); transition: transform 0.2s; }
+    .dd-trigger.open .dd-chevron { transform: rotate(180deg); }
+    .dd-menu {
+      position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+      background: var(--surface-2); border: 1px solid var(--border-strong);
+      border-radius: var(--r-sm); z-index: 200; display: none;
+      max-height: 280px; overflow-y: auto;
+      animation: dropIn 0.15s ease;
+    }
+    .dd-menu.show { display: block; }
+    @keyframes dropIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
+    .dd-menu::-webkit-scrollbar { width: 3px; }
+    .dd-menu::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+    .dd-search-wrap {
+      position: sticky; top: 0;
+      background: var(--surface-2);
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .dd-search-wrap input {
+      width: 100%; background: var(--surface);
+      border: 1px solid var(--border); border-radius: var(--r-xs);
+      padding: 8px 12px; color: var(--text-1);
+      font-family: var(--font-mono); font-size: 0.7rem;
+      outline: none; transition: border-color 0.2s;
+    }
+    .dd-search-wrap input::placeholder { color: var(--text-3); }
+    .dd-search-wrap input:focus { border-color: var(--border-focus); }
+    .dd-item {
+      padding: 12px 16px; font-size: 0.75rem; font-weight: 500;
+      color: var(--text-2); cursor: pointer;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.12s, color 0.12s;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .dd-item:last-child { border-bottom: none; }
+    .dd-item:hover { background: var(--surface-3); color: var(--text-0); }
+    .dd-item.selected { color: var(--text-0); }
+    .dd-check { font-size: 0.5rem; color: var(--text-0); opacity: 0; }
+    .dd-item.selected .dd-check { opacity: 1; }
+
+    /* ── RANGE HINT ── */
+    .range-hint {
+      font-family: var(--font-mono);
+      font-size: 0.56rem;
+      color: var(--text-3);
+      letter-spacing: 0.06em;
+      margin-top: 8px;
+      display: none;
+    }
+    .range-hint span { color: var(--text-2); }
+
+    /* ── BTN ── */
+    .btn-primary {
+      width: 100%;
+      background: var(--text-0);
+      color: var(--bg);
+      border: none;
+      border-radius: var(--r-sm);
+      padding: 15px 28px;
+      font-family: var(--font-display);
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      cursor: pointer;
+      margin-top: 8px;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      transition: opacity 0.15s, transform 0.15s;
+    }
+    .btn-primary:hover { opacity: 0.9; }
+    .btn-primary:active { transform: scale(0.98); }
+    .btn-primary:disabled { opacity: 0.2; cursor: not-allowed; transform: none; }
+
+    /* ── RESULTS ── */
+    .results-wrap {
+      margin-top: 40px;
+      border-top: 1px solid var(--border);
+      padding-top: 32px;
+      display: none;
+      animation: fadeUp 0.35s ease both;
+    }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+    .results-header {
+      display: flex; align-items: baseline; justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .results-title { font-size: 1rem; font-weight: 700; color: var(--text-0); letter-spacing: -0.02em; }
+    .results-meta { font-family: var(--font-mono); font-size: 0.55rem; color: var(--text-3); letter-spacing: 0.06em; }
+
+    .results-rank-band {
+      font-family: var(--font-mono);
+      font-size: 0.56rem;
+      color: var(--text-3);
+      letter-spacing: 0.06em;
+      margin-bottom: 24px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .results-rank-band::before {
+      content: '';
+      display: inline-block;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--success);
+      flex-shrink: 0;
+    }
+
+    /* ── RESULT CARD ── */
+    .result-card {
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
+      margin-bottom: 12px;
+      background: var(--surface);
+      transition: border-color 0.2s;
+    }
+    .result-card:hover { border-color: var(--border-strong); }
+    .result-card.guaranteed { border-color: rgba(0,204,102,0.25); }
+
+    .result-top { padding: 18px 18px 0; }
+    .result-priority {
+      font-family: var(--font-mono);
+      font-size: 0.5rem;
+      color: var(--text-3);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .result-priority .pnum { color: var(--warn); }
+    .result-name {
+      font-size: 0.9rem; font-weight: 700; color: var(--text-0);
+      letter-spacing: -0.02em; line-height: 1.3; margin-bottom: 6px;
+    }
+    .result-branch-tag {
+      display: inline-block;
+      font-family: var(--font-mono); font-size: 0.56rem;
+      color: var(--text-2); background: var(--surface-2);
+      border: 1px solid var(--border); border-radius: var(--r-xs);
+      padding: 4px 10px; margin-bottom: 14px;
+      max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+
+    .result-metrics {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 1px; background: var(--border);
+      border-top: 1px solid var(--border);
+    }
+    .metric-block { background: var(--surface); padding: 13px 16px; }
+    .metric-label { font-family: var(--font-mono); font-size: 0.48rem; color: var(--text-3); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 5px; }
+    .metric-value { font-size: 1.15rem; font-weight: 800; color: var(--text-0); letter-spacing: -0.03em; line-height: 1; }
+    .metric-value.safe { color: var(--success); }
+    .metric-value.tight { color: var(--warn); }
+    .metric-value.far { color: var(--text-2); }
+
+    /* chance badge */
+    .chance-badge {
+      font-family: var(--font-mono);
+      font-size: 0.48rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 20px;
+      margin-top: 4px;
+      display: inline-block;
+    }
+    .chance-high { background: rgba(0,204,102,0.12); color: var(--success); }
+    .chance-mid { background: rgba(245,166,35,0.12); color: var(--warn); }
+    .chance-low { background: rgba(255,255,255,0.05); color: var(--text-3); }
+
+    /* ── NO RESULTS / ERROR ── */
+    .empty-state {
+      text-align: center; padding: 56px 20px; color: var(--text-3);
+    }
+    .empty-state i { font-size: 1.2rem; display: block; margin-bottom: 12px; opacity: 0.4; }
+    .empty-state p { font-size: 0.75rem; }
+    .empty-state .hint { font-size: 0.6rem; margin-top: 8px; font-family: var(--font-mono); opacity: 0.6; }
+
+    .error-notice {
+      border: 1px solid rgba(255,59,59,0.2);
+      border-radius: var(--r-sm);
+      padding: 12px 16px;
+      background: rgba(255,59,59,0.04);
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      color: #ff6b6b;
+      letter-spacing: 0.05em;
+      margin-top: 8px;
+    }
+
+    /* ── SEPARATOR / GROUP LABEL ── */
+    .group-label {
+      font-family: var(--font-mono);
+      font-size: 0.52rem;
+      color: var(--text-3);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 20px 0 10px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .group-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    @media (max-width: 480px) {
+      .result-metrics { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="panel">
+
+  <div class="header">
+    <div class="header-eyebrow">x0s · Disha</div>
+    <h1>Priority Predictor</h1>
+    <div class="header-sub">Upload options list · match rank · predict chances</div>
+  </div>
+
+  <!-- STEP 1: UPLOAD PDF -->
+  <div class="field">
+    <div class="step-label">
+      <div class="step-num" id="step1num">1</div>
+      <span class="step-text">Upload KEA Options List PDF</span>
+    </div>
+
+    <div class="parse-state" id="parseState">
+      <div class="parse-spinner"><i class="fa-solid fa-circle-notch"></i></div>
+      <div class="parse-label">reading pdf…</div>
+    </div>
+
+    <div class="upload-zone" id="uploadZone">
+      <input type="file" accept="application/pdf" id="pdfInput">
+      <div class="upload-icon"><i class="fa-solid fa-file-arrow-up"></i></div>
+      <div class="upload-label">Drop your KEA options PDF here</div>
+      <div class="upload-sub">or tap to browse · First Round Options List</div>
+    </div>
+
+    <div class="upload-done" id="uploadDone">
+      <div class="upload-done-row">
+        <i class="fa-solid fa-circle-check upload-done-icon"></i>
+        <div class="upload-done-info">
+          <div class="upload-done-name" id="uploadFileName">options.pdf</div>
+          <div class="upload-done-count" id="uploadCollegeCount">—</div>
+        </div>
+        <button class="upload-done-reset" onclick="resetUpload()">Reset</button>
+      </div>
+    </div>
+
+    <div class="priority-preview" id="priorityPreview"></div>
+    <div class="error-notice" id="parseError" style="display:none;"></div>
+  </div>
+
+  <!-- STEP 2: CATEGORY -->
+  <div class="field">
+    <div class="step-label">
+      <div class="step-num" id="step2num">2</div>
+      <span class="step-text">Your Category</span>
+    </div>
+    <div class="xos-dropdown" id="catDropdown">
+      <div class="dd-trigger" id="catTrigger" tabindex="0">
+        <span class="dd-text placeholder" id="catText">Select category</span>
+        <i class="fa-solid fa-chevron-down dd-chevron"></i>
+      </div>
+      <div class="dd-menu" id="catMenu">
+        <div class="dd-search-wrap">
+          <input type="text" id="catSearch" placeholder="Search category…" autocomplete="off" spellcheck="false">
+        </div>
+        <div id="catItems"></div>
+      </div>
+    </div>
+    <input type="hidden" id="selectedCategory" value="">
+  </div>
+
+  <!-- STEP 3: RANK -->
+  <div class="field">
+    <div class="step-label">
+      <div class="step-num" id="step3num">3</div>
+      <span class="step-text">Your CET Rank</span>
+    </div>
+    <input type="number" id="rankInput" class="xos-input" placeholder="Enter your rank" min="1" autocomplete="off">
+    <div class="range-hint" id="rangeHint">Searching cutoffs from <span id="rangeFrom">—</span> to ∞ (your rank and above)</div>
+  </div>
+
+  <button class="btn-primary" id="predictBtn" onclick="runPrediction()">
+    Predict Colleges <i class="fa-solid fa-arrow-right" style="font-size:0.6rem;"></i>
+  </button>
+  <div class="error-notice" id="mainError" style="display:none;"></div>
+
+  <!-- RESULTS -->
+  <div class="results-wrap" id="resultsWrap">
+    <div class="results-header">
+      <div class="results-title" id="resultsTitle">Results</div>
+      <div class="results-meta" id="resultsMeta">—</div>
+    </div>
+    <div class="results-rank-band" id="resultsRankBand"></div>
+    <div id="resultsContainer"></div>
+  </div>
+
+</div>
+
+<!-- firstround.js must be in same folder: exposes window.XOS_CUTOFF and window.XOS_DICT -->
+<script src="firstround.js"></script>
+
+<script>
+  // ── PDF.js setup ──
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+  // ── State ──
+  let priorityList = []; // [{ priority, collegeId, collegeName, courseCode, courseName }]
+  let selectedCat = '';
+
+  // All known KCET category codes
+  const ALL_CATS = [
+    '1G','1K','1R','2AG','2AK','2AR','2BG','2BK','2BR',
+    '3AG','3AK','3AR','3BG','3BK','3BR',
+    'GM','GMK','GMR',
+    'SCG','SCK','SCR','STG','STK','STR'
+  ];
+
+  // ── Upload / Drag ──
+  const uploadZone = document.getElementById('uploadZone');
+  const pdfInput = document.getElementById('pdfInput');
+
+  uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.classList.add('drag'); });
+  uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag'));
+  uploadZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadZone.classList.remove('drag');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type === 'application/pdf') processPDF(file);
+  });
+  pdfInput.addEventListener('change', (e) => {
+    if (e.target.files[0]) processPDF(e.target.files[0]);
+  });
+
+  // ── PDF Parsing ──
+  async function processPDF(file) {
+    document.getElementById('uploadZone').style.display = 'none';
+    document.getElementById('uploadDone').style.display = 'none';
+    document.getElementById('parseState').style.display = 'block';
+    document.getElementById('parseError').style.display = 'none';
+    document.getElementById('priorityPreview').style.display = 'none';
+    priorityList = [];
+
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      let fullText = '';
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const content = await page.getTextContent();
+        // Get items sorted by Y then X for proper reading order
+        const items = content.items.slice().sort((a, b) => {
+          const dy = Math.round(b.transform[5]) - Math.round(a.transform[5]);
+          return dy !== 0 ? dy : a.transform[4] - b.transform[4];
+        });
+        fullText += items.map(i => i.str).join(' ') + '\n';
+      }
+
+      priorityList = parsePriorityList(fullText);
+
+      document.getElementById('parseState').style.display = 'none';
+
+      if (!priorityList.length) {
+        document.getElementById('parseError').style.display = 'block';
+        document.getElementById('parseError').textContent = 'Could not extract college options from this PDF. Make sure it\'s a KEA First Round Options List.';
+        document.getElementById('uploadZone').style.display = 'block';
+        return;
+      }
+
+      // Show done state
+      document.getElementById('uploadDone').style.display = 'block';
+      document.getElementById('uploadFileName').textContent = file.name;
+      document.getElementById('uploadCollegeCount').textContent = `${priorityList.length} options extracted`;
+      document.getElementById('step1num').classList.add('done');
+      document.getElementById('step1num').innerHTML = '<i class="fa-solid fa-check" style="font-size:0.45rem;"></i>';
+
+      renderPreview();
+      populateCategoryDropdown();
+
+    } catch (err) {
+      document.getElementById('parseState').style.display = 'none';
+      document.getElementById('parseError').style.display = 'block';
+      document.getElementById('parseError').textContent = 'Failed to read PDF: ' + err.message;
+      document.getElementById('uploadZone').style.display = 'block';
+      console.error(err);
+    }
+  }
+
+  function parsePriorityList(text) {
+    const results = [];
+    // Match pattern: number, college code (like E005CS), course name block, fee block, college name
+    // KEA PDF has rows like: "1 E005CS COMPUTER SCIENCE AND ENGINEERING 1,20,320 ... College Name"
+    // We'll look for lines that start with a number followed by an E-code
+    
+    // Strategy: find all E-code entries with their priority number
+    // Pattern: digit(s) followed by E followed by 3 digits followed by 2 alpha chars
+    const lines = text.split('\n');
+    
+    for (const line of lines) {
+      // Look for priority number + college+course code pattern
+      // e.g. "1 E005CS" or "12 E275CA"
+      const match = line.match(/\b(\d{1,2})\s+(E\d{3}[A-Z]{2})\b/);
+      if (!match) continue;
+      
+      const priority = parseInt(match[1]);
+      const fullCode = match[2]; // e.g. E005CS
+      const collegeId = fullCode.slice(0, 4); // e.g. E005
+      const courseCode = fullCode.slice(4); // e.g. CS, CA, DS, AM, BW...
+
+      // Skip if already added (PDF may have duplicate lines due to text extraction)
+      if (results.find(r => r.priority === priority && r.collegeId === collegeId && r.courseCode === courseCode)) continue;
+
+      results.push({ priority, collegeId, courseCode, fullCode });
+    }
+
+    // Sort by priority
+    results.sort((a, b) => a.priority - b.priority);
+
+    // Enrich with college name from window.XOS_CUTOFF if loaded
+    if (window.XOS_CUTOFF) {
+      for (const item of results) {
+        const college = window.XOS_CUTOFF.find(c => c.id === item.collegeId);
+        item.collegeName = college ? college.name : item.collegeId;
+      }
+    } else {
+      // Will enrich later during prediction
+      for (const item of results) { item.collegeName = item.collegeId; }
+    }
+
+    return results;
+  }
+
+  function renderPreview() {
+    const container = document.getElementById('priorityPreview');
+    if (!priorityList.length) { container.style.display = 'none'; return; }
+    container.style.display = 'block';
+    container.innerHTML = priorityList.map(item => {
+      const shortName = getShortName(item.collegeName || item.collegeId);
+      return `<div class="pv-item">
+        <div class="pv-num">${item.priority}</div>
+        <div class="pv-info">
+          <div class="pv-college">${escapeHtml(shortName)}</div>
+          <div class="pv-branch">${item.collegeId} · ${item.courseCode}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function resetUpload() {
+    priorityList = [];
+    selectedCat = '';
+    document.getElementById('selectedCategory').value = '';
+    document.getElementById('catText').textContent = 'Select category';
+    document.getElementById('catText').classList.add('placeholder');
+    document.getElementById('uploadDone').style.display = 'none';
+    document.getElementById('uploadZone').style.display = 'block';
+    document.getElementById('priorityPreview').style.display = 'none';
+    document.getElementById('resultsWrap').style.display = 'none';
+    document.getElementById('step1num').classList.remove('done');
+    document.getElementById('step1num').innerHTML = '1';
+    document.getElementById('pdfInput').value = '';
+    document.getElementById('parseError').style.display = 'none';
+  }
+
+  // ── Category Dropdown ──
+  function populateCategoryDropdown() {
+    // Derive available categories from XOS_CUTOFF if possible
+    let cats = ALL_CATS;
+    if (window.XOS_CUTOFF) {
+      const catSet = new Set();
+      for (const c of window.XOS_CUTOFF) {
+        if (!c.branches) continue;
+        for (const bd of Object.values(c.branches)) {
+          for (const k in bd) { if (bd[k] != null) catSet.add(k); }
+        }
+      }
+      if (catSet.size) cats = Array.from(catSet).sort();
+    }
+
+    const hidden = document.getElementById('selectedCategory');
+    const trigger = document.getElementById('catTrigger');
+    const menu = document.getElementById('catMenu');
+    const search = document.getElementById('catSearch');
+    const items = document.getElementById('catItems');
+    const text = document.getElementById('catText');
+
+    function render(f) {
+      const q = (f || '').toUpperCase();
+      const filtered = q ? cats.filter(c => c.includes(q)) : cats;
+      items.innerHTML = filtered.map(c => {
+        const sel = hidden.value === c;
+        return `<div class="dd-item${sel?' selected':''}" data-v="${escapeHtml(c)}">${escapeHtml(c)}<i class="fa-solid fa-check dd-check"></i></div>`;
+      }).join('');
+      items.querySelectorAll('.dd-item').forEach(el => {
+        el.addEventListener('click', () => {
+          hidden.value = el.getAttribute('data-v');
+          selectedCat = hidden.value;
+          text.textContent = selectedCat;
+          text.classList.remove('placeholder');
+          closeDD();
+          document.getElementById('step2num').classList.add('done');
+          document.getElementById('step2num').innerHTML = '<i class="fa-solid fa-check" style="font-size:0.45rem;"></i>';
+        });
+      });
+    }
+
+    function openDD() { menu.classList.add('show'); trigger.classList.add('open'); search.value = ''; render(''); setTimeout(() => search.focus(), 50); }
+    function closeDD() { menu.classList.remove('show'); trigger.classList.remove('open'); }
+
+    // Remove old listeners by cloning
+    const newTrigger = trigger.cloneNode(true);
+    trigger.parentNode.replaceChild(newTrigger, trigger);
+    newTrigger.addEventListener('click', (e) => { e.stopPropagation(); menu.classList.contains('show') ? closeDD() : openDD(); });
+    document.addEventListener('click', (e) => { if (!document.getElementById('catDropdown').contains(e.target)) closeDD(); });
+    search.addEventListener('input', (e) => render(e.target.value));
+    search.addEventListener('click', (e) => e.stopPropagation());
+    render('');
+  }
+
+  // ── Rank hint ──
+  document.getElementById('rankInput').addEventListener('input', (e) => {
+    const r = parseInt(e.target.value);
+    const hint = document.getElementById('rangeHint');
+    const from = document.getElementById('rangeFrom');
+    if (!isNaN(r) && r > 0) {
+      const low = Math.max(1, r - 500);
+      from.textContent = low.toLocaleString('en-IN');
+      hint.style.display = 'block';
+    } else {
+      hint.style.display = 'none';
+    }
+  });
+
+  // ── PREDICTION ENGINE ──
+  function runPrediction() {
+    const mainError = document.getElementById('mainError');
+    mainError.style.display = 'none';
+
+    if (!priorityList.length) { showError(mainError, 'Upload your KEA options list PDF first.'); return; }
+    if (!selectedCat) { showError(mainError, 'Select your category.'); return; }
+    const userRank = parseInt(document.getElementById('rankInput').value);
+    if (isNaN(userRank) || userRank < 1) { showError(mainError, 'Enter a valid CET rank.'); return; }
+    if (!window.XOS_CUTOFF) { showError(mainError, 'firstround.js not loaded — make sure it\'s in the same folder.'); return; }
+    if (!window.XOS_DICT) { showError(mainError, 'XOS_DICT not found in firstround.js.'); return; }
+
+    const minCutoff = Math.max(1, userRank - 500);
+    const results = [];
+
+    // Build branch code → name map
+    const codeToName = {};
+    for (const [code, name] of Object.entries(window.XOS_DICT)) {
+      codeToName[code] = cleanBranchName(name);
+    }
+
+    for (const item of priorityList) {
+      const college = window.XOS_CUTOFF.find(c => c.id === item.collegeId);
+      if (!college) continue;
+      item.collegeName = college.name; // enrich
+
+      if (!college.branches) continue;
+
+      // Map course code suffix to branch entries
+      // courseCode like CS → look for branches that map to that code
+      // We try to find a direct match or fuzzy match in branches
+      const matchedBranches = findBranchesForCourseCode(college, item.courseCode, codeToName);
+
+      for (const { branchCode, branchName, cutoff } of matchedBranches) {
+        const catCutoff = cutoff[selectedCat];
+        if (catCutoff == null) continue;
+
+        const diff = catCutoff - userRank; // positive = cutoff is above rank = safe
+        // Include if: cutoff >= minCutoff (within window) OR cutoff >= userRank (you can get it)
+        // Window: cutoff from (userRank-500) upward — means you can get it (your rank ≤ cutoff)
+        // Also include where cutoff < userRank but very close (within 500) as "tight"
+        if (catCutoff >= minCutoff) {
+          results.push({
+            priority: item.priority,
+            collegeId: item.collegeId,
+            collegeName: college.name,
+            courseCode: item.courseCode,
+            branchName,
+            branchCode,
+            cutoff: catCutoff,
+            diff, // positive = safe (rank < cutoff), negative = above cutoff
+          });
+        }
+      }
+    }
+
+    // Sort: by priority first, then by diff (closest cutoff first)
+    results.sort((a, b) => {
+      if (a.priority !== b.priority) return a.priority - b.priority;
+      return Math.abs(a.diff) - Math.abs(b.diff);
+    });
+
+    renderResults(results, userRank, minCutoff);
+  }
+
+  function findBranchesForCourseCode(college, courseCode, codeToName) {
+    const matched = [];
+    // courseCode is the suffix after college ID, e.g. CS, CA, DS, AM, BW, AD, AI, etc.
+    // In XOS_DICT, branch codes are things like "COMPUTER SCIENCE AND ENGINEERING", etc.
+    // We need to match the KEA course code suffix to the actual branch data keys
+
+    // Build a mapping from KEA suffix → branch key patterns
+    const suffixToBranchPattern = {
+      'CS': ['COMPUTER SCIENCE AND ENGINEERING'],
+      'CA': ['COMPUTER SCIENCE AND ENGG(ARTIFICIAL INTELLIGENCE AND MACHINE LEARNING)', 'COMPUTER SCIENCE AND ENGINEERING(ARTIFICIAL INTELLIGENCE'],
+      'DS': ['COMPUTER SCIENCE AND ENGINEERING(DATA SCIENCE)', 'DATA SCIENCE'],
+      'AM': ['COMPUTER SCIENCE AND ENGINEERING(ARTIFICIAL INTELLIGENCE', 'ARTIFICIAL INTELLIGENCE AND MACHINE LEARNING', 'COMPUTER SCIENCE & ENGINEERING (ARTIFICAL INTELLIGENCE'],
+      'AD': ['ARTIFICIAL INTELLIGENCE AND DATA SCIENCE'],
+      'AI': ['ARTIFICIAL INTELLIGENCE AND MACHINE LEARNING'],
+      'IS': ['INFORMATION SCIENCE AND ENGINEERING', 'INFORMATION SCIENCE'],
+      'EC': ['ELECTRONICS AND COMMUNICATION', 'ELECTRONICS & COMMUNICATION'],
+      'EE': ['ELECTRICAL & ELECTRONICS', 'ELECTRICAL AND ELECTRONICS'],
+      'ME': ['MECHANICAL ENGINEERING'],
+      'CV': ['CIVIL ENGINEERING'],
+      'BT': ['BIOTECHNOLOGY'],
+      'CH': ['CHEMICAL ENGINEERING'],
+      'IM': ['INDUSTRIAL ENGINEERING', 'INDUSTRIAL & MANAGEMENT'],
+      'TC': ['TELECOMMUNICATION ENGINEERING', 'COMMUNICATION ENGG'],
+      'ET': ['ELECTRONICS AND TELECOMMUNICATION'],
+      'BW': ['COMPUTER SCIENCE AND ENGINEERING'], // B.Tech variants
+      'BZ': ['COMPUTER SCIENCE AND ENGINEERING(DATA SCIENCE)', 'DATA SCIENCE'],
+    };
+
+    const patterns = suffixToBranchPattern[courseCode] || [];
+
+    for (const [branchKey, cutoff] of Object.entries(college.branches)) {
+      const branchUpper = branchKey.toUpperCase();
+      let matched_flag = false;
+
+      if (patterns.length) {
+        for (const pat of patterns) {
+          if (branchUpper.includes(pat.toUpperCase()) || pat.toUpperCase().includes(branchUpper)) {
+            matched_flag = true;
+            break;
+          }
+        }
+      }
+
+      if (matched_flag) {
+        matched.push({
+          branchCode: branchKey,
+          branchName: codeToName[branchKey] || branchKey,
+          cutoff,
+        });
+      }
+    }
+
+    // Fallback: if no match, try all branches (broad match)
+    if (!matched.length && patterns.length === 0) {
+      for (const [branchKey, cutoff] of Object.entries(college.branches)) {
+        matched.push({ branchCode: branchKey, branchName: codeToName[branchKey] || branchKey, cutoff });
+      }
+    }
+
+    return matched;
+  }
+
+  function renderResults(results, userRank, minCutoff) {
+    const wrap = document.getElementById('resultsWrap');
+    const container = document.getElementById('resultsContainer');
+    const title = document.getElementById('resultsTitle');
+    const meta = document.getElementById('resultsMeta');
+    const band = document.getElementById('resultsRankBand');
+
+    wrap.style.display = 'block';
+    wrap.style.animation = 'none';
+    wrap.offsetHeight; // reflow
+    wrap.style.animation = '';
+
+    title.textContent = results.length ? 'Predicted Colleges' : 'No Matches';
+    meta.textContent = `${results.length} match${results.length !== 1 ? 'es' : ''} · ${selectedCat}`;
+    band.textContent = `Rank ${minCutoff.toLocaleString('en-IN')} – ∞ · your rank ${userRank.toLocaleString('en-IN')}`;
+
+    if (!results.length) {
+      container.innerHTML = `<div class="empty-state">
+        <i class="fa-regular fa-folder-open"></i>
+        <p>No colleges from your priority list match this rank + category</p>
+        <div class="hint">Try adjusting rank or a different category</div>
+      </div>`;
+      return;
+    }
+
+    // Group: Safe (diff >= 0) and Tight (diff < 0, within 500)
+    const safe = results.filter(r => r.diff >= 0);
+    const tight = results.filter(r => r.diff < 0);
+
+    let html = '';
+
+    if (safe.length) {
+      html += `<div class="group-label">Likely to get · ${safe.length} college${safe.length !== 1 ? 's' : ''}</div>`;
+      html += safe.map(r => buildCard(r, userRank)).join('');
+    }
+
+    if (tight.length) {
+      html += `<div class="group-label" style="margin-top:8px;">Slightly above cutoff · ${tight.length}</div>`;
+      html += tight.map(r => buildCard(r, userRank)).join('');
+    }
+
+    container.innerHTML = html;
+  }
+
+  function buildCard(r, userRank) {
+    const shortName = getShortName(r.collegeName);
+    const isSafe = r.diff >= 0;
+    const diffAbs = Math.abs(r.diff);
+
+    let chanceClass = 'chance-high', chanceLabel = 'High Chance';
+    let valClass = 'safe';
+    if (!isSafe) {
+      if (diffAbs <= 200) { chanceClass = 'chance-mid'; chanceLabel = 'Tight'; valClass = 'tight'; }
+      else { chanceClass = 'chance-low'; chanceLabel = 'Unlikely'; valClass = 'far'; }
+    } else if (r.diff < 2000) {
+      chanceClass = 'chance-mid'; chanceLabel = 'Moderate'; valClass = 'tight';
+    }
+
+    return `<div class="result-card${isSafe ? ' guaranteed' : ''}">
+      <div class="result-top">
+        <div class="result-priority">Priority <span class="pnum">#${r.priority}</span> · ${r.collegeId}</div>
+        <div class="result-name">${escapeHtml(shortName)}</div>
+        <div class="result-branch-tag">${escapeHtml(r.branchName || r.courseCode)}</div>
+      </div>
+      <div class="result-metrics">
+        <div class="metric-block">
+          <div class="metric-label">Cutoff · ${escapeHtml(selectedCat)}</div>
+          <div class="metric-value">${r.cutoff.toLocaleString('en-IN')}</div>
+        </div>
+        <div class="metric-block">
+          <div class="metric-label">Your Rank</div>
+          <div class="metric-value">${userRank.toLocaleString('en-IN')}</div>
+        </div>
+        <div class="metric-block">
+          <div class="metric-label">Buffer</div>
+          <div class="metric-value ${valClass}">${r.diff >= 0 ? '+' : ''}${r.diff.toLocaleString('en-IN')}</div>
+          <div class="chance-badge ${chanceClass}">${chanceLabel}</div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  // ── Branch name cleaner (same as disha) ──
+  function cleanBranchName(raw) {
+    if (!raw) return '';
+    let clean = raw.toUpperCase().trim()
+      .replace(/\bENGG\b/g, 'ENGINEERING').replace(/\bTECH\b/g, 'TECHNOLOGY')
+      .replace(/\s+/g, ' ').trim();
+    return clean;
+  }
+
+  function getShortName(name) {
+    if (!name) return '';
+    const i = name.indexOf(',');
+    return i > 0 ? name.substring(0, i).trim() : name.trim();
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+  }
+
+  function showError(el, msg) {
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+
+  // Init category dropdown with defaults even before PDF upload
+  populateCategoryDropdown();
+</script>
+</body>
+</html>
