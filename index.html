@@ -986,6 +986,92 @@ function hideTyping() {
 }
 
 // ---- Special command handlers ----
+// ── Conversation context ─────────────────────────────────────
+// Tracks last bot reply so we can interpret short follow-up messages
+const ConvoContext = (() => {
+    let lastBotReply   = null;   // last thing proton said
+    let lastUserQuery  = null;   // last thing user said
+    let awaitingReply  = false;  // bot asked a question?
+
+    // Short affirmative/status replies that only make sense in context
+    const STATUS_REPLIES = {
+        positive: ['i am fine', 'i am good', 'i am great', 'i am okay', 'doing well',
+                   'doing good', 'doing great', 'fine', 'good', 'great', 'okay', 'ok',
+                   'not bad', 'pretty good', 'all good', 'fantastic', 'wonderful',
+                   'amazing', 'awesome', 'blessed', 'happy', 'well'],
+        negative: ['i am not good', 'not great', 'not okay', 'not fine', 'bad',
+                   'not well', 'tired', 'exhausted', 'sad', 'stressed', 'anxious',
+                   'not so good', 'could be better', 'not feeling well'],
+        neutral:  ['meh', 'so so', 'so-so', 'alright', 'could be better', 'managing',
+                   'surviving', 'hanging in there'],
+    };
+
+    // Replies Proton can give when user answers "how are you"-type questions
+    const FOLLOWUP_RESPONSES = {
+        positive: [
+            "That's great to hear! 😊 What can I help you with?",
+            "Glad you're doing well! Anything I can do for you?",
+            "Nice! Hope your day keeps going that way. What's up?",
+            "Love to hear that! What's on your mind?",
+        ],
+        negative: [
+            "Sorry to hear that 😔 Hope things get better. I'm here if you need anything.",
+            "That's rough — take it easy. Anything I can help with?",
+            "Hang in there! What can I do for you today?",
+        ],
+        neutral: [
+            "Fair enough! What can I help you with?",
+            "Totally get that. What's up?",
+            "Alright, let's make it a better day. What do you need?",
+        ],
+    };
+
+    function rand(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+    function classify(q) {
+        const lq = q.toLowerCase().trim();
+        for (const [tier, phrases] of Object.entries(STATUS_REPLIES)) {
+            if (phrases.some(p => lq === p || lq.startsWith(p + ' ') || lq.endsWith(' ' + p))) {
+                return tier;
+            }
+        }
+        return null;
+    }
+
+    function set(botReply, userQuery) {
+        lastBotReply  = botReply;
+        lastUserQuery = userQuery;
+        // Did bot ask a question?
+        awaitingReply = botReply && botReply.includes('?');
+    }
+
+    // Returns a contextual response if the current input is a follow-up, else null
+    function resolve(query) {
+        if (!awaitingReply || !lastBotReply) return null;
+
+        // Bot asked about the user ("what about you", "how are you", etc.)
+        const botAskedAboutUser = /what about you|how about you|how are you|and you/i.test(lastBotReply);
+        if (botAskedAboutUser) {
+            const tier = classify(query);
+            if (tier) return rand(FOLLOWUP_RESPONSES[tier]);
+        }
+
+        // Generic short affirmation after any question
+        const lq = query.toLowerCase().trim();
+        const genericAck = ['yes', 'no', 'yep', 'nope', 'sure', 'of course',
+                            'maybe', 'not really', 'i think so', 'definitely'];
+        if (genericAck.includes(lq)) {
+            return "Got it! Anything else I can help with?";
+        }
+
+        return null;
+    }
+
+    function clear() { lastBotReply = null; awaitingReply = false; }
+
+    return { set, resolve, clear };
+})();
+
 function handleSpecialCommands(query) {
     const q = query.toLowerCase().trim();
 
@@ -993,7 +1079,6 @@ function handleSpecialCommands(query) {
     if (q.startsWith('calc ') || q.startsWith('calculate ')) {
         const expr = q.replace(/^calc(ulate)?\s+/, '');
         try {
-            // Safe eval using Function — only allow math chars
             if (!/^[0-9\s\+\-\*\/\.\(\)\%\^]+$/.test(expr)) throw new Error('invalid');
             const result = Function('"use strict"; return (' + expr + ')')();
             return `= ${result}`;
@@ -1012,7 +1097,7 @@ function handleSpecialCommands(query) {
         return `It's ${new Date().toLocaleString('en-IN', { dateStyle: 'full', timeStyle: 'short' })}.`;
     }
 
-    return null; // let neural engine handle
+    return null;
 }
 
 // Main search pipeline
@@ -1028,23 +1113,33 @@ window.doEsSearch = function(val) {
     setTimeout(() => {
         hideTyping();
 
-        // 1. Try special commands first
+        // 1. Context-aware follow-up resolution (handles "i am fine", "yes", etc.)
+        const contextual = ConvoContext.resolve(query);
+        if (contextual) {
+            ConvoContext.set(contextual, query);
+            appendSystemBubble(contextual);
+            return;
+        }
+
+        // 2. Special command handlers
         const special = handleSpecialCommands(query);
         if (special) {
+            ConvoContext.set(special, query);
             appendSystemBubble(special);
             return;
         }
 
-        // 2. Neural prediction
+        // 3. Neural prediction
         const { answer, confidence } = ProtonEngine.predict(query);
 
         if (!answer || confidence < 0.15) {
-            appendSystemBubble(
-                `I'm not sure about that yet.\n\nTry: <b>kcet predict</b>, <b>calc 2+3</b>, <b>weather in Mumbai</b>, or just <b>help</b>.`
-            );
+            const fallback = `I'm not sure about that yet. Try: <b>kcet predict</b>, <b>calc 2+3</b>, <b>weather in Mumbai</b>, or just <b>help</b>.`;
+            ConvoContext.clear();
+            appendSystemBubble(fallback);
             return;
         }
 
+        ConvoContext.set(answer, query);
         appendSystemBubble(answer, confidence);
     }, 350);
 };
