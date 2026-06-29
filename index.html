@@ -35,12 +35,7 @@
             --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.05);
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            -webkit-tap-highlight-color: transparent;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
         html, body {
             background-color: var(--bg-base);
@@ -64,7 +59,7 @@
             flex-direction: column;
             position: relative;
             overflow: hidden;
-            padding-top: max(env(safe-area-inset-top, 20px), 20px); 
+            padding-top: max(env(safe-area-inset-top, 20px), 20px);
             transition: background-color var(--transition-smooth);
         }
 
@@ -109,11 +104,42 @@
             border-radius: 50%;
         }
 
-        .search-container {
-            padding: 0 16px;
-            margin-bottom: 12px;
-            z-index: 10;
+        /* Model status pill under brand */
+        .model-status-pill {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            color: var(--text-dim);
+            padding: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
         }
+
+        .model-status-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--text-dim);
+            transition: background 0.4s ease;
+        }
+
+        .model-status-dot.loading { background: #f5a623; animation: blink 1s ease-in-out infinite; }
+        .model-status-dot.ready   { background: #32d74b; }
+        .model-status-dot.boosting{ background: #007aff; animation: blink 0.8s ease-in-out infinite; }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .search-container { padding: 0 16px; margin-bottom: 12px; z-index: 10; }
 
         .premium-pill {
             background: var(--bg-card);
@@ -125,7 +151,7 @@
             justify-content: space-between;
             border: 1px solid var(--border-subtle);
             cursor: pointer;
-            transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1), background-color var(--transition-smooth), border-color var(--transition-smooth);
+            transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1), background-color var(--transition-smooth);
         }
 
         .premium-pill:active { transform: scale(0.98); }
@@ -140,19 +166,8 @@
             100% { transform: scale(1); opacity: 1; }
         }
 
-        .search-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-weight: 500;
-            font-size: 14px;
-        }
-
-        .search-right {
-            font-size: 12px;
-            color: var(--text-dim);
-            padding-left: 14px;
-        }
+        .search-left { display: flex; align-items: center; gap: 12px; font-weight: 500; font-size: 14px; }
+        .search-right { font-size: 12px; color: var(--text-dim); padding-left: 14px; }
 
         .display-viewport {
             flex: 1;
@@ -187,31 +202,38 @@
             transition: background-color var(--transition-smooth);
         }
 
-        .empty-title {
-            font-size: 19px;
-            font-weight: 600;
-            letter-spacing: -0.02em;
-            margin-bottom: 8px;
+        /* Spinning loader ring on empty circle while loading */
+        .empty-circle.loading-ring {
+            position: relative;
+        }
+        .empty-circle.loading-ring::after {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            border-top-color: #f5a623;
+            animation: spin 1.2s linear infinite;
+        }
+        .empty-circle.loading-ring.boost::after {
+            border-top-color: #007aff;
+        }
+        .empty-circle.loading-ring.trained::after {
+            border-top-color: #32d74b;
+            animation: none;
+            opacity: 0;
         }
 
-        .empty-subtitle {
-            font-size: 13px;
-            color: var(--text-dim);
-            max-width: 280px;
-            line-height: 1.5;
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        .msg-row {
-            display: flex;
-            width: 100%;
-            margin-bottom: 4px;
-        }
-        
+        .empty-title { font-size: 19px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 8px; }
+        .empty-subtitle { font-size: 13px; color: var(--text-dim); max-width: 280px; line-height: 1.5; }
+
+        .msg-row { display: flex; width: 100%; margin-bottom: 4px; }
         .msg-row.user-align { justify-content: flex-end; }
         .msg-row.system-align { justify-content: flex-start; }
 
-        /* Modified: Supports extension-injected structures alongside clean raw bubbles */
-        .msg-capsule, .es-bubble-user, .es-bubble-sys {
+        .msg-capsule {
             width: max-content;
             max-width: 85%;
             padding: 12px 18px;
@@ -225,7 +247,7 @@
             transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1), background-color var(--transition-smooth);
         }
 
-        .msg-row.user-align .msg-capsule, .es-bubble-user {
+        .msg-row.user-align .msg-capsule {
             background: var(--text-main);
             color: var(--bg-base);
             border-bottom-right-radius: 4px;
@@ -234,13 +256,56 @@
             margin-bottom: 8px;
         }
 
-        .msg-row.system-align .msg-capsule, .es-bubble-sys {
+        .msg-row.system-align .msg-capsule {
             background: var(--bg-card);
             color: var(--text-main);
             border-bottom-left-radius: 4px;
             align-self: flex-start;
             margin-right: auto;
             margin-bottom: 8px;
+        }
+
+        /* Confidence bar inside system bubble */
+        .conf-bar-wrap {
+            margin-top: 8px;
+            height: 2px;
+            background: var(--border-subtle);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .conf-bar-fill {
+            height: 100%;
+            border-radius: 2px;
+            background: #32d74b;
+            transition: width 0.4s ease;
+        }
+
+        .conf-bar-fill.low  { background: #ff453a; }
+        .conf-bar-fill.mid  { background: #f5a623; }
+        .conf-bar-fill.high { background: #32d74b; }
+
+        /* Typing indicator */
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+            padding: 4px 0;
+        }
+
+        .typing-dots span {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--text-dim);
+            animation: typingBounce 1.2s ease-in-out infinite;
+        }
+
+        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typingBounce {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+            30% { transform: translateY(-5px); opacity: 1; }
         }
 
         .dock-anchor {
@@ -265,7 +330,7 @@
 
         .glass-dock.highlight-focus {
             border-color: var(--text-main);
-            box-shadow: 0 0 14px rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 14px rgba(255,255,255,0.15);
         }
 
         .input-row { padding: 4px 12px 0 12px; }
@@ -282,12 +347,7 @@
 
         .input-row input::placeholder { color: var(--text-dim); opacity: 0.6; }
 
-        .action-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
+        .action-row { display: flex; justify-content: space-between; align-items: center; }
         .action-left { display: flex; gap: 4px; }
 
         .action-btn {
@@ -315,49 +375,25 @@
             opacity: 0;
             transition: all 0.3s ease;
         }
-        .mic-recording .mic-ring {
-            opacity: 1;
-            border-color: var(--accent-dot);
-            animation: micPulse 1.2s ease-in-out infinite;
-        }
-        .mic-recording {
-            background: rgba(255, 0, 0, 0.1) !important;
-        }
-        .mic-recording svg {
-            stroke: var(--accent-dot) !important;
-        }
+
+        .mic-recording .mic-ring { opacity: 1; border-color: var(--accent-dot); animation: micPulse 1.2s ease-in-out infinite; }
+        .mic-recording { background: rgba(255,0,0,0.1) !important; }
+        .mic-recording svg { stroke: var(--accent-dot) !important; }
+
         @keyframes micPulse {
             0% { transform: scale(1); opacity: 0.6; }
             50% { transform: scale(1.4); opacity: 0; }
             100% { transform: scale(1); opacity: 0.6; }
         }
-        .mic-wave {
-            position: absolute;
-            bottom: -4px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 2px;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        .mic-recording .mic-wave {
-            opacity: 1;
-        }
-        .mic-bar {
-            width: 3px;
-            height: 8px;
-            background: var(--accent-dot);
-            border-radius: 2px;
-            animation: waveBar 0.6s ease-in-out infinite alternate;
-        }
+
+        .mic-wave { position: absolute; bottom: -4px; left: 50%; transform: translateX(-50%); display: flex; gap: 2px; opacity: 0; transition: opacity 0.3s ease; }
+        .mic-recording .mic-wave { opacity: 1; }
+        .mic-bar { width: 3px; height: 8px; background: var(--accent-dot); border-radius: 2px; animation: waveBar 0.6s ease-in-out infinite alternate; }
         .mic-bar:nth-child(2) { animation-delay: 0.1s; }
         .mic-bar:nth-child(3) { animation-delay: 0.2s; }
         .mic-bar:nth-child(4) { animation-delay: 0.3s; }
-        @keyframes waveBar {
-            0% { height: 4px; }
-            100% { height: 12px; }
-        }
+
+        @keyframes waveBar { 0% { height: 4px; } 100% { height: 12px; } }
 
         .action-btn.pill-mode {
             background: var(--bg-card);
@@ -380,35 +416,19 @@
             height: 40px;
         }
 
+        /* Sidebar */
         .sidebar-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 100;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 100;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
         }
 
-        .sidebar-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
+        .sidebar-overlay.active { opacity: 1; pointer-events: auto; }
 
         .sidebar-slider {
-            position: absolute;
-            top: 0;
-            left: -280px;
-            width: 280px;
-            height: 100%;
-            background: var(--bg-card);
-            border-right: 1px solid var(--border-subtle);
-            z-index: 101;
-            display: flex;
-            flex-direction: column;
+            position: absolute; top: 0; left: -280px; width: 280px; height: 100%;
+            background: var(--bg-card); border-right: 1px solid var(--border-subtle);
+            z-index: 101; display: flex; flex-direction: column;
             padding: calc(24px + env(safe-area-inset-top, 24px)) 20px calc(24px + env(safe-area-inset-bottom, 24px)) 20px;
             transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
             box-shadow: var(--shadow-soft);
@@ -417,453 +437,855 @@
         .sidebar-overlay.active .sidebar-slider { transform: translateX(280px); }
 
         .slider-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 32px;
-            padding-bottom: 12px;
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 32px; padding-bottom: 12px;
             border-bottom: 1px solid var(--border-subtle);
         }
 
         .slider-title { font-size: 15px; font-weight: 600; color: var(--text-dim); letter-spacing: 1px; text-transform: uppercase; }
-
         .slider-menu-list { display: flex; flex-direction: column; gap: 8px; flex: 1; }
 
         .menu-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 14px;
-            border-radius: 14px;
-            color: var(--text-main);
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
+            display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+            border-radius: 14px; color: var(--text-main); font-size: 14px;
+            font-weight: 500; cursor: pointer; transition: background-color 0.2s ease;
         }
 
         .menu-item:hover, .menu-item.active { background-color: var(--bg-base); }
 
-        .slider-footer {
-            padding-top: 16px;
-            border-top: 1px solid var(--border-subtle);
-        }
+        .slider-footer { padding-top: 16px; border-top: 1px solid var(--border-subtle); }
 
-        .toggle-pill {
+        /* Model stats in sidebar */
+        .model-stats-panel {
+            margin-bottom: 16px;
+            padding: 12px 14px;
+            border-radius: 14px;
             background: var(--bg-base);
             border: 1px solid var(--border-subtle);
-            border-radius: 20px;
-            padding: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: relative;
-        }
-
-        .toggle-btn {
-            flex: 1;
-            border: none;
-            background: transparent;
-            height: 32px;
-            font-family: var(--font-sans);
             font-size: 12px;
-            font-weight: 600;
             color: var(--text-dim);
-            cursor: pointer;
-            z-index: 2;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
+            line-height: 1.8;
         }
 
-        .toggle-btn.active { color: var(--text-main); }
+        .model-stats-panel strong { color: var(--text-main); font-weight: 600; }
 
-        .pill-capsule {
-            position: absolute;
-            top: 6px;
-            left: 6px;
-            width: calc(50% - 6px);
-            height: 32px;
-            background: var(--bg-card);
-            border-radius: 16px;
-            border: 1px solid var(--border-subtle);
-            z-index: 1;
-            transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+        .toggle-pill {
+            background: var(--bg-base); border: 1px solid var(--border-subtle);
+            border-radius: 20px; padding: 6px; display: flex;
+            align-items: center; justify-content: space-between; position: relative;
         }
 
-        :root.light-theme .pill-capsule { transform: translateX(100%); }
+        .dark-mode-row {
+            cursor: pointer; padding: 10px 14px; border-radius: 20px;
+            display: flex; align-items: center; justify-content: space-between;
+            background: var(--bg-base); border: 1px solid var(--border-subtle);
+        }
     </style>
-<base target="_blank">
 </head>
 <body>
 
-    <div class="phone-frame">
-        
-        <!-- Sidebar Drawer Overlay Modules -->
-        <div class="sidebar-overlay" id="sidebarOverlay">
-            <div class="sidebar-slider">
-                <div class="slider-header">
-                    <span class="slider-title">x-bit proton</span>
-                    <button class="action-btn" id="closeSidebar">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                    </button>
-                </div>
-                
-                <div class="user-profile" id="userProfile" style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding: 0 4px;">
-                    <div id="userPfp" style="width: 44px; height: 44px; border-radius: 50%; background: var(--bg-base); border: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 600; color: var(--text-main); text-transform: uppercase;"></div>
-                    <span id="userNameDisplay" style="font-size: 15px; font-weight: 600; color: var(--text-main);"></span>
-                </div>
-                <div class="slider-menu-list">
-                    <div class="menu-item active">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                        <span>x-bit proton</span>
-                    </div>
-                    <div class="menu-item">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-                        <span>global topology</span>
-                    </div>
-                </div>
+<div class="phone-frame">
 
-                <div class="slider-footer">
-                    <div class="toggle-pill" id="darkModeToggle" style="cursor: pointer; padding: 10px 14px; border-radius: 20px; display: flex; align-items: center; justify-content: space-between; background: var(--bg-base); border: 1px solid var(--border-subtle);">
-                        <span style="font-size: 13px; font-weight: 500; color: var(--text-main);">Dark Mode</span>
-                        <div id="darkModeSwitch" style="width: 44px; height: 24px; background: var(--text-main); border-radius: 12px; position: relative; transition: background 0.3s ease;">
-                            <div id="darkModeKnob" style="width: 20px; height: 20px; background: var(--bg-base); border-radius: 50%; position: absolute; top: 2px; right: 2px; transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);"></div>
-                        </div>
+    <!-- Sidebar -->
+    <div class="sidebar-overlay" id="sidebarOverlay">
+        <div class="sidebar-slider">
+            <div class="slider-header">
+                <span class="slider-title">x-bit proton</span>
+                <button class="action-btn" id="closeSidebar">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;padding:0 4px;">
+                <div id="userPfp" style="width:44px;height:44px;border-radius:50%;background:var(--bg-base);border:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600;color:var(--text-main);text-transform:uppercase;"></div>
+                <span id="userNameDisplay" style="font-size:15px;font-weight:600;color:var(--text-main);"></span>
+            </div>
+
+            <!-- Live model stats -->
+            <div class="model-stats-panel" id="modelStatsPanel">
+                <div>Status: <strong id="statStatus">booting</strong></div>
+                <div>Vectors: <strong id="statVectors">0</strong></div>
+                <div>Classes: <strong id="statClasses">0</strong></div>
+                <div>Samples: <strong id="statSamples">0</strong></div>
+                <div>Epoch: <strong id="statEpoch">0</strong></div>
+                <div>Loss: <strong id="statLoss">—</strong></div>
+            </div>
+
+            <div class="slider-menu-list">
+                <div class="menu-item active">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                    <span>x-bit proton</span>
+                </div>
+                <div class="menu-item">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                    <span>global topology</span>
+                </div>
+            </div>
+
+            <div class="slider-footer">
+                <div class="dark-mode-row" id="darkModeToggle">
+                    <span style="font-size:13px;font-weight:500;color:var(--text-main);">Dark Mode</span>
+                    <div id="darkModeSwitch" style="width:44px;height:24px;background:var(--text-main);border-radius:12px;position:relative;transition:background 0.3s ease;">
+                        <div id="darkModeKnob" style="width:20px;height:20px;background:var(--bg-base);border-radius:50%;position:absolute;top:2px;right:2px;transition:transform 0.3s cubic-bezier(0.25,1,0.5,1);"></div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Header Panel Navigation -->
-        <nav class="top-nav">
-            <button class="nav-square" id="openSidebar" aria-label="Open Sidebar Menu">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-            </button>
+    <!-- Top Nav -->
+    <nav class="top-nav" style="position:relative;">
+        <button class="nav-square" id="openSidebar" aria-label="Open Sidebar">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
             <div class="app-brand">
                 <span>x-bit proton</span>
                 <span class="brand-dot"></span>
             </div>
-            <button class="nav-square" aria-label="Create Thread Context">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-            </button>
-        </nav>
-
-        <!-- Search Dashboard Pill -->
-        <div class="search-container">
-            <div class="premium-pill" id="dashboardSearchPill">
-                <div class="search-left" style="gap: 16px;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="opacity:0.8;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                    <span style="padding-left: 4px;">x-bit proton</span>
-                </div>
-                <div class="search-right">
-                    <span>Powered by x0s</span>
-                </div>
+            <div class="model-status-pill" id="modelStatusPill">
+                <div class="model-status-dot loading" id="modelStatusDot"></div>
+                <span id="modelStatusText">booting</span>
             </div>
         </div>
+        <button class="nav-square" aria-label="New Thread">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+        </button>
+    </nav>
 
-        <!-- Scrollable Thread Core Display Area Mapping to Extension ID targets -->
-        <main id="es-messages" class="display-viewport">
-            <div class="empty-view" id="es-greeting">
-                <div class="empty-circle">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                </div>
-                <h2 class="empty-title">x-bit 2.0.1</h2>
-                <p class="empty-subtitle" id="greetingText">Hey there, good morning</p>
+    <!-- Search Pill -->
+    <div class="search-container">
+        <div class="premium-pill" id="dashboardSearchPill">
+            <div class="search-left" style="gap:16px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="opacity:0.8;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <span style="padding-left:4px;">x-bit proton</span>
             </div>
-        </main>
-
-        <!-- Fixed Glassmorphic Input Dock Module Mapping to Extension ID targets -->
-        <div class="dock-anchor">
-            <div class="glass-dock" id="inputDockContainer">
-                <div class="input-row">
-                    <input type="text" id="es-input" placeholder="Message Proton..." autocomplete="off">
-                </div>
-                <div class="action-row">
-                    <div class="action-left">
-                        <button class="action-btn" aria-label="Append Media Context">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                        </button>
-                        <button class="action-btn pill-mode" aria-label="Inline Search Execution Engine Switch">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line></svg>
-                            <span>Search</span>
-                        </button>
-                        <button class="action-btn" aria-label="Extended Directives">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
-                        </button>
-                    </div>
-                    <div class="action-right" style="display: flex; gap: 4px; align-items: center;">
-                        <button class="action-btn" id="micBtn" aria-label="Audio Translation System Input">
-                            <div class="mic-ring" id="micRing"></div>
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path></svg>
-                            <div class="mic-wave" id="micWave">
-                                <div class="mic-bar"></div>
-                                <div class="mic-bar"></div>
-                                <div class="mic-bar"></div>
-                                <div class="mic-bar"></div>
-                            </div>
-                        </button>
-                        <button class="action-btn submit" id="es-send" aria-label="Push Vector Instruction Matrix">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
+            <div class="search-right"><span>Powered by x0s</span></div>
         </div>
-
     </div>
 
-    <!-- ========== DATA & BRAIN ========== -->
-    <!-- Required data files for KCET predictor & college matches -->
-    <script src="colleges.js"></script>
-    <script src="Dishabase.js"></script>
-    <!-- Disha AI engine (overrides doEsSearch) -->
-    <script src="disha-extensions.js" defer></script>
+    <!-- Message Viewport -->
+    <main id="es-messages" class="display-viewport">
+        <div class="empty-view" id="es-greeting">
+            <div class="empty-circle loading-ring" id="emptyCircle">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </div>
+            <h2 class="empty-title">x-bit 2.0.1</h2>
+            <p class="empty-subtitle" id="greetingText">Loading model...</p>
+        </div>
+    </main>
 
-    <script>
-        // ====== CORE UTILITIES (Disha-compatible) ======
-        window.scrollEsToBottom = function() {
-            const viewport = document.getElementById('es-messages');
-            if (viewport) viewport.scrollTop = viewport.scrollHeight;
-        };
+    <!-- Input Dock -->
+    <div class="dock-anchor">
+        <div class="glass-dock" id="inputDockContainer">
+            <div class="input-row">
+                <input type="text" id="es-input" placeholder="Loading model..." autocomplete="off">
+            </div>
+            <div class="action-row">
+                <div class="action-left">
+                    <button class="action-btn" aria-label="Attach">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    </button>
+                    <button class="action-btn pill-mode" aria-label="Search">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line></svg>
+                        <span>Search</span>
+                    </button>
+                    <button class="action-btn" aria-label="More">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
+                    </button>
+                </div>
+                <div style="display:flex;gap:4px;align-items:center;">
+                    <button class="action-btn" id="micBtn" aria-label="Voice">
+                        <div class="mic-ring" id="micRing"></div>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path></svg>
+                        <div class="mic-wave" id="micWave">
+                            <div class="mic-bar"></div><div class="mic-bar"></div>
+                            <div class="mic-bar"></div><div class="mic-bar"></div>
+                        </div>
+                    </button>
+                    <button class="action-btn submit" id="es-send" aria-label="Send">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        window.appendEsBubbleUser = function(query) {
-            const greet = document.getElementById('es-greeting');
-            if (greet) greet.style.display = 'none';
-            const viewport = document.getElementById('es-messages');
-            const row = document.createElement('div');
-            row.className = 'msg-row user-align';
-            const capsule = document.createElement('div');
-            capsule.className = 'msg-capsule';
-            capsule.textContent = query;
-            row.appendChild(capsule);
-            viewport.appendChild(row);
-            setTimeout(() => { capsule.style.transform = 'translateY(0)'; }, 10);
-            window.scrollEsToBottom();
-        };
+</div>
 
-        // Fallback search handler — Disha-extensions.js will override this
-        window.doEsSearch = function(val) {
-            const query = val.trim();
-            if (!query) return;
-            window.appendEsBubbleUser(query);
-            const viewport = document.getElementById('es-messages');
-            const sysRow = document.createElement('div');
-            sysRow.className = 'msg-row system-align';
-            const sysCapsule = document.createElement('div');
-            sysCapsule.className = 'msg-capsule';
-            sysCapsule.innerHTML = '⚠️ I am not sure how to help with that.<br><span style="font-size:0.75rem; color:var(--text-dim);">Try: <strong>kcet predict</strong>, <strong>weather in Mumbai</strong>, <strong>calc 2+2</strong>, or <strong>help</strong>.</span>';
-            sysRow.appendChild(sysCapsule);
-            viewport.appendChild(sysRow);
-            setTimeout(() => { sysCapsule.style.transform = 'translateY(0)'; }, 10);
-            window.scrollEsToBottom();
-            const inp = document.getElementById('es-input');
-            if (inp) inp.value = '';
-        };
+<!-- External data files (colleges, Dishabase — still loaded for reference) -->
+<script src="colleges.js"></script>
+<script src="Dishabase.js"></script>
 
-        // ====== UI INTERACTIONS ======
-        const sidebarOverlay = document.getElementById('sidebarOverlay');
-        const openSidebar = document.getElementById('openSidebar');
-        const closeSidebar = document.getElementById('closeSidebar');
-        const dashboardSearchPill = document.getElementById('dashboardSearchPill');
-        const inputDockContainer = document.getElementById('inputDockContainer');
-        const rootElement = document.documentElement;
+<script>
+// ============================================================
+//  PROTON NEURAL ENGINE — Integrated Vectorizer + Classifier
+//  Progressive training: 10 seeds → ONLINE → background boost
+// ============================================================
 
-        openSidebar.addEventListener('click', () => sidebarOverlay.classList.add('active'));
-        closeSidebar.addEventListener('click', () => sidebarOverlay.classList.remove('active'));
-        sidebarOverlay.addEventListener('click', (e) => { if(e.target === sidebarOverlay) sidebarOverlay.classList.remove('active'); });
+const ProtonEngine = (() => {
 
-        dashboardSearchPill.addEventListener('click', () => {
-            dashboardSearchPill.classList.add('pulse-shift');
-            inputDockContainer.classList.add('highlight-focus');
-            document.getElementById('es-input').focus();
-            setTimeout(() => { dashboardSearchPill.classList.remove('pulse-shift'); }, 400);
-            setTimeout(() => { inputDockContainer.classList.remove('highlight-focus'); }, 800);
+    // ── Model State ──────────────────────────────────────────
+    let vocab      = [];          // token list
+    let classes    = [];          // output label list
+    let vocabIndex = {};          // token → index
+    let classIndex = {};          // label → index
+    let W          = [];          // Float32Array[vocab][classes]  weights
+    let b          = [];          // Float32Array[classes]         biases
+    let Wm         = [];          // momentum for W (Adam m)
+    let Wv         = [];          // Adam v for W
+    let bm         = [];          // Adam m for b
+    let bv         = [];          // Adam v for b
+    let adamT      = 0;           // Adam timestep
+
+    let trainedSamples = 0;
+    let currentEpoch   = 0;
+    let totalEpochs    = 0;
+    let isReady  = false;
+    let isBoosting = false;
+    let loss       = 0;
+
+    // ── Hyper-parameters ─────────────────────────────────────
+    const LR_INIT       = 0.05;   // Adam base LR
+    const BETA1         = 0.9;    // Adam momentum decay
+    const BETA2         = 0.999;  // Adam second moment decay
+    const EPSILON       = 1e-8;
+    const L2            = 1e-4;   // weight decay (regularisation)
+    const EPOCHS_SEED   = 300;    // fast pass on first 10
+    const EPOCHS_FULL   = 500;    // full dataset async
+    const CHUNK_EPOCHS  = 10;     // epochs per rAF frame
+
+    // ── Tokeniser ────────────────────────────────────────────
+    // Simple but effective: lowercase, split on non-word, bigrams appended
+    function tokenize(text) {
+        const uni = text.toLowerCase().split(/\W+/).filter(Boolean);
+        const bi  = [];
+        for (let i = 0; i < uni.length - 1; i++) bi.push(uni[i] + '_' + uni[i+1]);
+        return [...uni, ...bi];
+    }
+
+    // ── Vocab / Class builders ────────────────────────────────
+    function buildVocab(data) {
+        data.forEach(d => {
+            tokenize(d.input).forEach(w => {
+                if (!(w in vocabIndex)) { vocabIndex[w] = vocab.length; vocab.push(w); }
+            });
+            const c = d.output;
+            if (!(c in classIndex)) { classIndex[c] = classes.length; classes.push(c); }
         });
+    }
 
-        const matrixField = document.getElementById('es-input');
-        const sendStream = document.getElementById('es-send');
-
-        function executeLocalPipeline() {
-            const val = matrixField.value.trim();
-            if (!val) return;
-            window.doEsSearch(val);
-        }
-
-        sendStream.addEventListener('click', executeLocalPipeline);
-        matrixField.addEventListener('keypress', (e) => { if (e.key === 'Enter') executeLocalPipeline(); });
-
-        // ====== SPEECH TO TEXT ======
-        const micBtn = document.getElementById('micBtn');
-        const micInput = document.getElementById('es-input');
-        let recognition = null;
-        let silenceTimer = null;
-        let isRecording = false;
-        const SILENCE_DELAY = 2000;
-
-        function isFileProtocol() {
-            return window.location.protocol === 'file:';
-        }
-
-        function initSpeechRecognition() {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) return null;
-            const rec = new SpeechRecognition();
-            rec.continuous = false;
-            rec.interimResults = true;
-            rec.lang = 'en-US';
-            return rec;
-        }
-
-        function startRecording() {
-            if (isFileProtocol()) {
-                micInput.placeholder = 'Speech requires HTTPS';
-                setTimeout(() => { micInput.placeholder = 'Message Proton...'; }, 3000);
-                return;
-            }
-            recognition = initSpeechRecognition();
-            if (!recognition) {
-                micInput.placeholder = 'Speech not supported';
-                setTimeout(() => { micInput.placeholder = 'Message Proton...'; }, 3000);
-                return;
-            }
-            isRecording = true;
-            micBtn.classList.add('mic-recording');
-            micInput.placeholder = 'Listening...';
-            micInput.value = '';
-            let finalTranscript = '';
-            recognition.onresult = (event) => {
-                let interimTranscript = '';
-                for (let i = event.resultIndex; i < event.results.length; i++) {
-                    const transcript = event.results[i][0].transcript;
-                    if (event.results[i].isFinal) {
-                        finalTranscript += transcript + ' ';
-                    } else {
-                        interimTranscript += transcript;
-                    }
-                }
-                micInput.value = (finalTranscript + interimTranscript).trim();
-                clearTimeout(silenceTimer);
-                silenceTimer = setTimeout(() => {
-                    if (isRecording && micInput.value.trim()) {
-                        stopRecording();
-                        executeLocalPipeline();
-                    }
-                }, SILENCE_DELAY);
-            };
-            recognition.onerror = (event) => {
-                if (event.error === 'not-allowed') micInput.placeholder = 'Mic denied';
-                else if (event.error === 'no-speech') micInput.placeholder = 'No speech';
-                else micInput.placeholder = 'Error: ' + event.error;
-                stopRecording();
-            };
-            recognition.onend = () => { stopRecording(); };
-            try { recognition.start(); }
-            catch(e) { micInput.placeholder = 'Mic failed'; stopRecording(); }
-        }
-
-        function stopRecording() {
-            isRecording = false;
-            clearTimeout(silenceTimer);
-            micBtn.classList.remove('mic-recording');
-            micInput.placeholder = 'Message Proton...';
-            if (recognition) {
-                try { recognition.stop(); } catch(e) {}
-                try { recognition.abort(); } catch(e) {}
-                recognition = null;
-            }
-        }
-
-        micBtn.addEventListener('click', () => {
-            if (isRecording) stopRecording();
-            else startRecording();
+    // ── Weight init / resize (Xavier uniform) ────────────────
+    function initWeights() {
+        const V = vocab.length, C = classes.length;
+        const scale = Math.sqrt(6 / (V + C));
+        W  = Array.from({ length: V }, () => {
+            const r = new Float32Array(C);
+            for (let j = 0; j < C; j++) r[j] = (Math.random() * 2 - 1) * scale;
+            return r;
         });
+        b  = new Float32Array(C);
+        // Adam moments — zero init
+        Wm = Array.from({ length: V }, () => new Float32Array(C));
+        Wv = Array.from({ length: V }, () => new Float32Array(C));
+        bm = new Float32Array(C);
+        bv = new Float32Array(C);
+        adamT = 0;
+    }
 
-        // ====== USER NAME & GREETING ======
-        function getTimeGreeting() {
-            const hour = new Date().getHours();
-            if (hour < 12) return 'good morning';
-            if (hour < 17) return 'good afternoon';
-            return 'good evening';
+    function expandWeights(oldV, oldC) {
+        const V = vocab.length, C = classes.length;
+        const scale = Math.sqrt(6 / (V + C));
+        // Grow rows (new vocab tokens)
+        while (W.length < V) {
+            const r = new Float32Array(C);
+            for (let j = 0; j < C; j++) r[j] = (Math.random() * 2 - 1) * scale;
+            W.push(r);
+            Wm.push(new Float32Array(C));
+            Wv.push(new Float32Array(C));
         }
+        // Grow columns (new classes)
+        if (C > oldC) {
+            for (let i = 0; i < V; i++) {
+                const wr = new Float32Array(C); wr.set(W[i]);
+                const mr = new Float32Array(C); mr.set(Wm[i]);
+                const vr = new Float32Array(C); vr.set(Wv[i]);
+                for (let j = oldC; j < C; j++) wr[j] = (Math.random() * 2 - 1) * scale;
+                W[i] = wr; Wm[i] = mr; Wv[i] = vr;
+            }
+            const bn = new Float32Array(C); bn.set(b);
+            const bm2 = new Float32Array(C); bm2.set(bm);
+            const bv2 = new Float32Array(C); bv2.set(bv);
+            b = bn; bm = bm2; bv = bv2;
+        }
+    }
 
-        function updateGreeting(name) {
-            const greetingEl = document.getElementById('greetingText');
-            if (greetingEl && name) {
-                greetingEl.textContent = 'Hey ' + name + ', ' + getTimeGreeting();
+    // ── Vectorise ────────────────────────────────────────────
+    // TF-weighted: term freq normalised by doc length (better than binary)
+    function vectorize(text) {
+        const tokens = tokenize(text);
+        const x = new Float32Array(vocab.length);
+        tokens.forEach(t => { if (t in vocabIndex) x[vocabIndex[t]] += 1; });
+        const norm = tokens.length || 1;
+        for (let i = 0; i < x.length; i++) x[i] /= norm;
+        return x;
+    }
+
+    // ── Forward pass ─────────────────────────────────────────
+    function softmax(logits) {
+        let max = logits[0];
+        for (let j = 1; j < logits.length; j++) if (logits[j] > max) max = logits[j];
+        let sum = 0;
+        const out = new Float32Array(logits.length);
+        for (let j = 0; j < logits.length; j++) { out[j] = Math.exp(logits[j] - max); sum += out[j]; }
+        for (let j = 0; j < logits.length; j++) out[j] /= sum;
+        return out;
+    }
+
+    function forwardPass(x) {
+        const C = classes.length;
+        const logits = b.slice();
+        for (let i = 0; i < x.length; i++) {
+            if (x[i] !== 0) {
+                const wi = W[i], xi = x[i];
+                for (let j = 0; j < C; j++) logits[j] += wi[j] * xi;
             }
         }
+        return softmax(logits);
+    }
 
-        function updateUserProfile(name) {
-            const pfp = document.getElementById('userPfp');
-            const nameDisplay = document.getElementById('userNameDisplay');
-            if (pfp && name) pfp.textContent = name.charAt(0);
-            if (nameDisplay && name) nameDisplay.textContent = name;
+    // ── Adam step ────────────────────────────────────────────
+    function adamUpdate(grad_W_sparse, grad_b) {
+        adamT++;
+        const lr_t = LR_INIT * Math.sqrt(1 - Math.pow(BETA2, adamT)) / (1 - Math.pow(BETA1, adamT));
+        const C = classes.length;
+
+        // Bias update
+        for (let j = 0; j < C; j++) {
+            bm[j] = BETA1 * bm[j] + (1 - BETA1) * grad_b[j];
+            bv[j] = BETA2 * bv[j] + (1 - BETA2) * grad_b[j] * grad_b[j];
+            b[j] -= lr_t * bm[j] / (Math.sqrt(bv[j]) + EPSILON);
         }
 
-        function askUserName() {
-            const storedName = localStorage.getItem('disha_username');
-            if (storedName) {
-                updateGreeting(storedName);
-                updateUserProfile(storedName);
-                return;
+        // Weight update (sparse — only active input dims)
+        grad_W_sparse.forEach(({ i, grad }) => {
+            const wi = W[i], wmi = Wm[i], wvi = Wv[i];
+            for (let j = 0; j < C; j++) {
+                const g = grad[j] + L2 * wi[j]; // L2 regularisation
+                wmi[j] = BETA1 * wmi[j] + (1 - BETA1) * g;
+                wvi[j] = BETA2 * wvi[j] + (1 - BETA2) * g * g;
+                wi[j] -= lr_t * wmi[j] / (Math.sqrt(wvi[j]) + EPSILON);
             }
-            const modal = document.createElement('div');
-            modal.id = 'nameModal';
-            modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); z-index: 1000; display: flex; align-items: center; justify-content: center;';
-            modal.innerHTML = '<div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 24px; padding: 28px 24px; width: 320px; max-width: 90%; box-shadow: var(--shadow-soft); text-align: center;"><div style="margin-bottom: 12px; color: var(--text-main);"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg></div><h3 style="font-size: 18px; font-weight: 600; margin-bottom: 8px; color: var(--text-main);">What is your name?</h3><p style="font-size: 13px; color: var(--text-dim); margin-bottom: 20px;">We will remember it for next time.</p><input type="text" id="nameInput" placeholder="Enter your name" style="width: 100%; padding: 12px 16px; border-radius: 14px; border: 1px solid var(--border-subtle); background: var(--bg-base); color: var(--text-main); font-family: var(--font-sans); font-size: 15px; outline: none; margin-bottom: 16px;" autocomplete="off"><button id="saveNameBtn" style="width: 100%; padding: 12px; border-radius: 14px; border: none; background: var(--text-main); color: var(--bg-base); font-family: var(--font-sans); font-size: 15px; font-weight: 600; cursor: pointer;">Continue</button></div>';
-            document.body.appendChild(modal);
-            const nameInput = document.getElementById('nameInput');
-            const saveBtn = document.getElementById('saveNameBtn');
-            function saveName() {
-                const name = nameInput.value.trim();
-                if (name) {
-                    localStorage.setItem('disha_username', name);
-                    updateGreeting(name);
-                    updateUserProfile(name);
-                    modal.remove();
-                } else {
-                    nameInput.style.borderColor = 'var(--accent-dot)';
-                    nameInput.focus();
+        });
+    }
+
+    // ── Single epoch over dataset ─────────────────────────────
+    function runEpoch(X, Y) {
+        let epochLoss = 0;
+        const C = classes.length;
+        // Shuffle indices each epoch — better generalisation
+        const idx = Array.from({ length: X.length }, (_, i) => i);
+        for (let a = idx.length - 1; a > 0; a--) {
+            const b2 = Math.floor(Math.random() * (a + 1));
+            [idx[a], idx[b2]] = [idx[b2], idx[a]];
+        }
+        for (const i of idx) {
+            const x = X[i], target = Y[i];
+            const probs = forwardPass(x);
+
+            // Cross-entropy loss
+            epochLoss -= Math.log(Math.max(probs[target], 1e-15));
+
+            // Gradient of softmax + cross-entropy = probs - one_hot
+            const grad_b = probs.slice();
+            grad_b[target] -= 1;
+
+            // Sparse weight gradient (only non-zero input dims)
+            const grad_W_sparse = [];
+            for (let k = 0; k < x.length; k++) {
+                if (x[k] !== 0) {
+                    const grad = new Float32Array(C);
+                    for (let j = 0; j < C; j++) grad[j] = grad_b[j] * x[k];
+                    grad_W_sparse.push({ i: k, grad });
                 }
             }
-            saveBtn.addEventListener('click', saveName);
-            nameInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') saveName(); });
-            nameInput.focus();
+
+            adamUpdate(grad_W_sparse, grad_b);
         }
+        return epochLoss / X.length;
+    }
 
-        // ====== DARK MODE TOGGLE ======
-        const darkModeToggle = document.getElementById('darkModeToggle');
-        const darkModeSwitch = document.getElementById('darkModeSwitch');
-        const darkModeKnob = document.getElementById('darkModeKnob');
+    // ── Sync seed train (fast — 10 samples) ──────────────────
+    function trainSync(data, epochs) {
+        const X = data.map(d => vectorize(d.input));
+        const Y = data.map(d => classIndex[d.output]);
+        for (let ep = 0; ep < epochs; ep++) {
+            loss = runEpoch(X, Y);
+            currentEpoch++;
+        }
+        trainedSamples = data.length;
+    }
 
-        function setDarkMode(isOn) {
-            if (isOn) {
-                rootElement.classList.remove('light-theme');
-                darkModeSwitch.style.background = 'var(--text-main)';
-                darkModeKnob.style.transform = 'translateX(0)';
-                darkModeKnob.style.right = '2px';
-                darkModeKnob.style.left = 'auto';
+    // ── Async progressive train (chunked rAF) ─────────────────
+    function trainAsync(data, epochs, onProgress, onDone) {
+        const X = data.map(d => vectorize(d.input));
+        const Y = data.map(d => classIndex[d.output]);
+        let ep = 0;
+
+        function step() {
+            for (let c = 0; c < CHUNK_EPOCHS && ep < epochs; c++, ep++) {
+                loss = runEpoch(X, Y);
+                currentEpoch++;
+            }
+            onProgress && onProgress(ep, epochs, loss);
+            if (ep < epochs) {
+                requestAnimationFrame(step);
             } else {
-                rootElement.classList.add('light-theme');
-                darkModeSwitch.style.background = 'var(--text-dim)';
-                darkModeKnob.style.transform = 'translateX(-20px)';
+                trainedSamples = data.length;
+                onDone && onDone();
             }
-            localStorage.setItem('disha_darkmode', isOn ? 'on' : 'off');
+        }
+        requestAnimationFrame(step);
+    }
+
+    // ── Public API ───────────────────────────────────────────
+    function loadAndTrain(url, onSeedReady, onBoostProgress, onBoostDone) {
+        fetch(url)
+            .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
+            .then(raw => {
+                let data = Array.isArray(raw) ? raw : (raw.data || raw.training || []);
+                data = data.filter(d => d && typeof d.input === 'string' && typeof d.output === 'string');
+                if (!data.length) throw new Error('Empty dataset');
+
+                const seed = data.slice(0, 10);
+                const rest = data;          // full set includes seed
+
+                // ── Phase 1: Seed (sync, instant) ──
+                buildVocab(seed);
+                initWeights();
+                totalEpochs = EPOCHS_SEED;
+                trainSync(seed, EPOCHS_SEED);
+                isReady = true;
+                onSeedReady && onSeedReady(seed.length);
+
+                // ── Phase 2: Full dataset async ──
+                const oldV = vocab.length, oldC = classes.length;
+                buildVocab(rest);           // expand vocab/classes
+                expandWeights(oldV, oldC);  // resize matrices safely
+                isBoosting = true;
+                totalEpochs = EPOCHS_FULL;
+                currentEpoch = 0;
+
+                trainAsync(
+                    rest,
+                    EPOCHS_FULL,
+                    (ep, total, l) => onBoostProgress && onBoostProgress(ep, total, l, rest.length),
+                    () => {
+                        isBoosting = false;
+                        onBoostDone && onBoostDone(rest.length);
+                    }
+                );
+            })
+            .catch(err => {
+                // Network failed — tell UI, stay ready=false
+                onSeedReady && onSeedReady(0, err.message);
+            });
+    }
+
+    function predict(text) {
+        if (!isReady) return { answer: null, confidence: 0 };
+        const x = vectorize(text);
+        if (x.every(v => v === 0)) return { answer: null, confidence: 0 };
+        const probs = forwardPass(x);
+        let maxP = 0, maxIdx = 0;
+        for (let j = 0; j < probs.length; j++) { if (probs[j] > maxP) { maxP = probs[j]; maxIdx = j; } }
+        return { answer: classes[maxIdx], confidence: maxP };
+    }
+
+    function getStats() {
+        return {
+            vocab:   vocab.length,
+            classes: classes.length,
+            samples: trainedSamples,
+            epoch:   currentEpoch,
+            loss:    loss.toFixed(4),
+            ready:   isReady,
+            boosting: isBoosting,
+        };
+    }
+
+    return { loadAndTrain, predict, getStats };
+})();
+
+// ============================================================
+//  UI LAYER
+// ============================================================
+
+const rootEl = document.documentElement;
+
+// Scroll helper
+window.scrollEsToBottom = () => {
+    const v = document.getElementById('es-messages');
+    if (v) v.scrollTop = v.scrollHeight;
+};
+
+// Append user bubble
+window.appendEsBubbleUser = (text) => {
+    const greet = document.getElementById('es-greeting');
+    if (greet) greet.style.display = 'none';
+    const v = document.getElementById('es-messages');
+    const row = document.createElement('div');
+    row.className = 'msg-row user-align';
+    const cap = document.createElement('div');
+    cap.className = 'msg-capsule';
+    cap.textContent = text;
+    row.appendChild(cap);
+    v.appendChild(row);
+    requestAnimationFrame(() => { cap.style.transform = 'translateY(0)'; });
+    window.scrollEsToBottom();
+};
+
+// Append system bubble with optional confidence bar
+function appendSystemBubble(text, confidence) {
+    const v = document.getElementById('es-messages');
+    const row = document.createElement('div');
+    row.className = 'msg-row system-align';
+    const cap = document.createElement('div');
+    cap.className = 'msg-capsule';
+    cap.innerHTML = text.replace(/\n/g, '<br>');
+
+    if (confidence !== undefined) {
+        const pct = Math.round(confidence * 100);
+        const tier = confidence > 0.7 ? 'high' : confidence > 0.4 ? 'mid' : 'low';
+        cap.innerHTML += `<div class="conf-bar-wrap"><div class="conf-bar-fill ${tier}" style="width:${pct}%"></div></div>`;
+    }
+
+    row.appendChild(cap);
+    v.appendChild(row);
+    requestAnimationFrame(() => { cap.style.transform = 'translateY(0)'; });
+    window.scrollEsToBottom();
+}
+
+// Typing indicator
+let typingRow = null;
+function showTyping() {
+    const v = document.getElementById('es-messages');
+    typingRow = document.createElement('div');
+    typingRow.className = 'msg-row system-align';
+    const cap = document.createElement('div');
+    cap.className = 'msg-capsule';
+    cap.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
+    typingRow.appendChild(cap);
+    v.appendChild(typingRow);
+    requestAnimationFrame(() => { cap.style.transform = 'translateY(0)'; });
+    window.scrollEsToBottom();
+}
+
+function hideTyping() {
+    if (typingRow) { typingRow.remove(); typingRow = null; }
+}
+
+// ---- Special command handlers ----
+function handleSpecialCommands(query) {
+    const q = query.toLowerCase().trim();
+
+    // calc
+    if (q.startsWith('calc ') || q.startsWith('calculate ')) {
+        const expr = q.replace(/^calc(ulate)?\s+/, '');
+        try {
+            // Safe eval using Function — only allow math chars
+            if (!/^[0-9\s\+\-\*\/\.\(\)\%\^]+$/.test(expr)) throw new Error('invalid');
+            const result = Function('"use strict"; return (' + expr + ')')();
+            return `= ${result}`;
+        } catch { return `Couldn't parse "${expr}". Try: calc 12 * 4.5`; }
+    }
+
+    // weather stub
+    if (q.includes('weather')) {
+        const match = q.match(/weather\s+(?:in\s+)?(.+)/i);
+        const city = match ? match[1].trim() : '';
+        return city ? `Weather for ${city}: I can't fetch live data yet, but I'm working on it! 🌤` : null;
+    }
+
+    // time/date
+    if (/\b(time|date|today|now)\b/.test(q)) {
+        return `It's ${new Date().toLocaleString('en-IN', { dateStyle: 'full', timeStyle: 'short' })}.`;
+    }
+
+    return null; // let neural engine handle
+}
+
+// Main search pipeline
+window.doEsSearch = function(val) {
+    const query = val.trim();
+    if (!query) return;
+
+    window.appendEsBubbleUser(query);
+    document.getElementById('es-input').value = '';
+
+    showTyping();
+
+    setTimeout(() => {
+        hideTyping();
+
+        // 1. Try special commands first
+        const special = handleSpecialCommands(query);
+        if (special) {
+            appendSystemBubble(special);
+            return;
         }
 
-        const savedDarkMode = localStorage.getItem('disha_darkmode');
-        if (savedDarkMode === 'off') setDarkMode(false);
-        else setDarkMode(true);
+        // 2. Neural prediction
+        const { answer, confidence } = ProtonEngine.predict(query);
 
-        darkModeToggle.addEventListener('click', () => {
-            const isCurrentlyDark = !rootElement.classList.contains('light-theme');
-            setDarkMode(!isCurrentlyDark);
-        });
+        if (!answer || confidence < 0.15) {
+            appendSystemBubble(
+                `I'm not sure about that yet.\n\nTry: <b>kcet predict</b>, <b>calc 2+3</b>, <b>weather in Mumbai</b>, or just <b>help</b>.`
+            );
+            return;
+        }
 
-        // Initialize on page load
-        askUserName();
-    </script>
+        appendSystemBubble(answer, confidence);
+    }, 350);
+};
+
+// ---- Model status UI updates ----
+function setModelStatus(state, label) {
+    const dot = document.getElementById('modelStatusDot');
+    const txt = document.getElementById('modelStatusText');
+    const statEl = document.getElementById('statStatus');
+    dot.className = `model-status-dot ${state}`;
+    txt.textContent = label;
+    if (statEl) statEl.textContent = label;
+}
+
+function updateSidebarStats() {
+    const s = ProtonEngine.getStats();
+    const el = (id) => document.getElementById(id);
+    if (el('statVectors')) el('statVectors').textContent = s.vocab;
+    if (el('statClasses')) el('statClasses').textContent = s.classes;
+    if (el('statSamples')) el('statSamples').textContent = s.samples;
+    if (el('statEpoch'))   el('statEpoch').textContent   = s.epoch;
+    if (el('statLoss'))    el('statLoss').textContent    = s.loss;
+}
+
+// ---- Boot sequence ----
+function bootProton() {
+    setModelStatus('loading', 'fetching...');
+
+    ProtonEngine.loadAndTrain(
+        'https://unknownxsuperman-prog.github.io/Tools/trainingset.json',
+
+        // Phase 1 — seed ready (first 10 samples trained, model online)
+        (seedCount, err) => {
+            if (err || seedCount === 0) {
+                setModelStatus('loading', 'offline');
+                document.getElementById('greetingText').textContent = '⚠️ Couldn\'t load model. Check connection.';
+                return;
+            }
+            updateSidebarStats();
+            setModelStatus('ready', 'online');
+
+            const ec = document.getElementById('emptyCircle');
+            ec.classList.add('boost');
+
+            document.getElementById('es-input').placeholder = 'Message Proton...';
+            updateGreeting(localStorage.getItem('disha_username') || '');
+        },
+
+        // Phase 2 — boost progress
+        (ep, total, loss, samples) => {
+            const pct = Math.round((ep / total) * 100);
+            setModelStatus('boosting', `training ${pct}%`);
+            updateSidebarStats();
+        },
+
+        // Phase 3 — boost complete
+        (total) => {
+            setModelStatus('ready', `online · ${total} samples`);
+            updateSidebarStats();
+            const ec = document.getElementById('emptyCircle');
+            ec.classList.remove('loading-ring');
+        }
+    );
+}
+
+// ============================================================
+//  SEND / INPUT
+// ============================================================
+
+const matrixField = document.getElementById('es-input');
+const sendBtn = document.getElementById('es-send');
+
+function executeLocalPipeline() {
+    const val = matrixField.value.trim();
+    if (!val) return;
+    window.doEsSearch(val);
+}
+
+sendBtn.addEventListener('click', executeLocalPipeline);
+matrixField.addEventListener('keypress', e => { if (e.key === 'Enter') executeLocalPipeline(); });
+
+// ============================================================
+//  SPEECH TO TEXT
+// ============================================================
+
+const micBtn = document.getElementById('micBtn');
+let recognition = null;
+let silenceTimer = null;
+let isRecording = false;
+
+function startRecording() {
+    if (window.location.protocol === 'file:') {
+        matrixField.placeholder = 'Speech requires HTTPS';
+        setTimeout(() => matrixField.placeholder = 'Message Proton...', 2500);
+        return;
+    }
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { matrixField.placeholder = 'Speech not supported'; return; }
+    recognition = new SR();
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+    isRecording = true;
+    micBtn.classList.add('mic-recording');
+    matrixField.placeholder = 'Listening...';
+    matrixField.value = '';
+    let final = '';
+    recognition.onresult = e => {
+        let interim = '';
+        for (let i = e.resultIndex; i < e.results.length; i++) {
+            const t = e.results[i][0].transcript;
+            e.results[i].isFinal ? (final += t + ' ') : (interim += t);
+        }
+        matrixField.value = (final + interim).trim();
+        clearTimeout(silenceTimer);
+        silenceTimer = setTimeout(() => {
+            if (isRecording && matrixField.value.trim()) { stopRecording(); executeLocalPipeline(); }
+        }, 2000);
+    };
+    recognition.onerror = () => stopRecording();
+    recognition.onend = () => stopRecording();
+    try { recognition.start(); } catch(e) { stopRecording(); }
+}
+
+function stopRecording() {
+    isRecording = false;
+    clearTimeout(silenceTimer);
+    micBtn.classList.remove('mic-recording');
+    matrixField.placeholder = 'Message Proton...';
+    if (recognition) { try { recognition.stop(); } catch(e) {} recognition = null; }
+}
+
+micBtn.addEventListener('click', () => isRecording ? stopRecording() : startRecording());
+
+// ============================================================
+//  GREETING & USER NAME
+// ============================================================
+
+function getTimeGreeting() {
+    const h = new Date().getHours();
+    return h < 12 ? 'good morning' : h < 17 ? 'good afternoon' : 'good evening';
+}
+
+function updateGreeting(name) {
+    const el = document.getElementById('greetingText');
+    if (!el) return;
+    el.textContent = name
+        ? `Hey ${name}, ${getTimeGreeting()}`
+        : `Hey there, ${getTimeGreeting()}`;
+}
+
+function updateUserProfile(name) {
+    const pfp = document.getElementById('userPfp');
+    const nd = document.getElementById('userNameDisplay');
+    if (pfp && name) pfp.textContent = name.charAt(0).toUpperCase();
+    if (nd && name) nd.textContent = name;
+}
+
+function askUserName() {
+    const stored = localStorage.getItem('disha_username');
+    if (stored) { updateGreeting(stored); updateUserProfile(stored); return; }
+
+    const modal = document.createElement('div');
+    modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);z-index:1000;display:flex;align-items:center;justify-content:center;';
+    modal.innerHTML = `
+        <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:24px;padding:28px 24px;width:320px;max-width:90%;box-shadow:var(--shadow-soft);text-align:center;">
+            <h3 style="font-size:18px;font-weight:600;margin-bottom:8px;color:var(--text-main);">What's your name?</h3>
+            <p style="font-size:13px;color:var(--text-dim);margin-bottom:20px;">We'll remember it for next time.</p>
+            <input type="text" id="nameInput" placeholder="Enter your name" style="width:100%;padding:12px 16px;border-radius:14px;border:1px solid var(--border-subtle);background:var(--bg-base);color:var(--text-main);font-family:var(--font-sans);font-size:15px;outline:none;margin-bottom:16px;" autocomplete="off">
+            <button id="saveNameBtn" style="width:100%;padding:12px;border-radius:14px;border:none;background:var(--text-main);color:var(--bg-base);font-family:var(--font-sans);font-size:15px;font-weight:600;cursor:pointer;">Continue</button>
+        </div>`;
+    document.body.appendChild(modal);
+
+    const inp = document.getElementById('nameInput');
+    const btn = document.getElementById('saveNameBtn');
+
+    function save() {
+        const name = inp.value.trim();
+        if (!name) { inp.style.borderColor = 'var(--accent-dot)'; inp.focus(); return; }
+        localStorage.setItem('disha_username', name);
+        updateGreeting(name);
+        updateUserProfile(name);
+        modal.remove();
+    }
+
+    btn.addEventListener('click', save);
+    inp.addEventListener('keypress', e => { if (e.key === 'Enter') save(); });
+    inp.focus();
+}
+
+// ============================================================
+//  DARK MODE
+// ============================================================
+
+function setDarkMode(on) {
+    if (on) {
+        rootEl.classList.remove('light-theme');
+        document.getElementById('darkModeSwitch').style.background = 'var(--text-main)';
+        document.getElementById('darkModeKnob').style.transform = 'translateX(0)';
+    } else {
+        rootEl.classList.add('light-theme');
+        document.getElementById('darkModeSwitch').style.background = 'var(--text-dim)';
+        document.getElementById('darkModeKnob').style.transform = 'translateX(-20px)';
+    }
+    localStorage.setItem('disha_darkmode', on ? 'on' : 'off');
+}
+
+const savedDark = localStorage.getItem('disha_darkmode');
+setDarkMode(savedDark !== 'off');
+
+document.getElementById('darkModeToggle').addEventListener('click', () => {
+    setDarkMode(rootEl.classList.contains('light-theme'));
+});
+
+// ============================================================
+//  SIDEBAR
+// ============================================================
+
+const sidebarOverlay = document.getElementById('sidebarOverlay');
+document.getElementById('openSidebar').addEventListener('click', () => sidebarOverlay.classList.add('active'));
+document.getElementById('closeSidebar').addEventListener('click', () => sidebarOverlay.classList.remove('active'));
+sidebarOverlay.addEventListener('click', e => { if (e.target === sidebarOverlay) sidebarOverlay.classList.remove('active'); });
+
+document.getElementById('dashboardSearchPill').addEventListener('click', () => {
+    const pill = document.getElementById('dashboardSearchPill');
+    const dock = document.getElementById('inputDockContainer');
+    pill.classList.add('pulse-shift');
+    dock.classList.add('highlight-focus');
+    matrixField.focus();
+    setTimeout(() => pill.classList.remove('pulse-shift'), 400);
+    setTimeout(() => dock.classList.remove('highlight-focus'), 800);
+});
+
+// ============================================================
+//  INIT
+// ============================================================
+
+window.addEventListener('DOMContentLoaded', () => {
+    askUserName();
+    bootProton();
+});
+</script>
 </body>
 </html>
