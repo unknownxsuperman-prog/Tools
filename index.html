@@ -651,9 +651,9 @@ const ProtonEngine = (() => {
     const BETA2         = 0.999;  // Adam second moment decay
     const EPSILON       = 1e-8;
     const L2            = 1e-4;   // weight decay (regularisation)
-    const EPOCHS_SEED   = 300;    // fast pass on first 10
-    const EPOCHS_FULL   = 500;    // full dataset async
-    const CHUNK_EPOCHS  = 10;     // epochs per rAF frame
+    const EPOCHS_SEED   = 800;    // fast pass on first 10 — more epochs = better seed
+    const EPOCHS_FULL   = 1000;   // full dataset async
+    const CHUNK_EPOCHS  = 25;     // epochs per rAF frame — faster convergence
 
     // ── Tokeniser ────────────────────────────────────────────
     // Simple but effective: lowercase, split on non-word, bigrams appended
@@ -857,7 +857,7 @@ const ProtonEngine = (() => {
                 data = data.filter(d => d && typeof d.input === 'string' && typeof d.output === 'string');
                 if (!data.length) throw new Error('Empty dataset');
 
-                const seed = data.slice(0, 10);
+                const seed = data.slice(0, 30);  // 30 gives much better initial coverage
                 const rest = data;          // full set includes seed
 
                 // ── Phase 1: Seed (sync, instant) ──
@@ -1050,10 +1050,18 @@ const ConvoContext = (() => {
         if (!awaitingReply || !lastBotReply) return null;
 
         // Bot asked about the user ("what about you", "how are you", etc.)
+        // Bot asked about user OR user's last query was about feelings/status
         const botAskedAboutUser = /what about you|how about you|how are you|and you/i.test(lastBotReply);
-        if (botAskedAboutUser) {
+        const userAskedAboutFeelings = /how are you|how do you feel|are you (okay|fine|good|alright)/i.test(lastUserQuery || '');
+        if (botAskedAboutUser || userAskedAboutFeelings) {
             const tier = classify(query);
             if (tier) return rand(FOLLOWUP_RESPONSES[tier]);
+        }
+
+        // Also catch "i am fine/good/great" globally — always a status reply
+        const globalStatus = classify(query);
+        if (globalStatus && query.split(' ').length <= 5) {
+            return rand(FOLLOWUP_RESPONSES[globalStatus]);
         }
 
         // Generic short affirmation after any question
@@ -1132,7 +1140,7 @@ window.doEsSearch = function(val) {
         // 3. Neural prediction
         const { answer, confidence } = ProtonEngine.predict(query);
 
-        if (!answer || confidence < 0.15) {
+        if (!answer || confidence < 0.08) {
             const fallback = `I'm not sure about that yet. Try: <b>kcet predict</b>, <b>calc 2+3</b>, <b>weather in Mumbai</b>, or just <b>help</b>.`;
             ConvoContext.clear();
             appendSystemBubble(fallback);
