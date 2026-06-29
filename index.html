@@ -657,11 +657,46 @@ const ProtonEngine = (() => {
 
     // ── Tokeniser ────────────────────────────────────────────
     // Simple but effective: lowercase, split on non-word, bigrams appended
+    // Normalize synonyms + stem before tokenizing
+    // This ensures "feeling bad" matches "feel sad", "i am upset" matches "feeling upset" etc.
+    const SYNONYMS = {
+        // feeling variants
+        'feeling': 'feel', 'feelings': 'feel', 'felt': 'feel',
+        // emotion clusters
+        'bad': 'sad', 'terrible': 'sad', 'awful': 'sad', 'horrible': 'sad',
+        'upset': 'sad', 'unhappy': 'sad', 'depressed': 'sad', 'down': 'sad',
+        'miserable': 'sad', 'low': 'sad', 'heartbroken': 'sad', 'broken': 'sad',
+        'crying': 'sad', 'cry': 'sad', 'tears': 'sad',
+        'angry': 'angry', 'mad': 'angry', 'furious': 'angry', 'annoyed': 'angry',
+        'frustrated': 'angry', 'irritated': 'angry',
+        'scared': 'fear', 'afraid': 'fear', 'anxious': 'fear', 'nervous': 'fear',
+        'worried': 'fear', 'stress': 'fear', 'stressed': 'fear', 'panic': 'fear',
+        'happy': 'happy', 'glad': 'happy', 'joyful': 'happy', 'excited': 'happy',
+        'great': 'happy', 'fantastic': 'happy', 'wonderful': 'happy', 'amazing': 'happy',
+        'tired': 'tired', 'exhausted': 'tired', 'sleepy': 'tired', 'fatigue': 'tired',
+        // am/is/are flattening
+        'am': 'be', 'is': 'be', 'are': 'be', 'was': 'be', 'were': 'be',
+        // not/dont contractions
+        "don't": 'not', "doesn't": 'not', "didn't": 'not', "can't": 'not',
+        "won't": 'not', "isn't": 'not', "aren't": 'not', "wasn't": 'not',
+        // misc
+        'wanna': 'want', 'gonna': 'going', 'gotta': 'got',
+        'kinda': 'kind', 'sorta': 'sort',
+    };
+
+    function normalize(word) {
+        return SYNONYMS[word] || word;
+    }
+
     function tokenize(text) {
-        const uni = text.toLowerCase().split(/\W+/).filter(Boolean);
+        const raw = text.toLowerCase().split(/\W+/).filter(Boolean);
+        const uni = raw.map(normalize);
         const bi  = [];
         for (let i = 0; i < uni.length - 1; i++) bi.push(uni[i] + '_' + uni[i+1]);
-        return [...uni, ...bi];
+        // Also add raw bigrams so exact phrasing still matches
+        const rawBi = [];
+        for (let i = 0; i < raw.length - 1; i++) rawBi.push(raw[i] + '_' + raw[i+1]);
+        return [...new Set([...uni, ...bi, ...rawBi])];
     }
 
     // ── Vocab / Class builders ────────────────────────────────
@@ -1140,7 +1175,7 @@ window.doEsSearch = function(val) {
         // 3. Neural prediction
         const { answer, confidence } = ProtonEngine.predict(query);
 
-        if (!answer || confidence < 0.08) {
+        if (!answer || confidence < 0.06) {
             const fallback = `I'm not sure about that yet. Try: <b>kcet predict</b>, <b>calc 2+3</b>, <b>weather in Mumbai</b>, or just <b>help</b>.`;
             ConvoContext.clear();
             appendSystemBubble(fallback);
