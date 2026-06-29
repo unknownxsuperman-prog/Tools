@@ -835,7 +835,7 @@ window.XOS_CUTOFF = [
         'GMK': 82612, 'GMR': 77331, 'SCG': 112490, 'SCK': null, 
         'SCR': null, 'STG': 141071, 'STK': null, 'STR': null, 
       },
-      'SCIENCE AND ENGG(INTERNET OF THINGS & CYBER SECURITY INCLUDING BLOCK CHAIN TECH) 21372 -- -- 19787 -- 20377 27827 -- -- 15957 -- -- 17589.5 29695.87 5 -- 15676 -- 17222 51534 -- 74419 38838 -- -- COMPUTER SCIENCE AND ENGINEERING': {
+      'COMPUTER SCIENCE AND ENGINEERING': {
         '1G': 16331, '1K': null, '1R': null, '2AG': 14907, 
         '2AK': 20982, '2AR': 16335, '2BG': 21159, '2BK': null, 
         '2BR': 24734, '3AG': 12376, '3AK': null, '3AR': 14302, 
@@ -1887,7 +1887,7 @@ window.XOS_CUTOFF = [
         'GMK': 111062, 'GMR': 102256, 'SCG': 150450, 'SCK': null, 
         'SCR': 173798, 'STG': 154934, 'STK': null, 'STR': null, 
       },
-      'SCIENCE AND ENGG (ARTIFICIAL INTELLIGENCE)': {
+      'CSCIENCE AND ENGG (ARTIFICIAL INTELLIGENCE)': {
         '1G': 22911, '1K': null, '1R': null, '2AG': 23044, 
         '2AK': null, '2AR': null, '2BG': 23850, '2BK': 29126, 
         '2BR': 38248, '3AG': 25004, '3AK': null, '3AR': null, 
