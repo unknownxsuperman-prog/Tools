@@ -808,6 +808,49 @@
         .chip-not-eligible { background: var(--danger-dim); color: var(--danger); }
         .chip-no-seat { background: var(--warning-dim); color: var(--warning); }
         .chip-no-data { background: rgba(142,142,147,0.15); color: var(--text-muted); }
+        .chip-high-chance { background: rgba(0, 210, 190, 0.14); color: #00d2be; }
+        .chip-possible { background: rgba(255, 214, 10, 0.14); color: #ffd60a; }
+        [data-theme="light"] .chip-high-chance { background: rgba(0, 180, 160, 0.12); color: #00897b; }
+        [data-theme="light"] .chip-possible { background: rgba(200, 160, 0, 0.12); color: #9e7700; }
+        .result-item.high-chance { border-left: 3px solid #00d2be; opacity: 0.9; }
+        .result-item.possible { border-left: 3px solid #ffd60a; opacity: 0.75; }
+        .stat-box.s-high-chance .stat-value { color: #00d2be; }
+        .stat-box.s-possible .stat-value { color: #ffd60a; }
+        [data-theme="light"] .stat-box.s-high-chance .stat-value { color: #00897b; }
+        [data-theme="light"] .stat-box.s-possible .stat-value { color: #9e7700; }
+        /* ─── Top College Badge ─── */
+        .top-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            background: linear-gradient(135deg, rgba(255,215,0,0.18), rgba(255,165,0,0.12));
+            color: #ffd60a;
+            font-size: 0.6rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            padding: 3px 7px;
+            border-radius: 4px;
+            margin-left: 6px;
+            vertical-align: middle;
+            text-transform: uppercase;
+        }
+        [data-theme="light"] .top-badge { color: #b8860b; background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,165,0,0.1)); }
+        /* ─── Margin Tag ─── */
+        .margin-tag {
+            display: inline-block;
+            font-size: 0.62rem;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-top: 4px;
+            letter-spacing: 0.02em;
+        }
+        .margin-tag.safe { background: var(--success-dim); color: var(--success); }
+        .margin-tag.close { background: rgba(0,210,190,0.12); color: #00d2be; }
+        .margin-tag.stretch { background: rgba(255,214,10,0.12); color: #ffd60a; }
+        .margin-tag.far { background: var(--danger-dim); color: var(--danger); }
+        [data-theme="light"] .margin-tag.close { color: #00897b; }
+        [data-theme="light"] .margin-tag.stretch { color: #9e7700; }
         /* ─── Mobile Results ─── */
         @media (max-width: 700px) {
             .result-item {
@@ -981,17 +1024,22 @@
                     <div class="stat-value" id="eligibleCount">0</div>
                     <div class="stat-label">Eligible</div>
                 </div>
+                <div class="stat-box s-high-chance">
+                    <div class="stat-value" id="highChanceCount">0</div>
+                    <div class="stat-label">High Chance</div>
+                </div>
+                <div class="stat-box s-possible">
+                    <div class="stat-value" id="possibleCount">0</div>
+                    <div class="stat-label">Possible</div>
+                </div>
                 <div class="stat-box s-not-eligible">
                     <div class="stat-value" id="notEligibleCount">0</div>
-                    <div class="stat-label">Not Eligible</div>
-                </div>
-                <div class="stat-box s-no-data">
-                    <div class="stat-value" id="noDataCount">0</div>
-                    <div class="stat-label">No Data</div>
+                    <div class="stat-label">Unlikely</div>
                 </div>
             </div>
             <div class="filter-tabs">
-                <button class="filter-tab active" data-filter="eligible">Eligible</button>
+                <button class="filter-tab active" data-filter="reachable">Reachable</button>
+                <button class="filter-tab" data-filter="eligible">Safe Only</button>
                 <button class="filter-tab" data-filter="all">All</button>
             </div>
         </div>
@@ -1274,50 +1322,99 @@ function matchBranch(pdfBranch, cutoffBranches) {
     return bestScore >= 0.4 ? best : null;
 }
 // ════════════════════════════════════════════════════════════════
-//  PREDICTION ENGINE
+//  TOP 20 COLLEGES
 // ════════════════════════════════════════════════════════════════
+const TOP_COLLEGES = new Set([
+    'E005','E009','E048','E006','E007','E008','E001','E118',
+    'E212','E004','E232','E235','E241','E027','E030','E034',
+    'E012','E021','E037','E115',
+]);
+// ════════════════════════════════════════════════════════════════
+//  SMART PREDICTION ENGINE
+// ════════════════════════════════════════════════════════════════
+// Dynamic margin thresholds based on rank range
+// Lower ranks (better) have tighter margins since competition is fiercer
+function getMargins(rank) {
+    if (rank <= 3000)  return { high: 200,  possible: 500  };
+    if (rank <= 8000)  return { high: 500,  possible: 1200 };
+    if (rank <= 15000) return { high: 800,  possible: 2000 };
+    if (rank <= 30000) return { high: 1200, possible: 3000 };
+    if (rank <= 60000) return { high: 2000, possible: 5000 };
+    return                     { high: 3000, possible: 8000 };
+}
 function predict(options, category, userRank) {
     const map = {};
     if (window.XOS_CUTOFF) {
         window.XOS_CUTOFF.forEach(c => { map[c.id] = c; });
     }
+    const margins = getMargins(userRank);
     return options.map(opt => {
         const college = map[opt.collegeId];
+        const isTop   = TOP_COLLEGES.has(opt.collegeId);
         if (!college) {
             return { ...opt, collegeName: null, matchedBranch: null,
-                     cutoff: null, status: 'no-data', statusLabel: 'College N/A' };
+                     cutoff: null, margin: null, isTop,
+                     status: 'no-data', statusLabel: 'College N/A' };
         }
         const mb = matchBranch(opt.branch, college.branches);
         if (!mb) {
             return { ...opt, collegeName: college.name, matchedBranch: null,
-                     cutoff: null, status: 'no-data', statusLabel: 'Branch N/A' };
+                     cutoff: null, margin: null, isTop,
+                     status: 'no-data', statusLabel: 'Branch N/A' };
         }
         const cutoff = college.branches[mb][category];
         if (cutoff === null || cutoff === undefined) {
             return { ...opt, collegeName: college.name, matchedBranch: mb,
-                     cutoff: null, status: 'no-seat', statusLabel: 'No Seat' };
+                     cutoff: null, margin: null, isTop,
+                     status: 'no-seat', statusLabel: 'No Seat' };
         }
-        const eligible = cutoff >= userRank;
+        // margin > 0 means cutoff is above rank (safe)
+        // margin < 0 means cutoff is below rank (need luck)
+        const margin = cutoff - userRank;
+        const gap    = Math.abs(margin);
+        let status, statusLabel;
+        if (margin >= 0) {
+            status = 'eligible';
+            statusLabel = 'Safe Bet';
+        } else if (gap <= margins.high) {
+            status = 'high-chance';
+            statusLabel = 'High Chance';
+        } else if (gap <= margins.possible) {
+            status = 'possible';
+            statusLabel = 'Possible';
+        } else {
+            status = 'not-eligible';
+            statusLabel = 'Unlikely';
+        }
         return {
             ...opt,
             collegeName: college.name,
             matchedBranch: mb,
             cutoff,
-            status: eligible ? 'eligible' : 'not-eligible',
-            statusLabel: eligible ? 'Eligible' : 'Not Eligible',
+            margin,
+            isTop,
+            status,
+            statusLabel,
         };
     });
 }
 // ════════════════════════════════════════════════════════════════
 //  RENDER RESULTS
 // ════════════════════════════════════════════════════════════════
+const REACHABLE = new Set(['eligible', 'high-chance', 'possible']);
 function renderResults(results, filter) {
-    const shown = filter === 'eligible'
-        ? results.filter(r => r.status === 'eligible')
-        : results;
+    let shown;
+    if (filter === 'reachable') {
+        shown = results.filter(r => REACHABLE.has(r.status));
+    } else if (filter === 'eligible') {
+        shown = results.filter(r => r.status === 'eligible');
+    } else {
+        shown = results;
+    }
     $('eligibleCount').textContent    = results.filter(r => r.status === 'eligible').length;
+    $('highChanceCount').textContent  = results.filter(r => r.status === 'high-chance').length;
+    $('possibleCount').textContent    = results.filter(r => r.status === 'possible').length;
     $('notEligibleCount').textContent = results.filter(r => r.status === 'not-eligible').length;
-    $('noDataCount').textContent      = results.filter(r => r.status === 'no-data' || r.status === 'no-seat').length;
     if (!shown.length) {
         resultsBody.innerHTML = `
             <div class="empty-state">
@@ -1327,8 +1424,8 @@ function renderResults(results, filter) {
                     <line x1="15" y1="9" x2="9" y2="15"/>
                     <line x1="9" y1="9" x2="15" y2="15"/>
                 </svg>
-                <p>${filter === 'eligible'
-                    ? 'No eligible colleges found for your rank &amp; category.<br>Try switching to "All" to see every option.'
+                <p>${filter !== 'all'
+                    ? 'No matching colleges found for your rank &amp; category.<br>Try switching to "All" to see every option.'
                     : 'No results to display.'}</p>
             </div>`;
         return;
@@ -1336,6 +1433,8 @@ function renderResults(results, filter) {
     resultsBody.innerHTML = shown.map((r, i) => {
         const chipCls = ({
             'eligible':     'chip-eligible',
+            'high-chance':  'chip-high-chance',
+            'possible':     'chip-possible',
             'not-eligible': 'chip-not-eligible',
             'no-seat':      'chip-no-seat',
             'no-data':      'chip-no-data',
@@ -1343,12 +1442,28 @@ function renderResults(results, filter) {
         const name    = r.collegeName || `College ${r.collegeId}`;
         const cutDisp = r.cutoff != null ? r.cutoff.toLocaleString('en-IN') : '—';
         const branch  = r.matchedBranch || r.branch;
+        const topHtml = r.isTop ? '<span class="top-badge">★ Top 20</span>' : '';
+        // Margin tag
+        let marginHtml = '';
+        if (r.margin !== null && r.margin !== undefined) {
+            const abs = Math.abs(r.margin).toLocaleString('en-IN');
+            if (r.margin >= 0) {
+                marginHtml = `<span class="margin-tag safe">+${abs} ranks safe</span>`;
+            } else if (r.status === 'high-chance') {
+                marginHtml = `<span class="margin-tag close">${abs} ranks away — very close</span>`;
+            } else if (r.status === 'possible') {
+                marginHtml = `<span class="margin-tag stretch">${abs} ranks away — stretch</span>`;
+            } else {
+                marginHtml = `<span class="margin-tag far">${abs} ranks away</span>`;
+            }
+        }
         return `
         <div class="result-item ${r.status} fade-in" style="animation-delay:${i * 0.025}s">
             <div class="result-priority">${r.priority}</div>
             <div class="result-info">
-                <div class="result-college">${esc(name)}</div>
+                <div class="result-college">${esc(name)}${topHtml}</div>
                 <div class="result-branch">${esc(branch)} · ${r.collegeId}</div>
+                ${marginHtml}
             </div>
             <div class="result-cutoff">
                 <div class="cutoff-label">Cutoff</div>
@@ -1422,9 +1537,9 @@ predictBtn.addEventListener('click', () => {
     const rank = parseInt(rankInput.value, 10);
     if (!cat || !rank || !extractedOptions.length) return;
     predictionResults = predict(extractedOptions, cat, rank);
-    currentFilter = 'eligible';
+    currentFilter = 'reachable';
     document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-    document.querySelector('.filter-tab[data-filter="eligible"]').classList.add('active');
+    document.querySelector('.filter-tab[data-filter="reachable"]').classList.add('active');
     renderResults(predictionResults, currentFilter);
     resultsCard.classList.remove('hidden');
     resultsCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
