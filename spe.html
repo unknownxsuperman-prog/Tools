@@ -251,7 +251,7 @@
             font-size: .6rem;
         }
 
-        /* ═══ CARD (forms rendered inline in chat) ═══ */
+        /* ═══ CARD ═══ */
         .chat-card {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -948,32 +948,45 @@
             font-size: .62rem;
         }
 
-        /* ── model selector (in pill-row) ── */
+        /* ── composer bar with model selector ── */
+        .composer-box {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 4px 4px 4px 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
         .model-selector-wrap {
             position: relative;
             flex-shrink: 0;
-            margin-left: auto;
+            display: flex;
+            align-items: center;
         }
         .model-selector-btn {
             display: flex;
             align-items: center;
             gap: 5px;
-            background: var(--surface-2);
-            border: 1px solid var(--border-strong);
+            background: transparent;
+            border: none;
+            padding: 6px 10px 6px 6px;
             border-radius: 20px;
-            padding: 8px 14px;
-            font-family: var(--font-m);
-            font-size: .63rem;
-            color: var(--text-1);
+            font-family: var(--font-d);
+            font-size: .72rem;
+            font-weight: 600;
+            color: var(--text-0);
             cursor: pointer;
             transition: .2s;
             white-space: nowrap;
+            min-width: 90px;
+            justify-content: center;
         }
         .model-selector-btn:hover {
-            border-color: var(--text-0);
+            background: var(--surface-3);
         }
         .model-selector-btn .model-name {
-            font-weight: 600;
+            font-weight: 700;
             color: var(--text-0);
         }
         .model-selector-btn .model-badge {
@@ -985,19 +998,42 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: .06em;
+            margin-left: 2px;
         }
         .model-selector-btn .model-badge.pro-badge {
             background: var(--success);
             color: #000;
         }
-        .model-selector-btn i {
+        .model-selector-btn .model-thinking {
+            font-size: .6rem;
+            color: var(--text-2);
+            margin-left: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            animation: pulse 1s ease-in-out infinite;
+        }
+        .model-selector-btn .model-thinking i {
+            font-size: .5rem;
+        }
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: .4;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+        .model-selector-btn .chevron {
             font-size: .5rem;
             opacity: .6;
+            margin-left: 2px;
         }
         .model-dropdown {
             position: absolute;
             top: calc(100% + 6px);
-            right: 0;
+            left: 0;
             min-width: 160px;
             background: var(--surface-3);
             border: 1px solid var(--border-strong);
@@ -1052,6 +1088,68 @@
             font-size: .6rem;
             color: var(--text-3);
             margin-left: 6px;
+        }
+
+        .composer-input {
+            flex: 1;
+            background: none;
+            border: none;
+            outline: none;
+            resize: none;
+            color: var(--text-0);
+            font-family: var(--font-d);
+            font-size: 16px;
+            max-height: 100px;
+            padding: 8px 4px;
+            line-height: 1.4;
+            min-height: 38px;
+        }
+        .composer-input::placeholder {
+            color: var(--text-3);
+        }
+        .composer-actions {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            flex-shrink: 0;
+        }
+        .comp-icon-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: none;
+            background: transparent;
+            color: var(--text-2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: .85rem;
+            transition: .2s;
+        }
+        .comp-icon-btn:hover {
+            color: var(--text-0);
+        }
+        .send-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--text-0);
+            color: var(--bg);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: .85rem;
+            transition: .2s;
+        }
+        .send-btn:hover {
+            opacity: .85;
+        }
+        .send-btn:disabled {
+            opacity: .25;
+            cursor: not-allowed;
         }
 
         /* ═══ SUBSCRIPTION MODAL ═══ */
@@ -1168,77 +1266,6 @@
         }
         .sub-card .sub-close:hover {
             color: var(--text-0);
-        }
-
-        .composer-box {
-            background: var(--surface-2);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 6px 6px 6px 14px;
-            display: flex;
-            align-items: flex-end;
-            gap: 6px;
-        }
-        .composer-input {
-            flex: 1;
-            background: none;
-            border: none;
-            outline: none;
-            resize: none;
-            color: var(--text-0);
-            font-family: var(--font-d);
-            font-size: 16px;
-            max-height: 100px;
-            padding: 8px 0;
-            line-height: 1.4;
-            min-height: 38px;
-        }
-        .composer-input::placeholder {
-            color: var(--text-3);
-        }
-        .composer-actions {
-            display: flex;
-            align-items: center;
-            gap: 2px;
-            flex-shrink: 0;
-        }
-        .comp-icon-btn {
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            border: none;
-            background: transparent;
-            color: var(--text-2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: .85rem;
-            transition: .2s;
-        }
-        .comp-icon-btn:hover {
-            color: var(--text-0);
-        }
-        .send-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: var(--text-0);
-            color: var(--bg);
-            border: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: .85rem;
-            transition: .2s;
-        }
-        .send-btn:hover {
-            opacity: .85;
-        }
-        .send-btn:disabled {
-            opacity: .25;
-            cursor: not-allowed;
         }
 
         /* ═══ CONNECT OVERLAY ═══ */
@@ -1379,26 +1406,7 @@
             letter-spacing: -0.01em;
         }
 
-        @media(max-width:420px) {
-            .msg-bubble {
-                max-width: 90%;
-            }
-            .chat-card {
-                max-width: 100%;
-            }
-            .model-selector-btn {
-                padding: 6px 10px;
-                font-size: .55rem;
-            }
-            .model-selector-btn .model-name {
-                font-size: .6rem;
-            }
-            .sub-card {
-                padding: 28px 18px 22px;
-            }
-        }
-
-        /* toast notification */
+        /* ═══ TOAST ═══ */
         .toast-notification {
             position: fixed;
             bottom: 100px;
@@ -1434,6 +1442,32 @@
         }
         .toast-notification .toast-icon.warning {
             color: var(--warning);
+        }
+
+        @media(max-width:420px) {
+            .msg-bubble {
+                max-width: 90%;
+            }
+            .chat-card {
+                max-width: 100%;
+            }
+            .model-selector-btn {
+                font-size: .65rem;
+                padding: 4px 8px;
+                min-width: 70px;
+            }
+            .model-selector-btn .model-name {
+                font-size: .7rem;
+            }
+            .sub-card {
+                padding: 28px 18px 22px;
+            }
+            .composer-box {
+                padding: 4px 4px 4px 4px;
+            }
+            .model-dropdown {
+                min-width: 140px;
+            }
         }
     </style>
 </head>
@@ -1554,13 +1588,16 @@
             <div class="cmd-pill" id="pillRank"><i class="fa-solid fa-chart-line"></i> Rank Prediction</div>
             <div class="cmd-pill" id="pillCollege"><i class="fa-solid fa-building-columns"></i> College Prediction</div>
             <div class="cmd-pill" id="pillPriority"><i class="fa-solid fa-list-ol"></i> Priority List</div>
+        </div>
 
-            <!-- model selector -->
+        <div class="composer-box">
+            <!-- model selector inside composer -->
             <div class="model-selector-wrap" id="modelSelectorWrap">
                 <div class="model-selector-btn" id="modelSelectorBtn">
                     <span class="model-name" id="currentModelLabel">x-bit1.0</span>
                     <span class="model-badge" id="modelBadge">free</span>
-                    <i class="fa-solid fa-chevron-down"></i>
+                    <span class="model-thinking" id="modelThinking" style="display:none;"><i class="fa-solid fa-circle-notch fa-spin"></i> Thinking</span>
+                    <span class="chevron"><i class="fa-solid fa-chevron-down"></i></span>
                 </div>
                 <div class="model-dropdown" id="modelDropdown">
                     <div class="model-option active" data-model="1.0">
@@ -1574,9 +1611,7 @@
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="composer-box">
             <textarea class="composer-input" id="composerInput" placeholder="Message Proton…" rows="1"></textarea>
             <div class="composer-actions">
                 <button class="comp-icon-btn"><i class="fa-solid fa-microphone"></i></button>
@@ -1640,7 +1675,8 @@
         function updateProfilePro() {
             const tag = document.getElementById('sbTag');
             if (isPro && proCode) {
-                tag.innerHTML = `x-bit · Proton · Pro · <span style="color:var(--success);font-weight:600;">${escapeHtml(proCode)}</span>`;
+                tag.innerHTML =
+                    `x-bit · Proton · Pro · <span style="color:var(--success);font-weight:600;">${escapeHtml(proCode)}</span>`;
                 tag.classList.add('pro');
             } else {
                 tag.textContent = 'x-bit · Proton';
@@ -1653,7 +1689,6 @@
             const badge = document.getElementById('modelBadge');
             const current = LS.get('selected_model', '1.0');
             if (current === '2.0' && !isPro) {
-                // fallback to 1.0 if pro was revoked (shouldn't happen)
                 LS.set('selected_model', '1.0');
                 label.textContent = 'x-bit1.0';
                 badge.textContent = 'free';
@@ -1668,7 +1703,6 @@
                 badge.textContent = 'free';
                 badge.className = 'model-badge';
             }
-            // update dropdown active state
             document.querySelectorAll('.model-option').forEach(el => {
                 el.classList.toggle('active', el.dataset.model === current);
             });
@@ -1787,6 +1821,17 @@
             el.classList.add('show');
             clearTimeout(toastTimer);
             toastTimer = setTimeout(() => { el.classList.remove('show'); }, 2800);
+        }
+
+        /* ── thinking indicator ── */
+        const thinkingEl = document.getElementById('modelThinking');
+
+        function setThinking(active) {
+            if (active) {
+                thinkingEl.style.display = 'inline-flex';
+            } else {
+                thinkingEl.style.display = 'none';
+            }
         }
 
         /* ══════════════════════════════════════════════════════════
@@ -2194,7 +2239,9 @@
                 const boardsPct = readBoardsPercent(card);
                 const kcetPct = readKcetPercent(card);
                 if (boardsPct === null || kcetPct === null) {
-                    protonSays(`<i class="fa-solid fa-triangle-exclamation"></i> Fill in at least one boards field and one KCET field to predict your rank.`);
+                    protonSays(
+                        `<i class="fa-solid fa-triangle-exclamation"></i> Fill in at least one boards field and one KCET field to predict your rank.`
+                        );
                     return;
                 }
                 const finalPct = computeFinalPercentage(boardsPct, kcetPct);
@@ -2954,6 +3001,7 @@
         function sleep(ms) { return new Promise(res => setTimeout(res, ms)); }
 
         function showTempThinking() {
+            setThinking(true);
             document.getElementById('emptyHero').style.display = 'none';
             const body = document.getElementById('chatBody');
             body.style.display = 'block';
@@ -3025,6 +3073,7 @@
             const thinkingRow = showTempThinking();
             await sleep(1600);
             thinkingRow.remove();
+            setThinking(false);
 
             let entities = extractEntities(rawText);
 
@@ -3090,6 +3139,7 @@
             try {
                 const results = await searchCollegesSmart(entities);
                 thinkingRow2.remove();
+                setThinking(false);
                 const row = protonSays(buildSmartCollegeAnswer(results, entities), `${results.length} matches`);
                 const seeMore = row.querySelector('[data-action="see-more-smart"]');
                 if (seeMore) {
@@ -3099,6 +3149,7 @@
                 }
             } catch (e) {
                 thinkingRow2.remove();
+                setThinking(false);
                 protonSays(`<i class="fa-solid fa-triangle-exclamation"></i> Couldn't load the college dataset (${e.message}).`);
             }
         }
