@@ -4,14 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
     <meta name="color-scheme" content="dark light">
-
-    <!-- PWA Manifest & Meta -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="x-bit Proton">
-
     <title>x-bit · Proton</title>
     <meta name="description" content="x-bit Proton — Disha AI chat: rank prediction, college prediction, priority list matching.">
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
@@ -81,7 +78,6 @@
             max-width: 100vw;
             overflow-x: hidden;
         }
-        /* ═══ TOP BAR ═══ */
         .topbar {
             display: flex;
             align-items: center;
@@ -128,8 +124,6 @@
             font-size: .92rem;
             letter-spacing: -0.02em;
         }
-
-        /* ═══ CHAT AREA ═══ */
         .chat-wrap {
             flex: 1;
             overflow-y: auto;
@@ -143,7 +137,6 @@
             background: var(--border-strong);
             border-radius: 4px;
         }
-
         .empty-hero {
             height: 100%;
             display: flex;
@@ -171,7 +164,6 @@
             color: var(--text-3);
             letter-spacing: .05em;
         }
-
         .msg-row {
             display: flex;
             margin-bottom: 14px;
@@ -220,7 +212,6 @@
             text-transform: uppercase;
             margin: 0 2px 5px;
         }
-
         .chip-row {
             display: flex;
             flex-wrap: wrap;
@@ -250,8 +241,6 @@
         .mini-chip i {
             font-size: .6rem;
         }
-
-        /* ═══ CARD ═══ */
         .chat-card {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -400,7 +389,6 @@
         .link-hint:hover {
             color: var(--text-0);
         }
-
         .rank-result {
             text-align: center;
             padding: 8px 0 4px;
@@ -427,7 +415,6 @@
             color: var(--text-2);
             margin-bottom: 14px;
         }
-
         .dd-mini {
             position: relative;
         }
@@ -479,7 +466,6 @@
             background: var(--surface-2);
             color: var(--text-0);
         }
-
         .college-result-card {
             border: 1px solid var(--border);
             border-radius: var(--r-sm);
@@ -522,7 +508,6 @@
             font-size: .58rem;
             color: var(--text-3);
         }
-
         .upload-dz {
             border: 1.5px dashed var(--border-strong);
             border-radius: var(--r-sm);
@@ -552,7 +537,6 @@
             font-size: .72rem;
             color: var(--text-2);
         }
-
         .loading-badge {
             width: 28px;
             height: 28px;
@@ -594,8 +578,6 @@
                 background-position: -200% 0;
             }
         }
-
-        /* ═══ SIDEBAR ═══ */
         .sb-backdrop {
             position: fixed;
             inset: 0;
@@ -798,8 +780,6 @@
         .toggle-pill input:checked+.toggle-track {
             background: var(--text-0);
         }
-
-        /* ═══ ONBOARDING ═══ */
         .onboard-overlay {
             position: fixed;
             inset: 0;
@@ -873,8 +853,6 @@
         .onboard-btn:disabled {
             opacity: .25;
         }
-
-        /* ═══ FULL RESULTS PAGE ═══ */
         .results-page {
             position: fixed;
             inset: 0;
@@ -906,8 +884,6 @@
             overflow-y: auto;
             padding: 16px 18px 40px;
         }
-
-        /* ═══ COMPOSER ═══ */
         .composer-wrap {
             flex-shrink: 0;
             padding: 8px 14px calc(14px + env(safe-area-inset-bottom));
@@ -947,8 +923,6 @@
         .cmd-pill i {
             font-size: .62rem;
         }
-
-        /* ── composer bar with model selector ── */
         .composer-box {
             background: var(--surface-2);
             border: 1px solid var(--border);
@@ -1030,9 +1004,11 @@
             opacity: .6;
             margin-left: 2px;
         }
+
+        /* ── MODEL DROP-UP ── */
         .model-dropdown {
             position: absolute;
-            top: calc(100% + 6px);
+            bottom: calc(100% + 8px);
             left: 0;
             min-width: 160px;
             background: var(--surface-3);
@@ -1041,7 +1017,7 @@
             padding: 4px;
             display: none;
             z-index: 60;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, .6);
+            box-shadow: 0 -12px 40px rgba(0, 0, 0, .6);
             overflow: hidden;
         }
         .model-dropdown.open {
@@ -1152,7 +1128,7 @@
             cursor: not-allowed;
         }
 
-        /* ═══ SUBSCRIPTION MODAL ═══ */
+        /* ── SUBSCRIPTION MODAL ── */
         .sub-overlay {
             position: fixed;
             inset: 0;
@@ -1224,7 +1200,7 @@
         .sub-card .coupon-row {
             display: flex;
             gap: 8px;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
         .sub-card .coupon-row .xin {
             flex: 1;
@@ -1239,6 +1215,21 @@
             padding: 10px 18px;
             margin-top: 0;
             font-size: .65rem;
+        }
+        .sub-card .buy-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .sub-card .buy-row .btn-solid {
+            flex: 1;
+            margin-top: 0;
+            font-size: .7rem;
+            padding: 12px;
+        }
+        .sub-card .buy-row .btn-solid.buy-now {
+            background: var(--success);
+            color: #000;
         }
         .sub-card .sub-status {
             font-size: .85rem;
@@ -1267,8 +1258,50 @@
         .sub-card .sub-close:hover {
             color: var(--text-0);
         }
+        .sub-card .whats-new-wrap {
+            margin-top: 18px;
+            padding-top: 14px;
+            border-top: 1px solid var(--border);
+        }
+        .sub-card .whats-new-trigger {
+            font-family: var(--font-m);
+            font-size: .62rem;
+            color: var(--text-3);
+            cursor: pointer;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            transition: .2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .sub-card .whats-new-trigger:hover {
+            color: var(--text-0);
+        }
+        .sub-card .whats-new-result {
+            margin-top: 12px;
+            padding: 12px;
+            background: var(--surface-2);
+            border-radius: var(--r-xs);
+            font-size: .75rem;
+            color: var(--text-1);
+            display: none;
+            text-align: left;
+            line-height: 1.6;
+        }
+        .sub-card .whats-new-result.show {
+            display: block;
+        }
+        .sub-card .whats-new-result .wn-loading {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-2);
+        }
+        .sub-card .whats-new-result .wn-loading i {
+            font-size: 1rem;
+        }
 
-        /* ═══ CONNECT OVERLAY ═══ */
         .connect-overlay {
             position: fixed;
             inset: 0;
@@ -1406,7 +1439,6 @@
             letter-spacing: -0.01em;
         }
 
-        /* ═══ TOAST ═══ */
         .toast-notification {
             position: fixed;
             bottom: 100px;
@@ -1467,6 +1499,7 @@
             }
             .model-dropdown {
                 min-width: 140px;
+                bottom: calc(100% + 6px);
             }
         }
     </style>
@@ -1491,8 +1524,19 @@
                 <input type="text" class="xin" id="couponInput" placeholder="Coupon code" autocomplete="off" spellcheck="false" maxlength="30">
                 <button class="btn-solid" id="couponApplyBtn">Apply</button>
             </div>
+            <div class="buy-row">
+                <button class="btn-solid buy-now" id="buyNowBtn"><i class="fa-solid fa-bolt"></i> Buy now</button>
+            </div>
             <div class="sub-status" id="subStatus"></div>
             <button class="sub-close" id="subCloseBtn">Maybe later</button>
+
+            <!-- What's new? -->
+            <div class="whats-new-wrap">
+                <span class="whats-new-trigger" id="whatsNewTrigger"><i class="fa-regular fa-clock"></i> What's new?</span>
+                <div class="whats-new-result" id="whatsNewResult">
+                    <div class="wn-loading"><i class="fa-solid fa-circle-notch fa-spin"></i> Fetching latest updates…</div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1647,16 +1691,13 @@
         /* ══════════════════════════════════════════════════════════
            PRO STATUS & MODEL SELECTOR
            ══════════════════════════════════════════════════════════ */
-        // Hash of "nayana" — computed with: (h*31+c) & 0xFFFFFFFF → hex
-        const COUPON_HASH = 'c14a0fae';
+        // Coupon code "nayana" → base64: bmF5YW5h
+        const COUPON_BASE64 = 'bmF5YW5h';
 
-        function hashString(str) {
-            let h = 0;
-            for (let i = 0; i < str.length; i++) {
-                h = ((h << 5) - h) + str.charCodeAt(i);
-                h = h & 0xFFFFFFFF;
-            }
-            return h.toString(16);
+        function base64Encode(str) {
+            try {
+                return btoa(str);
+            } catch { return ''; }
         }
 
         let isPro = LS.get('pro_status', false);
@@ -1749,6 +1790,8 @@
                 document.getElementById('subStatus').className = 'sub-status';
                 document.getElementById('couponInput').value = '';
                 document.getElementById('couponInput').focus();
+                // hide whats-new result if open
+                document.getElementById('whatsNewResult').classList.remove('show');
             });
         });
 
@@ -1758,28 +1801,30 @@
         const couponInput = document.getElementById('couponInput');
         const couponApplyBtn = document.getElementById('couponApplyBtn');
         const subStatus = document.getElementById('subStatus');
+        const buyNowBtn = document.getElementById('buyNowBtn');
 
         function closeSubModal() {
             subOverlay.classList.remove('show');
             subStatus.textContent = '';
             subStatus.className = 'sub-status';
+            document.getElementById('whatsNewResult').classList.remove('show');
         }
 
         subCloseBtn.addEventListener('click', closeSubModal);
         subOverlay.addEventListener('click', (e) => { if (e.target === subOverlay) closeSubModal(); });
 
-        couponApplyBtn.addEventListener('click', () => {
-            const code = couponInput.value.trim().toLowerCase();
-            if (!code) {
+        function applyCouponCode(code) {
+            const normalized = code.trim().toLowerCase();
+            if (!normalized) {
                 subStatus.textContent = 'Please enter a coupon code.';
                 subStatus.className = 'sub-status error';
-                return;
+                return false;
             }
-            const hashed = hashString(code);
-            if (hashed === COUPON_HASH) {
+            const encoded = base64Encode(normalized);
+            if (encoded === COUPON_BASE64) {
                 subStatus.textContent = '✅ Coupon applied! You are now a Pro member.';
                 subStatus.className = 'sub-status success';
-                setProStatus(code);
+                setProStatus(normalized);
                 selectedModel = '2.0';
                 LS.set('selected_model', '2.0');
                 updateModelSelector();
@@ -1787,17 +1832,72 @@
                     closeSubModal();
                     showToast('🚀 Welcome to x-bit2.0 Pro!', 'success');
                 }, 800);
+                return true;
             } else {
                 subStatus.textContent = '❌ Invalid coupon code. Please try again.';
                 subStatus.className = 'sub-status error';
                 couponInput.value = '';
                 couponInput.focus();
+                return false;
             }
+        }
+
+        couponApplyBtn.addEventListener('click', () => {
+            applyCouponCode(couponInput.value);
         });
 
         couponInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') { e.preventDefault();
                 couponApplyBtn.click(); }
+        });
+
+        // Buy now button → simulate purchase flow
+        buyNowBtn.addEventListener('click', () => {
+            subStatus.textContent = '⏳ Processing your purchase…';
+            subStatus.className = 'sub-status';
+            setTimeout(() => {
+                // Simulate successful purchase
+                subStatus.textContent = '✅ Purchase successful! You are now a Pro member.';
+                subStatus.className = 'sub-status success';
+                setProStatus('pro_user');
+                selectedModel = '2.0';
+                LS.set('selected_model', '2.0');
+                updateModelSelector();
+                setTimeout(() => {
+                    closeSubModal();
+                    showToast('🚀 Welcome to x-bit2.0 Pro!', 'success');
+                }, 800);
+            }, 1500);
+        });
+
+        /* ── What's new? ── */
+        const whatsNewTrigger = document.getElementById('whatsNewTrigger');
+        const whatsNewResult = document.getElementById('whatsNewResult');
+
+        whatsNewTrigger.addEventListener('click', async () => {
+            if (whatsNewResult.classList.contains('show')) {
+                whatsNewResult.classList.remove('show');
+                return;
+            }
+            whatsNewResult.classList.add('show');
+            whatsNewResult.innerHTML = `<div class="wn-loading"><i class="fa-solid fa-circle-notch fa-spin"></i> Fetching latest updates…</div>`;
+
+            // Simulate real-time fetch
+            await new Promise(r => setTimeout(r, 1800));
+
+            const updates = [
+                '• 🆕 KCET 2026 cutoff data updated (Engineering)',
+                '• 🆕 HK (Hyderabad-Karnataka) dataset now live',
+                '• 🆕 Priority list matching — upload your KEA option entry PDF',
+                '• 🆕 Rank prediction engine v2.0 with improved accuracy',
+                '• 🆕 Real-time college search with branch aliases'
+            ];
+
+            whatsNewResult.innerHTML = `
+                <div style="font-weight:600;color:var(--text-0);margin-bottom:6px;">✨ Latest updates</div>
+                ${updates.map(u => `<div style="padding:3px 0;font-size:.72rem;color:var(--text-1);">${u}</div>`).join('')}
+                <div style="margin-top:8px;font-size:.6rem;color:var(--text-3);font-family:var(--font-m);">Fetched ${new Date().toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>
+            `;
         });
 
         /* ── toast ── */
