@@ -1,5 +1,6 @@
 {
   "engineering": {
+    "type": "surrendered_seats",
     "actual_name": "Engineering management surrendered seats list - 2026 - provisional (batch - 3)",
     "aliases": [
       "engineering management surrendered seats",
@@ -9,7 +10,9 @@
       "eng management surrendered seats"
     ]
   },
+
   "engineering_special_category": {
+    "type": "surrendered_seats",
     "actual_name": "Engineering management surrendered seats list (special category) - 2026 - provisional (batch - 3)",
     "aliases": [
       "engineering special category surrendered seats",
@@ -19,7 +22,9 @@
       "engineering special surrendered seats"
     ]
   },
+
   "engineering_management_batch_3": {
+    "type": "surrendered_seats",
     "actual_name": "UGCET – 2026 Engineering Management surrendered seats (batch 3) – 12 August 2026",
     "aliases": [
       "engineering management seats batch 3",
@@ -29,7 +34,9 @@
       "batch 3 engineering surrendered seats"
     ]
   },
+
   "engineering_management_batch_2": {
+    "type": "surrendered_seats",
     "actual_name": "UGCET – 2026 Engineering Management surrendered seats (batch 2) – 12 August 2026",
     "aliases": [
       "engineering management seats batch 2",
@@ -39,7 +46,9 @@
       "batch 2 engineering surrendered seats"
     ]
   },
+
   "engineering_surrendered_seat_matrix": {
+    "type": "seat_matrix",
     "actual_name": "UGCET - 2026 provisional engineering management surrendered seat matrix. 19/07/2026",
     "aliases": [
       "engineering surrendered seat matrix",
@@ -49,7 +58,9 @@
       "engineering surrendered seats matrix 2026"
     ]
   },
+
   "engineering_second_round_seat_matrix": {
+    "type": "seat_matrix",
     "actual_name": "UGCET - 2026 second round provisional seat matrix (07-08-2026)",
     "aliases": [
       "engineering second round seat matrix",
@@ -59,7 +70,11 @@
       "second round seat matrix"
     ]
   },
+
   "engineering_first_round_cutoff": {
+    "type": "cutoff",
+    "round": 1,
+    "provisional": false,
     "actual_name": "UGCET - 2026 first round seat allotment cutoff (15-07-2026)",
     "aliases": [
       "engineering first round cutoff",
@@ -69,7 +84,11 @@
       "engineering first round cut off"
     ]
   },
+
   "engineering_provisional_first_round_cutoff": {
+    "type": "cutoff",
+    "round": 1,
+    "provisional": true,
     "actual_name": "UGCET - 2026 provisional first round seat allotment cutoff (13-07-2026)",
     "aliases": [
       "provisional engineering first round cutoff",
@@ -79,7 +98,11 @@
       "provisional round 1 engineering"
     ]
   },
+
   "engineering_mock_cutoff": {
+    "type": "cutoff",
+    "round": "mock",
+    "provisional": false,
     "actual_name": "UGCET - 2026 mock seat allotment cutoff (06-07-2026)",
     "aliases": [
       "engineering mock cutoff",
@@ -89,7 +112,12 @@
       "engineering mock cut off"
     ]
   },
+
   "engineering_second_round_mock_cutoff": {
+    "type": "cutoff",
+    "round": 2,
+    "mock": true,
+    "provisional": false,
     "actual_name": "UGCET - 2026 second round mock seat allotment cutoff (17-08-2026)",
     "aliases": [
       "engineering second round mock cutoff",
@@ -99,7 +127,31 @@
       "engineering round 2 mock cutoff"
     ]
   },
+
+  "engineering_second_round_provisional_cutoff": {
+    "type": "cutoff",
+    "round": 2,
+    "mock": false,
+    "provisional": true,
+    "actual_name": "UGCET 2026 second round provisional allotment cut-off ranks for Engineering",
+    "aliases": [
+      "UGCET 2026 second round provisional cutoff",
+      "second round provisional engineering cutoff",
+      "engineering second round provisional cutoff",
+      "second round engineering cutoff",
+      "2nd round provisional cutoff",
+      "engineering second round cut off",
+      "second round provisional allotment cutoff",
+      "second round provisional allotment cut off ranks"
+    ],
+    "known_links": [
+      "https://cetonline.karnataka.gov.in/keawebentry456/ugcet2026/H_E.pdf",
+      "https://cetonline.karnataka.gov.in/keawebentry456/ugcet2026/R_E.pdf"
+    ]
+  },
+
   "engineering_choice_entry": {
+    "type": "choice_entry",
     "actual_name": "UGCET / UGNEET - 2026 choice entry link - second round (18-08-2026)",
     "aliases": [
       "engineering second round choice entry",
@@ -109,7 +161,9 @@
       "engineering option entry second round"
     ]
   },
+
   "engineering_first_round_choice_entry": {
+    "type": "choice_entry",
     "actual_name": "UGCET - 2026 choice entry, fee payment and verification slip download link. 16/07/2026",
     "aliases": [
       "engineering choice entry",
@@ -119,7 +173,9 @@
       "engineering choice entry link"
     ]
   },
+
   "engineering_seat_allotment_process": {
+    "type": "allotment_process",
     "actual_name": "UGCET -2026 second round seat allotment process (07-08-2026)",
     "aliases": [
       "engineering second round allotment process",
@@ -129,7 +185,9 @@
       "how engineering seat allotment works"
     ]
   },
+
   "engineering_seat_allotment_schedule": {
+    "type": "allotment_schedule",
     "actual_name": "UGCET-UG NEET-2026 seat allotment schedule (07-08-2026)",
     "aliases": [
       "engineering seat allotment schedule",
@@ -139,7 +197,9 @@
       "engineering seat allotment dates"
     ]
   },
+
   "engineering_management_surrendered_seats": {
+    "type": "surrendered_seats",
     "actual_name": "Engineering management surrendered seats list - 2026 - provisional (batch - 3)",
     "aliases": [
       "management surrendered engineering seats",
