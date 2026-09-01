@@ -16,7 +16,9 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
 
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -139,7 +141,9 @@
 
         <div class="hub-categories reveal">
           <div class="hub-cat-card">
-            <span class="hub-cat-icon">🩺</span>
+            <span class="hub-cat-icon hub-cat-icon--healthcare">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2a2 2 0 0 0-2 2v5H4a2 2 0 0 0-2 2v2c0 1.1.9 2 2 2h5v5c0 1.1.9 2 2 2h2a2 2 0 0 0 2-2v-5h5a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-5V4a2 2 0 0 0-2-2h-2z"/></svg>
+            </span>
             <div class="hub-cat-info">
               <h3>Healthcare Resources</h3>
               <p>Health-related information, tools, guides, and awareness resources.</p>
@@ -147,7 +151,9 @@
             <button class="btn btn-ghost btn-sm filter-jump" data-category="healthcare">View Resources</button>
           </div>
           <div class="hub-cat-card">
-            <span class="hub-cat-icon">📚</span>
+            <span class="hub-cat-icon hub-cat-icon--medstudent">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"/></svg>
+            </span>
             <div class="hub-cat-info">
               <h3>Medical Student Resources</h3>
               <p>Notes, study materials, guides, and reference resources for medical students.</p>
@@ -155,7 +161,9 @@
             <button class="btn btn-ghost btn-sm filter-jump" data-category="medstudent">View Resources</button>
           </div>
           <div class="hub-cat-card">
-            <span class="hub-cat-icon">🎯</span>
+            <span class="hub-cat-icon hub-cat-icon--neet">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4"/><path d="M12 16V8"/></svg>
+            </span>
             <div class="hub-cat-info">
               <h3>NEET Resources</h3>
               <p>Preparation guides, study resources, and planning tools for NEET.</p>
@@ -163,7 +171,9 @@
             <button class="btn btn-ghost btn-sm filter-jump" data-category="neet">View Resources</button>
           </div>
           <div class="hub-cat-card">
-            <span class="hub-cat-icon">🧠</span>
+            <span class="hub-cat-icon hub-cat-icon--useful">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
+            </span>
             <div class="hub-cat-info">
               <h3>Useful Resources</h3>
               <p>Productivity tools, templates, and everyday resources for student life.</p>
@@ -252,13 +262,13 @@
           <p>Why Anush Decodes exists, and what it's trying to do.</p>
         </div>
         <div class="reveal" style="max-width: 68ch;">
-          <p style="color:var(--muted); font-size:1.02rem; margin-bottom:16px;">
+          <p style="color:var(--muted); font-size:1.02rem; margin-bottom:16px; line-height:1.7;">
             Anush Decodes is built around a simple belief: useful information should be easy to
             find, not locked behind confusing formats or scattered across a dozen places. It
             brings together student resources, health information, practical tools, and personal
             experience in one place that's meant to be revisited, not just visited once.
           </p>
-          <p style="color:var(--muted); font-size:1.02rem;">
+          <p style="color:var(--muted); font-size:1.02rem; line-height:1.7;">
             Free resources exist here because access shouldn't depend on who you know or what you
             can afford. Education, health, and practical guidance are areas where good information
             genuinely changes outcomes — that's the reason this keeps getting built out.
@@ -387,5 +397,6 @@
       });
     });
   </script>
+
 </body>
 </html>
