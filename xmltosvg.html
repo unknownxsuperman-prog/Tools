@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>XML to SVG Converter</title>
+    <!-- JSZip for creating ZIP files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js">
+    </script>
+    <style>
+        /* ─── Reset & Base ─── */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f0f4f9;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .app {
+            max-width: 900px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 32px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+            padding: 40px 40px 50px;
+            transition: all 0.2s;
+        }
+
+        /* ─── Header ─── */
+        .app-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 12px;
+        }
+
+        .app-header .icon {
+            font-size: 32px;
+            line-height: 1;
+        }
+
+        .app-header h1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #0b1e33;
+            letter-spacing: -0.3px;
+        }
+
+        .app-header .badge {
+            background: #dbeafe;
+            color: #1d4ed8;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 2px 12px;
+            border-radius: 20px;
+            margin-left: 8px;
+        }
+
+        .subtitle {
+            color: #4b5b6e;
+            font-size: 15px;
+            margin-bottom: 28px;
+            padding-left: 46px;
+            line-height: 1.5;
+        }
+
+        .subtitle strong {
+            color: #0b1e33;
+        }
+
+        /* ─── Upload Area ─── */
+        .upload-zone {
+            border: 2px dashed #cdd9e6;
+            border-radius: 20px;
+            padding: 48px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.25s, background 0.25s;
+            background: #fafcff;
+            position: relative;
+            margin-bottom: 28px;
+        }
+
+        .upload-zone:hover {
+            border-color: #7a9bcb;
+            background: #f5f9ff;
+        }
+
+        .upload-zone.dragover {
+            border-color: #2563eb;
+            background: #eff4ff;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
+        }
+
+        .upload-zone .upload-icon {
+            font-size: 52px;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        .upload-zone .upload-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #0b1e33;
+        }
+
+        .upload-zone .upload-hint {
+            color: #6b7d93;
+            font-size: 14px;
+            margin-top: 6px;
+        }
+
+        .upload-zone .upload-hint span {
+            color: #2563eb;
+            font-weight: 500;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+
+        .upload-zone input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        /* ─── File List ─── */
+        .file-list {
+            margin: 16px 0 24px;
+            max-height: 340px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .file-list::-webkit-scrollbar {
+            width: 5px;
+        }
+        .file-list::-webkit-scrollbar-track {
+            background: #eef2f6;
+            border-radius: 10px;
+        }
+        .file-list::-webkit-scrollbar-thumb {
+            background: #c1ccdb;
+            border-radius: 10px;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 16px;
+            background: #f8faff;
+            border-radius: 14px;
+            margin-bottom: 8px;
+            transition: background 0.15s;
+            border: 1px solid #e9eef3;
+        }
+
+        .file-item:hover {
+            background: #f2f7fe;
+        }
+
+        .file-item .file-icon {
+            font-size: 22px;
+            flex-shrink: 0;
+            width: 36px;
+            text-align: center;
+        }
+
+        .file-item .file-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .file-item .file-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: #0b1e33;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .file-item .file-meta {
+            font-size: 12px;
+            color: #6b7d93;
+            display: flex;
+            gap: 16px;
+            margin-top: 2px;
+        }
+
+        .file-item .file-status {
+            font-size: 13px;
+            font-weight: 500;
+            flex-shrink: 0;
+            padding: 4px 14px;
+            border-radius: 30px;
+            background: #eef2f6;
+            color: #4b5b6e;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .file-item .file-status .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #c1ccdb;
+            border-top-color: #2563eb;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .file-item .file-status.done {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .file-item .file-status.done::before {
+            content: "✓";
+            font-weight: 700;
+            margin-right: 2px;
+        }
+
+        .file-item .file-status.error {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .file-item .file-status.error::before {
+            content: "✕";
+            font-weight: 700;
+            margin-right: 2px;
+        }
+
+        .file-item .file-status.pending {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .file-item .file-status.converting {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        /* ─── Actions ─── */
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            align-items: center;
+            margin-top: 6px;
+        }
+
+        .actions .left {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            flex: 1;
+        }
+
+        .actions .right {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 11px 28px;
+            border: none;
+            border-radius: 60px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            background: #eef2f6;
+            color: #1e2a3a;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+        }
+
+        .btn:active {
+            transform: translateY(0px);
+        }
+
+        .btn-primary {
+            background: #1d4ed8;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(29, 78, 216, 0.25);
+        }
+
+        .btn-primary:hover {
+            background: #1e40af;
+            box-shadow: 0 8px 20px rgba(29, 78, 216, 0.30);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-success {
+            background: #16a34a;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25);
+        }
+
+        .btn-success:hover {
+            background: #15803d;
+            box-shadow: 0 8px 20px rgba(22, 163, 74, 0.30);
+        }
+
+        .btn-success:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid #cdd9e6;
+            color: #1e2a3a;
+        }
+
+        .btn-outline:hover {
+            background: #f5f9ff;
+            border-color: #7a9bcb;
+        }
+
+        .btn-danger-outline {
+            background: transparent;
+            border: 1.5px solid #fca5a5;
+            color: #b91c1c;
+        }
+
+        .btn-danger-outline:hover {
+            background: #fef2f2;
+            border-color: #ef4444;
+        }
+
+        .btn .badge-count {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 30px;
+            padding: 0 10px;
+            font-size: 12px;
+            line-height: 20px;
+            font-weight: 600;
+        }
+
+        .btn-primary .badge-count {
+            background: rgba(255, 255, 255, 0.18);
+        }
+
+        .btn-success .badge-count {
+            background: rgba(255, 255, 255, 0.18);
+        }
+
+        /* ─── Empty State ─── */
+        .empty-state {
+            text-align: center;
+            padding: 16px 0 6px;
+            color: #8a9bb0;
+            font-size: 14px;
+        }
+
+        .empty-state .empty-icon {
+            font-size: 36px;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        /* ─── Stats Bar ─── */
+        .stats {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+            padding: 10px 0 4px;
+            font-size: 13px;
+            color: #4b5b6e;
+            border-top: 1px solid #e9eef3;
+            margin-top: 6px;
+            padding-top: 16px;
+        }
+
+        .stats .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .stats .stat-item .num {
+            font-weight: 700;
+            color: #0b1e33;
+            font-size: 15px;
+        }
+
+        /* ─── Responsive ─── */
+        @media (max-width: 640px) {
+            .app {
+                padding: 24px 18px 32px;
+                border-radius: 24px;
+            }
+
+            .app-header h1 {
+                font-size: 21px;
+            }
+
+            .app-header .badge {
+                font-size: 10px;
+                padding: 0 10px;
+            }
+
+            .subtitle {
+                font-size: 14px;
+                padding-left: 0;
+                margin-top: 4px;
+            }
+
+            .upload-zone {
+                padding: 32px 16px;
+            }
+
+            .upload-zone .upload-icon {
+                font-size: 40px;
+            }
+
+            .file-item {
+                padding: 10px 12px;
+                flex-wrap: wrap;
+            }
+
+            .file-item .file-status {
+                font-size: 12px;
+                padding: 2px 12px;
+            }
+
+            .actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .actions .left,
+            .actions .right {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .btn {
+                justify-content: center;
+                padding: 12px 20px;
+                width: 100%;
+            }
+
+            .stats {
+                gap: 14px;
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .app {
+                padding: 16px 12px 24px;
+            }
+
+            .upload-zone .upload-title {
+                font-size: 16px;
+            }
+
+            .file-item .file-name {
+                font-size: 13px;
+            }
+        }
+
+        /* ─── Toast ─── */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: #0b1e33;
+            color: #fff;
+            padding: 14px 28px;
+            border-radius: 60px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+            opacity: 0;
+            transition: opacity 0.35s, transform 0.35s;
+            pointer-events: none;
+            z-index: 999;
+            max-width: 90%;
+            text-align: center;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast.success {
+            background: #16a34a;
+        }
+
+        .toast.error {
+            background: #dc2626;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ─── Toast ─── -->
+    <div id="toast" class="toast"></div>
+
+    <!-- ─── App ─── -->
+    <div class="app" id="app">
+
+        <!-- Header -->
+        <div class="app-header">
+            <span class="icon">📄➜🖼️</span>
+            <h1>XML to SVG <span class="badge">Bulk</span></h1>
+        </div>
+        <p class="subtitle">
+            Upload <strong>.xml</strong> files — we'll convert each to <strong>.svg</strong>
+            and bundle them all in a <strong>ZIP</strong>.
+        </p>
+
+        <!-- Upload Zone -->
+        <div class="upload-zone" id="uploadZone">
+            <span class="upload-icon">📁</span>
+            <div class="upload-title">Drop your XML files here</div>
+            <div class="upload-hint">
+                or <span>click to browse</span> &nbsp;·&nbsp; multiple files accepted
+            </div>
+            <input type="file" id="fileInput" accept=".xml,text/xml" multiple />
+        </div>
+
+        <!-- File List -->
+        <div id="fileListContainer">
+            <div class="empty-state" id="emptyState">
+                <span class="empty-icon">📂</span>
+                No files uploaded yet
+            </div>
+            <div class="file-list" id="fileList" style="display:none;"></div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats" id="statsBar">
+            <span class="stat-item">📎 Total: <span class="num" id="totalCount">0</span></span>
+            <span class="stat-item">✅ Converted: <span class="num" id="doneCount">0</span></span>
+            <span class="stat-item">⏳ Pending: <span class="num" id="pendingCount">0</span></span>
+        </div>
+
+        <!-- Actions -->
+        <div class="actions">
+            <div class="left">
+                <button class="btn btn-primary" id="convertBtn" disabled>
+                    ⚡ Convert All
+                    <span class="badge-count" id="convertBadge">0</span>
+                </button>
+                <button class="btn btn-outline" id="clearBtn" disabled>
+                    🗑️ Clear All
+                </button>
+            </div>
+            <div class="right">
+                <button class="btn btn-success" id="downloadBtn" disabled>
+                    📦 Download ZIP
+                    <span class="badge-count" id="downloadBadge">0</span>
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ─── JavaScript ─── -->
+    <script>
+        (function() {
+            'use strict';
+
+            // ─── DOM refs ───
+            const fileInput = document.getElementById('fileInput');
+            const uploadZone = document.getElementById('uploadZone');
+            const fileList = document.getElementById('fileList');
+            const emptyState = document.getElementById('emptyState');
+            const convertBtn = document.getElementById('convertBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const convertBadge = document.getElementById('convertBadge');
+            const downloadBadge = document.getElementById('downloadBadge');
+            const totalCount = document.getElementById('totalCount');
+            const doneCount = document.getElementById('doneCount');
+            const pendingCount = document.getElementById('pendingCount');
+            const toast = document.getElementById('toast');
+
+            // ─── State ───
+            /** @type {Array<{ id: string, file: File, name: string, size: number, status: 'pending'|'converting'|'done'|'error', svgContent: string|null, errorMsg: string|null }>} */
+            let files = [];
+            let idCounter = 0;
+            let isConverting = false;
+
+            // ─── Helpers ───
+            function formatSize(bytes) {
+                if (bytes < 1024) return bytes + ' B';
+                if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+                return (bytes / 1048576).toFixed(1) + ' MB';
+            }
+
+            function getFileExtension(name) {
+                const i = name.lastIndexOf('.');
+                return i > 0 ? name.slice(i + 1).toLowerCase() : '';
+            }
+
+            function getBaseName(name) {
+                const i = name.lastIndexOf('.');
+                return i > 0 ? name.slice(0, i) : name;
+            }
+
+            function showToast(msg, type = 'info', duration = 3000) {
+                toast.textContent = msg;
+                toast.className = 'toast ' + type;
+                // force reflow
+                void toast.offsetWidth;
+                toast.classList.add('show');
+                clearTimeout(toast._hideTimer);
+                toast._hideTimer = setTimeout(() => {
+                    toast.classList.remove('show');
+                }, duration);
+            }
+
+            // ─── Render file list ───
+            function render() {
+                if (files.length === 0) {
+                    fileList.style.display = 'none';
+                    emptyState.style.display = 'block';
+                    convertBtn.disabled = true;
+                    clearBtn.disabled = true;
+                    downloadBtn.disabled = true;
+                    convertBadge.textContent = '0';
+                    downloadBadge.textContent = '0';
+                    totalCount.textContent = '0';
+                    doneCount.textContent = '0';
+                    pendingCount.textContent = '0';
+                    return;
+                }
+
+                fileList.style.display = 'block';
+                emptyState.style.display = 'none';
+
+                // Build HTML
+                let html = '';
+                for (const f of files) {
+                    const statusClass = f.status;
+                    let statusLabel = '';
+                    let statusExtra = '';
+                    if (f.status === 'pending') { statusLabel = 'Pending';
+                        statusExtra = ''; }
+                    if (f.status === 'converting') { statusLabel = 'Converting';
+                        statusExtra = '<span class="spinner"></span>'; }
+                    if (f.status === 'done') { statusLabel = 'Done';
+                        statusExtra = ''; }
+                    if (f.status === 'error') { statusLabel = 'Error';
+                        statusExtra = ''; }
+
+                    const icon = f.status === 'done' ? '✅' : f.status === 'error' ? '❌' : '📄';
+
+                    html += `
+                        <div class="file-item" data-id="${f.id}">
+                            <span class="file-icon">${icon}</span>
+                            <div class="file-info">
+                                <div class="file-name" title="${escapeHtml(f.name)}">${escapeHtml(f.name)}</div>
+                                <div class="file-meta">
+                                    <span>${formatSize(f.size)}</span>
+                                    ${f.status === 'done' ? '<span>→ ' + escapeHtml(getBaseName(f.name) + '.svg') + '</span>' : ''}
+                                    ${f.status === 'error' && f.errorMsg ? '<span style="color:#b91c1c;">' + escapeHtml(f.errorMsg) + '</span>' : ''}
+                                </div>
+                            </div>
+                            <div class="file-status ${statusClass}">
+                                ${statusExtra} ${statusLabel}
+                            </div>
+                        </div>
+                    `;
+                }
+                fileList.innerHTML = html;
+
+                // Update stats
+                const total = files.length;
+                const done = files.filter(f => f.status === 'done').length;
+                const pending = files.filter(f => f.status === 'pending' || f.status === 'converting').length;
+                totalCount.textContent = total;
+                doneCount.textContent = done;
+                pendingCount.textContent = pending;
+
+                const pendingCountForConvert = files.filter(f => f.status === 'pending').length;
+                convertBadge.textContent = pendingCountForConvert;
+                convertBtn.disabled = pendingCountForConvert === 0 || isConverting;
+
+                const doneCountForDownload = files.filter(f => f.status === 'done').length;
+                downloadBadge.textContent = doneCountForDownload;
+                downloadBtn.disabled = doneCountForDownload === 0;
+
+                clearBtn.disabled = files.length === 0 || isConverting;
+            }
+
+            // Simple escape
+            function escapeHtml(str) {
+                const div = document.createElement('div');
+                div.textContent = str;
+                return div.innerHTML;
+            }
+
+            // ─── Add files ───
+            function addFiles(fileListFromInput) {
+                let added = 0;
+                for (const file of fileListFromInput) {
+                    // Only accept .xml files
+                    const ext = getFileExtension(file.name);
+                    if (ext !== 'xml') {
+                        showToast(`"${file.name}" is not an .xml file — skipped`, 'error', 2500);
+                        continue;
+                    }
+                    // Avoid duplicates by name (simple)
+                    if (files.some(f => f.name === file.name && f.size === file.size)) {
+                        showToast(`"${file.name}" already uploaded — skipped`, 'error', 2000);
+                        continue;
+                    }
+                    files.push({
+                        id: 'f' + (++idCounter),
+                        file: file,
+                        name: file.name,
+                        size: file.size,
+                        status: 'pending',
+                        svgContent: null,
+                        errorMsg: null,
+                    });
+                    added++;
+                }
+                if (added > 0) {
+                    showToast(`Added ${added} file${added > 1 ? 's' : ''}`, 'success', 2000);
+                }
+                render();
+            }
+
+            // ─── Convert a single file ───
+            function convertFile(fileEntry) {
+                return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        try {
+                            const xmlText = e.target.result;
+                            // Check if it contains an <svg> tag (case insensitive)
+                            const svgMatch = xmlText.match(/<svg[\s>]/i);
+                            let svgContent = null;
+
+                            if (svgMatch) {
+                                // It already contains SVG — use the whole content as SVG
+                                // But we should ensure it has proper XML declaration if needed
+                                svgContent = xmlText;
+                            } else {
+                                // Not an SVG — wrap the XML content in an SVG as text
+                                // Format the XML nicely
+                                const formatted = formatXml(xmlText);
+                                const escaped = escapeHtmlForSvg(formatted);
+                                svgContent = `<?xml version="1.0" encoding="UTF-8"?>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+                                <rect width="800" height="600" fill="#f8faff" rx="12" />
+                                <text x="40" y="48" font-family="monospace" font-size="16" fill="#0b1e33" font-weight="700">
+                                    📄 ${escapeHtmlForSvg(getBaseName(fileEntry.name))}.xml
+                                </text>
+                                <text x="40" y="78" font-family="monospace" font-size="13" fill="#4b5b6e">
+                                    ── XML content ──
+                                </text>
+                                <rect x="30" y="95" width="740" height="470" fill="#ffffff" rx="8" stroke="#e9eef3" stroke-width="1.5" />
+                                <text xml:space="preserve">
+                                    <tspan x="50" y="125" font-family="monospace" font-size="12" fill="#1e2a3a">${escaped}</tspan>
+                                </text>
+                            </svg>`;
+                            }
+
+                            fileEntry.status = 'done';
+                            fileEntry.svgContent = svgContent;
+                            fileEntry.errorMsg = null;
+                            resolve(true);
+                        } catch (err) {
+                            fileEntry.status = 'error';
+                            fileEntry.errorMsg = err.message || 'Conversion failed';
+                            fileEntry.svgContent = null;
+                            resolve(false);
+                        } finally {
+                            render();
+                        }
+                    };
+                    reader.onerror = function() {
+                        fileEntry.status = 'error';
+                        fileEntry.errorMsg = 'Failed to read file';
+                        fileEntry.svgContent = null;
+                        render();
+                        resolve(false);
+                    };
+                    reader.readAsText(fileEntry.file);
+                });
+            }
+
+            // ─── Format XML (simple pretty print) ───
+            function formatXml(xml) {
+                try {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(xml, 'text/xml');
+                    const serializer = new XMLSerializer();
+                    let formatted = serializer.serializeToString(doc);
+                    // Simple indentation: add newlines after > and before <
+                    formatted = formatted.replace(/>\s*</g, '>\n<');
+                    // Limit lines for display
+                    const lines = formatted.split('\n');
+                    if (lines.length > 200) {
+                        formatted = lines.slice(0, 200).join('\n') + '\n\n… (truncated)';
+                    }
+                    return formatted;
+                } catch (_) {
+                    // If parsing fails, just return the original
+                    return xml;
+                }
+            }
+
+            // ─── Escape for SVG text content ───
+            function escapeHtmlForSvg(str) {
+                return str
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/\n/g, '&#10;')
+                    .replace(/\r/g, '');
+            }
+
+            // ─── Convert all pending ───
+            async function convertAll() {
+                if (isConverting) return;
+                const pending = files.filter(f => f.status === 'pending');
+                if (pending.length === 0) {
+                    showToast('No pending files to convert', 'error', 2000);
+                    return;
+                }
+
+                isConverting = true;
+                convertBtn.disabled = true;
+                showToast(`Converting ${pending.length} file${pending.length > 1 ? 's' : ''}…`, 'info', 2000);
+
+                // Mark all as converting
+                for (const f of pending) {
+                    f.status = 'converting';
+                }
+                render();
+
+                let successCount = 0;
+                for (const f of pending) {
+                    const ok = await convertFile(f);
+                    if (ok) successCount++;
+                    // small delay to avoid UI freezing
+                    await new Promise(r => setTimeout(r, 80));
+                }
+
+                isConverting = false;
+                render();
+
+                if (successCount === pending.length) {
+                    showToast(`✅ All ${successCount} file${successCount > 1 ? 's' : ''} converted successfully!`, 'success',
+                    3000);
+                } else {
+                    showToast(`⚠️ ${successCount} of ${pending.length} converted, ${pending.length - successCount} failed.`,
+                        'error', 4000);
+                }
+            }
+
+            // ─── Download ZIP ───
+            async function downloadZip() {
+                const doneFiles = files.filter(f => f.status === 'done' && f.svgContent);
+                if (doneFiles.length === 0) {
+                    showToast('No converted files to download', 'error', 2000);
+                    return;
+                }
+
+                try {
+                    const zip = new JSZip();
+                    for (const f of doneFiles) {
+                        const svgName = getBaseName(f.name) + '.svg';
+                        zip.file(svgName, f.svgContent);
+                    }
+
+                    const zipBlob = await zip.generateAsync({ type: 'blob' });
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(zipBlob);
+                    link.download = 'converted_svgs.zip';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    setTimeout(() => URL.revokeObjectURL(link.href), 5000);
+
+                    showToast(`📦 Downloaded ${doneFiles.length} SVG${doneFiles.length > 1 ? 's' : ''} as ZIP`, 'success', 3000);
+                } catch (err) {
+                    showToast('Failed to create ZIP: ' + err.message, 'error', 3000);
+                }
+            }
+
+            // ─── Clear all ───
+            function clearAll() {
+                if (isConverting) {
+                    showToast('Please wait for conversion to finish', 'error', 2000);
+                    return;
+                }
+                if (files.length === 0) return;
+                if (!confirm('Remove all uploaded files?')) return;
+                files = [];
+                render();
+                showToast('All files cleared', 'info', 1500);
+            }
+
+            // ─── Event listeners ───
+
+            // File input
+            fileInput.addEventListener('change', function(e) {
+                if (this.files && this.files.length > 0) {
+                    addFiles(this.files);
+                }
+                this.value = ''; // reset so same file can be re-uploaded
+            });
+
+            // Drag and drop
+            uploadZone.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('dragover');
+            });
+
+            uploadZone.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+            });
+
+            uploadZone.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+                if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                    addFiles(e.dataTransfer.files);
+                }
+            });
+
+            // Buttons
+            convertBtn.addEventListener('click', convertAll);
+            downloadBtn.addEventListener('click', downloadZip);
+            clearBtn.addEventListener('click', clearAll);
+
+            // ─── Init ───
+            render();
+
+            // ─── Keyboard shortcut: Enter to convert ───
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                    if (!convertBtn.disabled) convertBtn.click();
+                }
+            });
+
+            // ─── Expose for debugging ───
+            window.__app = { files, render, convertAll, downloadZip, clearAll, addFiles };
+
+            console.log('%c📄➜🖼️ XML to SVG Converter ready', 'font-size:16px; font-weight:600; color:#1d4ed8;');
+            console.log(`Drop .xml files or click to upload. ${files.length} files loaded.`);
+
+        })();
+    </script>
+
+</body>
+</html>
