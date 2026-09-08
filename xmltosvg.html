@@ -29,7 +29,7 @@
         }
 
         .app {
-            max-width: 900px;
+            max-width: 960px;
             width: 100%;
             background: #ffffff;
             border-radius: 32px;
@@ -43,7 +43,7 @@
             display: flex;
             align-items: center;
             gap: 14px;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
         }
 
         .app-header .icon {
@@ -71,13 +71,20 @@
         .subtitle {
             color: #4b5b6e;
             font-size: 15px;
-            margin-bottom: 28px;
+            margin-bottom: 24px;
             padding-left: 46px;
-            line-height: 1.5;
+            line-height: 1.6;
         }
 
         .subtitle strong {
             color: #0b1e33;
+        }
+
+        .subtitle .highlight {
+            background: #f1f5f9;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-weight: 500;
         }
 
         /* ─── Upload Area ─── */
@@ -139,7 +146,7 @@
         /* ─── File List ─── */
         .file-list {
             margin: 16px 0 24px;
-            max-height: 340px;
+            max-height: 380px;
             overflow-y: auto;
             padding-right: 4px;
         }
@@ -166,6 +173,7 @@
             margin-bottom: 8px;
             transition: background 0.15s;
             border: 1px solid #e9eef3;
+            flex-wrap: wrap;
         }
 
         .file-item:hover {
@@ -181,7 +189,7 @@
 
         .file-item .file-info {
             flex: 1;
-            min-width: 0;
+            min-width: 160px;
         }
 
         .file-item .file-name {
@@ -199,6 +207,27 @@
             display: flex;
             gap: 16px;
             margin-top: 2px;
+            flex-wrap: wrap;
+        }
+
+        .file-item .file-meta .conversion-type {
+            background: #eef2f6;
+            padding: 0 10px;
+            border-radius: 30px;
+            font-weight: 500;
+            color: #475569;
+            font-size: 11px;
+            line-height: 20px;
+        }
+
+        .file-item .file-meta .conversion-type.preserved {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .file-item .file-meta .conversion-type.embedded {
+            background: #dbeafe;
+            color: #1d4ed8;
         }
 
         .file-item .file-status {
@@ -456,12 +485,18 @@
 
             .file-item {
                 padding: 10px 12px;
-                flex-wrap: wrap;
+                flex-direction: column;
+                align-items: stretch;
             }
 
             .file-item .file-status {
+                align-self: flex-start;
                 font-size: 12px;
                 padding: 2px 12px;
+            }
+
+            .file-item .file-info {
+                min-width: unset;
             }
 
             .actions {
@@ -550,8 +585,12 @@
             <h1>XML to SVG <span class="badge">Bulk</span></h1>
         </div>
         <p class="subtitle">
-            Upload <strong>.xml</strong> files — we'll convert each to <strong>.svg</strong>
-            and bundle them all in a <strong>ZIP</strong>.
+            Upload <strong>.xml</strong> files — we'll convert each to a valid <strong>.svg</strong>.
+            <br />
+            <span class="highlight">✓</span> If the XML already contains an <strong>&lt;svg&gt;</strong> element, we preserve it.
+            <span class="highlight">✓</span> Otherwise, we embed the XML content inside a clean SVG for easy viewing.
+            <br />
+            <span style="font-size:13px; opacity:0.8;">All converted SVGs are bundled into a single <strong>ZIP</strong> for download.</span>
         </p>
 
         <!-- Upload Zone -->
@@ -622,7 +661,7 @@
             const toast = document.getElementById('toast');
 
             // ─── State ───
-            /** @type {Array<{ id: string, file: File, name: string, size: number, status: 'pending'|'converting'|'done'|'error', svgContent: string|null, errorMsg: string|null }>} */
+            /** @type {Array<{ id: string, file: File, name: string, size: number, status: 'pending'|'converting'|'done'|'error', svgContent: string|null, errorMsg: string|null, conversionType: 'preserved'|'embedded'|null }>} */
             let files = [];
             let idCounter = 0;
             let isConverting = false;
@@ -647,7 +686,6 @@
             function showToast(msg, type = 'info', duration = 3000) {
                 toast.textContent = msg;
                 toast.className = 'toast ' + type;
-                // force reflow
                 void toast.offsetWidth;
                 toast.classList.add('show');
                 clearTimeout(toast._hideTimer);
@@ -675,7 +713,6 @@
                 fileList.style.display = 'block';
                 emptyState.style.display = 'none';
 
-                // Build HTML
                 let html = '';
                 for (const f of files) {
                     const statusClass = f.status;
@@ -692,6 +729,14 @@
 
                     const icon = f.status === 'done' ? '✅' : f.status === 'error' ? '❌' : '📄';
 
+                    // Conversion type badge
+                    let typeBadge = '';
+                    if (f.status === 'done' && f.conversionType) {
+                        const cls = f.conversionType === 'preserved' ? 'preserved' : 'embedded';
+                        const label = f.conversionType === 'preserved' ? 'Preserved SVG' : 'Embedded XML';
+                        typeBadge = `<span class="conversion-type ${cls}">${label}</span>`;
+                    }
+
                     html += `
                         <div class="file-item" data-id="${f.id}">
                             <span class="file-icon">${icon}</span>
@@ -699,6 +744,7 @@
                                 <div class="file-name" title="${escapeHtml(f.name)}">${escapeHtml(f.name)}</div>
                                 <div class="file-meta">
                                     <span>${formatSize(f.size)}</span>
+                                    ${typeBadge}
                                     ${f.status === 'done' ? '<span>→ ' + escapeHtml(getBaseName(f.name) + '.svg') + '</span>' : ''}
                                     ${f.status === 'error' && f.errorMsg ? '<span style="color:#b91c1c;">' + escapeHtml(f.errorMsg) + '</span>' : ''}
                                 </div>
@@ -730,7 +776,6 @@
                 clearBtn.disabled = files.length === 0 || isConverting;
             }
 
-            // Simple escape
             function escapeHtml(str) {
                 const div = document.createElement('div');
                 div.textContent = str;
@@ -741,13 +786,11 @@
             function addFiles(fileListFromInput) {
                 let added = 0;
                 for (const file of fileListFromInput) {
-                    // Only accept .xml files
                     const ext = getFileExtension(file.name);
                     if (ext !== 'xml') {
                         showToast(`"${file.name}" is not an .xml file — skipped`, 'error', 2500);
                         continue;
                     }
-                    // Avoid duplicates by name (simple)
                     if (files.some(f => f.name === file.name && f.size === file.size)) {
                         showToast(`"${file.name}" already uploaded — skipped`, 'error', 2000);
                         continue;
@@ -760,6 +803,7 @@
                         status: 'pending',
                         svgContent: null,
                         errorMsg: null,
+                        conversionType: null,
                     });
                     added++;
                 }
@@ -779,14 +823,14 @@
                             // Check if it contains an <svg> tag (case insensitive)
                             const svgMatch = xmlText.match(/<svg[\s>]/i);
                             let svgContent = null;
+                            let conversionType = 'embedded';
 
                             if (svgMatch) {
                                 // It already contains SVG — use the whole content as SVG
-                                // But we should ensure it has proper XML declaration if needed
                                 svgContent = xmlText;
+                                conversionType = 'preserved';
                             } else {
                                 // Not an SVG — wrap the XML content in an SVG as text
-                                // Format the XML nicely
                                 const formatted = formatXml(xmlText);
                                 const escaped = escapeHtmlForSvg(formatted);
                                 svgContent = `<?xml version="1.0" encoding="UTF-8"?>
@@ -803,16 +847,19 @@
                                     <tspan x="50" y="125" font-family="monospace" font-size="12" fill="#1e2a3a">${escaped}</tspan>
                                 </text>
                             </svg>`;
+                                conversionType = 'embedded';
                             }
 
                             fileEntry.status = 'done';
                             fileEntry.svgContent = svgContent;
                             fileEntry.errorMsg = null;
+                            fileEntry.conversionType = conversionType;
                             resolve(true);
                         } catch (err) {
                             fileEntry.status = 'error';
                             fileEntry.errorMsg = err.message || 'Conversion failed';
                             fileEntry.svgContent = null;
+                            fileEntry.conversionType = null;
                             resolve(false);
                         } finally {
                             render();
@@ -822,6 +869,7 @@
                         fileEntry.status = 'error';
                         fileEntry.errorMsg = 'Failed to read file';
                         fileEntry.svgContent = null;
+                        fileEntry.conversionType = null;
                         render();
                         resolve(false);
                     };
@@ -836,16 +884,13 @@
                     const doc = parser.parseFromString(xml, 'text/xml');
                     const serializer = new XMLSerializer();
                     let formatted = serializer.serializeToString(doc);
-                    // Simple indentation: add newlines after > and before <
                     formatted = formatted.replace(/>\s*</g, '>\n<');
-                    // Limit lines for display
                     const lines = formatted.split('\n');
                     if (lines.length > 200) {
                         formatted = lines.slice(0, 200).join('\n') + '\n\n… (truncated)';
                     }
                     return formatted;
                 } catch (_) {
-                    // If parsing fails, just return the original
                     return xml;
                 }
             }
@@ -874,7 +919,6 @@
                 convertBtn.disabled = true;
                 showToast(`Converting ${pending.length} file${pending.length > 1 ? 's' : ''}…`, 'info', 2000);
 
-                // Mark all as converting
                 for (const f of pending) {
                     f.status = 'converting';
                 }
@@ -884,7 +928,6 @@
                 for (const f of pending) {
                     const ok = await convertFile(f);
                     if (ok) successCount++;
-                    // small delay to avoid UI freezing
                     await new Promise(r => setTimeout(r, 80));
                 }
 
@@ -893,7 +936,7 @@
 
                 if (successCount === pending.length) {
                     showToast(`✅ All ${successCount} file${successCount > 1 ? 's' : ''} converted successfully!`, 'success',
-                    3000);
+                        3000);
                 } else {
                     showToast(`⚠️ ${successCount} of ${pending.length} converted, ${pending.length - successCount} failed.`,
                         'error', 4000);
@@ -945,15 +988,13 @@
 
             // ─── Event listeners ───
 
-            // File input
             fileInput.addEventListener('change', function(e) {
                 if (this.files && this.files.length > 0) {
                     addFiles(this.files);
                 }
-                this.value = ''; // reset so same file can be re-uploaded
+                this.value = '';
             });
 
-            // Drag and drop
             uploadZone.addEventListener('dragover', function(e) {
                 e.preventDefault();
                 this.classList.add('dragover');
@@ -972,7 +1013,6 @@
                 }
             });
 
-            // Buttons
             convertBtn.addEventListener('click', convertAll);
             downloadBtn.addEventListener('click', downloadZip);
             clearBtn.addEventListener('click', clearAll);
@@ -980,18 +1020,15 @@
             // ─── Init ───
             render();
 
-            // ─── Keyboard shortcut: Enter to convert ───
+            // ─── Keyboard shortcut: Ctrl+Enter to convert ───
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
                     if (!convertBtn.disabled) convertBtn.click();
                 }
             });
 
-            // ─── Expose for debugging ───
-            window.__app = { files, render, convertAll, downloadZip, clearAll, addFiles };
-
             console.log('%c📄➜🖼️ XML to SVG Converter ready', 'font-size:16px; font-weight:600; color:#1d4ed8;');
-            console.log(`Drop .xml files or click to upload. ${files.length} files loaded.`);
+            console.log('Upload .xml files — we preserve existing SVG or embed XML content in a clean SVG.');
 
         })();
     </script>
