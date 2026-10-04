@@ -16,11 +16,13 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
 
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="crazy.css" />
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -64,7 +66,26 @@
     <section class="hero" id="home">
       <div class="wrap">
         <p class="hero-tag">anushdecodes.com</p>
-        <h1>Anush Decodes</h1>
+
+        <span class="sticker sticker-a" aria-hidden="true">Students<br>first</span>
+        <span class="sticker sticker-b" aria-hidden="true">Free for<br>everyone</span>
+
+        <h1 class="hero-title">
+          <span>Anush</span>
+          <span class="blob-wrap" aria-hidden="true">
+            <img src="https://unknownxsuperman-prog.github.io/anushdecodes/Screenshot_20260418-234611.png" alt="" width="600" height="600" />
+          </span>
+          <span>Decodes</span>
+        </h1>
+      </div>
+
+      <!-- curved marquee (letters are built by the script at the bottom) -->
+      <div class="marquee" aria-hidden="true">
+        <div class="marquee-track" id="marquee-track"
+             data-text="Study guides  *  Health, explained  *  Real experiences  *  Your favorite student resource hub  *  "></div>
+      </div>
+
+      <div class="wrap hero-body">
         <p class="hero-lede">
           Helping students • Improving health • Personal experiences • Helping you at every point.
           This is where educational content, useful resources, health information, and student
@@ -262,13 +283,13 @@
           <p>Why Anush Decodes exists, and what it's trying to do.</p>
         </div>
         <div class="reveal" style="max-width: 68ch;">
-          <p style="color:var(--muted); font-size:1.02rem; margin-bottom:16px; line-height:1.7;">
+          <p style="color:#fff; font-size:1.02rem; margin-bottom:16px; line-height:1.7;">
             Anush Decodes is built around a simple belief: useful information should be easy to
             find, not locked behind confusing formats or scattered across a dozen places. It
             brings together student resources, health information, practical tools, and personal
             experience in one place that's meant to be revisited, not just visited once.
           </p>
-          <p style="color:var(--muted); font-size:1.02rem; line-height:1.7;">
+          <p style="color:#fff; font-size:1.02rem; line-height:1.7;">
             Free resources exist here because access shouldn't depend on who you know or what you
             can afford. Education, health, and practical guidance are areas where good information
             genuinely changes outcomes — that's the reason this keeps getting built out.
@@ -396,6 +417,20 @@
         document.getElementById("resource-hub").scrollIntoView({ behavior: "smooth", block: "start" });
       });
     });
+
+    // Wavy marquee: split the text into letters and ride each one on a sine wave
+    (function () {
+      const track = document.getElementById("marquee-track");
+      if (!track) return;
+      const text = track.dataset.text.replace(/\*/g, "✦");
+      const html = (t) => [...t].map((c, i) => {
+        const y = Math.sin(i * 0.55) * 9;
+        const r = Math.cos(i * 0.55) * 9;
+        return `<span class="ch" style="transform:translateY(${y.toFixed(1)}px) rotate(${r.toFixed(1)}deg)">${c === " " ? "&nbsp;" : c}</span>`;
+      }).join("");
+      // duplicate so the -50% scroll loops seamlessly
+      track.innerHTML = html(text) + html(text) + html(text) + html(text);
+    })();
   </script>
 
 </body>
