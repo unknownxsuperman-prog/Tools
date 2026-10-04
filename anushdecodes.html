@@ -1,55 +1,431 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Anush Decodes — Student, Health & Practical Resources</title>
-  <meta name="description" content="Anush Decodes helps students, shares health information responsibly, and brings together practical resources, guides, and personal experiences in one place." />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Anush Decodes — Student, Health & Practical Resources</title>
+<meta name="description" content="Anush Decodes helps students, shares health information responsibly, and brings together practical resources, guides, and personal experiences in one place." />
 
-  <!-- Open Graph -->
-  <meta property="og:title" content="Anush Decodes" />
-  <meta property="og:description" content="Helping students • Improving health • Personal experiences • Helping you at every point" />
-  <meta property="og:type" content="website" />
-  <meta property="og:image" content="assets/pop.png" />
+<meta property="og:title" content="Anush Decodes" />
+<meta property="og:description" content="Helping students • Improving health • Personal experiences • Helping you at every point" />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="assets/pop.png" />
 
-  <link rel="icon" type="image/png" href="assets/logo.png" />
+<link rel="icon" type="image/png" href="assets/logo.png" />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
 
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
+<style>
+/* =====================================================================
+   ANUSH DECODES — one-file stylesheet
+   1. Tokens   2. Base   3. Layout   4. Components   5. Sections   6. Responsive
+   ===================================================================== */
 
-  <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="crazy.css" />
+/* ---------- 1. TOKENS ---------- */
+:root {
+  --periwinkle: #6b8ce8;
+  --indigo: #4a48b5;
+  --indigo-deep: #35329a;
+  --teal: #2fa6b5;
+  --teal-deep: #167b8a;
+  --mustard: #efc050;
+  --berry: #dc4d6e;
+  --ink: #1a1650;
+  --ink-soft: #4b4a7a;
+  --paper: #ffffff;
+
+  --display: "Bagel Fat One", system-ui, sans-serif;
+  --body: "DM Sans", system-ui, sans-serif;
+
+  --gap: 16px;                         /* space between slabs + page edge */
+  --slab-radius: 44px;
+  --card-radius: 28px;
+  --pad-y: clamp(64px, 9vw, 112px);    /* vertical padding inside every slab */
+  --pad-x: clamp(20px, 4vw, 40px);     /* horizontal padding inside every slab */
+  --outline: 3px solid var(--ink);
+  --pop: 4px 4px 0 var(--ink);
+
+  --blob: 38% 62% 55% 45% / 50% 40% 60% 50%;
+  --flower: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><g fill='white'><circle cx='50' cy='50' r='30'/><circle cx='50' cy='20' r='17'/><circle cx='71.2' cy='28.8' r='17'/><circle cx='80' cy='50' r='17'/><circle cx='71.2' cy='71.2' r='17'/><circle cx='50' cy='80' r='17'/><circle cx='28.8' cy='71.2' r='17'/><circle cx='20' cy='50' r='17'/><circle cx='28.8' cy='28.8' r='17'/></g></svg>");
+}
+
+/* ---------- 2. BASE ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 96px; }
+body {
+  margin: 0;
+  background: var(--indigo);
+  color: #fff;
+  font-family: var(--body);
+  font-size: 1.05rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+img, svg { display: block; max-width: 100%; }
+h1, h2, h3, p, ul { margin: 0; }
+ul { padding: 0; list-style: none; }
+a { color: inherit; text-decoration: none; }
+button, input, textarea { font: inherit; color: inherit; }
+h1, h2, h3 { font-family: var(--display); font-weight: 400; line-height: 1; letter-spacing: .005em; }
+
+:focus-visible { outline: 4px solid var(--mustard); outline-offset: 3px; }
+
+.skip-link {
+  position: absolute; left: 16px; top: -80px; z-index: 100;
+  background: var(--mustard); color: var(--ink);
+  padding: 10px 18px; border-radius: 999px; border: var(--outline); font-weight: 700;
+}
+.skip-link:focus { top: 16px; }
+
+/* ---------- 3. LAYOUT ---------- */
+.slab {
+  margin: var(--gap);
+  padding: var(--pad-y) var(--pad-x);
+  border-radius: var(--slab-radius);
+  position: relative;
+  overflow: hidden;
+}
+.wrap { max-width: 1200px; margin-inline: auto; }
+
+.section-head { margin-bottom: clamp(32px, 5vw, 56px); }
+.section-head h2 { font-size: clamp(2.6rem, 7.5vw, 5.25rem); margin-bottom: 14px; }
+.section-head p { max-width: 56ch; font-size: 1.12rem; opacity: .92; }
+
+.grid { display: grid; gap: 20px; }
+.grid--cards { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+
+/* ---------- 4. COMPONENTS ---------- */
+
+/* buttons */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 12px 26px;
+  font-family: var(--display); font-size: 1rem; line-height: 1.1;
+  background: #fff; color: var(--ink);
+  border: var(--outline); border-radius: 999px; box-shadow: var(--pop);
+  cursor: pointer; white-space: nowrap;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.btn:hover { transform: translate(2px, 2px) rotate(-1.5deg); box-shadow: 2px 2px 0 var(--ink); }
+.btn--ink     { background: var(--ink); color: #fff; }
+.btn--mustard { background: var(--mustard); }
+.btn--sm { padding: 8px 18px; font-size: .9rem; box-shadow: 3px 3px 0 var(--ink); }
+
+/* pill tags (category / platform) */
+.tag {
+  display: inline-block; align-self: flex-start;
+  padding: 4px 14px;
+  font-family: var(--display); font-size: .85rem; line-height: 1.3;
+  border: 2px solid var(--ink); border-radius: 999px;
+  background: #fff; color: var(--ink);
+}
+.tag.c-healthcare { background: var(--berry);  color: #fff; }
+.tag.c-medstudent { background: var(--teal);   color: var(--ink); }
+.tag.c-neet       { background: var(--indigo); color: #fff; }
+.tag.c-useful     { background: var(--mustard); color: var(--ink); }
+
+/* generic white card */
+.card {
+  display: flex; flex-direction: column; gap: 12px;
+  padding: 26px;
+  background: var(--paper); color: var(--ink);
+  border-radius: var(--card-radius);
+  transition: transform .2s ease;
+}
+.card:hover { transform: rotate(-1.2deg) translateY(-4px); }
+.card h3 { font-size: 1.45rem; }
+.card p  { color: var(--ink-soft); font-size: 1rem; }
+.card .btn { margin-top: auto; align-self: flex-start; }
+.card p + .btn { margin-top: auto; }
+.card p { margin-bottom: 8px; }
+
+/* video card */
+.vcard { padding: 0; overflow: hidden; }
+.vthumb {
+  position: relative; aspect-ratio: 16 / 9; width: 100%;
+  background: var(--teal); display: grid; place-items: center;
+  background-size: cover; background-position: center;
+}
+.vthumb::after {
+  content: ""; width: 64px; height: 64px; border-radius: 50%;
+  background: var(--mustard) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%231a1650' d='M9 6.5v11l9-5.5z'/></svg>") center / 60% no-repeat;
+  border: var(--outline); box-shadow: var(--pop);
+}
+.vbody { display: flex; flex-direction: column; gap: 12px; padding: 22px 26px 26px; flex: 1; }
+
+/* social round icon */
+.social-row { display: flex; gap: 12px; flex-wrap: wrap; }
+.social-icon {
+  width: 48px; height: 48px; display: grid; place-items: center;
+  background: #fff; border: var(--outline); border-radius: 50%; box-shadow: 3px 3px 0 var(--ink);
+  transition: transform .15s ease;
+}
+.social-icon:hover { transform: translateY(-3px) rotate(-6deg); }
+.social-icon img, .social-icon svg { width: 22px; height: 22px; object-fit: contain; }
+
+/* ---------- 5. SECTIONS ---------- */
+
+/* NAV */
+.nav { position: sticky; top: 12px; z-index: 50; margin: 12px var(--gap) -80px; }
+.nav-bar {
+  max-width: 1200px; margin-inline: auto;
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px;
+  padding: 10px 14px 10px 26px;
+  background: #fff; color: var(--ink);
+  border: var(--outline); border-radius: 999px; box-shadow: var(--pop);
+}
+.brand { font-family: var(--display); font-size: 1.4rem; justify-self: start; }
+.nav-links { display: flex; gap: 6px; justify-self: center; }
+.nav-links a { display: block; padding: 8px 16px; border-radius: 999px; font-family: var(--display); font-size: .98rem; }
+.nav-links a:hover { background: var(--mustard); }
+.nav-actions { display: flex; align-items: center; gap: 10px; justify-self: end; }
+
+.hamburger {
+  display: none; width: 46px; height: 46px; padding: 0;
+  background: var(--mustard); border: var(--outline); border-radius: 50%; cursor: pointer;
+  flex-direction: column; align-items: center; justify-content: center; gap: 5px;
+}
+.hamburger span { width: 20px; height: 3px; background: var(--ink); border-radius: 2px; transition: transform .2s, opacity .2s; }
+.hamburger[aria-expanded="true"] span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+.hamburger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+.hamburger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+.mobile-menu {
+  display: none;
+  max-width: 1200px; margin: 10px auto 0;
+  padding: 14px; background: #fff; color: var(--ink);
+  border: var(--outline); border-radius: 32px; box-shadow: var(--pop);
+  flex-direction: column; gap: 4px;
+}
+.mobile-menu.open { display: flex; }
+.mobile-menu a { padding: 12px 18px; border-radius: 999px; font-family: var(--display); font-size: 1.15rem; }
+.mobile-menu a:hover { background: var(--mustard); }
+.mobile-menu .btn { margin-top: 8px; }
+
+/* HERO */
+.hero {
+  background: var(--periwinkle); color: var(--ink);
+  margin-top: var(--gap);
+  padding: 140px 0 0;
+  text-align: center;
+}
+.hero-stage { position: relative; max-width: 1200px; margin-inline: auto; padding-inline: var(--pad-x); }
+.hero-title {
+  display: flex; align-items: center; justify-content: center; flex-wrap: wrap;
+  column-gap: .12em;
+  font-size: clamp(3.8rem, 14.5vw, 12.5rem);
+  line-height: .92; color: #fff;
+  text-shadow: 0 .04em 0 rgba(26, 22, 80, .14);
+}
+.blob-wrap { position: relative; flex: none; width: 1.6em; aspect-ratio: 1; margin-block: -.1em; }
+.blob-wrap::before, .blob-wrap img {
+  position: absolute; inset: 0;
+  -webkit-mask: var(--flower) center / 100% 100% no-repeat;
+          mask: var(--flower) center / 100% 100% no-repeat;
+}
+.blob-wrap::before { content: ""; inset: -6%; background: var(--teal); animation: spin 40s linear infinite; }
+.blob-wrap img { width: 100%; height: 100%; object-fit: cover; object-position: center top; transform: scale(.82); background: var(--teal); }
+
+.sticker {
+  position: absolute; z-index: 2;
+  display: grid; place-items: center; text-align: center;
+  padding: 1.1em 1.9em; border-radius: 50%;
+  font-family: var(--display); font-size: clamp(.8rem, 1.6vw, 1.15rem); line-height: 1.05;
+  border: var(--outline); box-shadow: var(--pop);
+}
+.sticker--a { background: var(--mustard); color: var(--ink); left: 3%;  top: -4%;   transform: rotate(-14deg); }
+.sticker--b { background: var(--berry);   color: #fff;       right: 3%; bottom: 4%; transform: rotate(-9deg); }
+
+.marquee { margin-top: clamp(28px, 5vw, 56px); padding: 26px 0 30px; overflow: hidden; white-space: nowrap; }
+.marquee-track { display: inline-flex; animation: scroll 38s linear infinite; }
+.marquee-track .ch { display: inline-block; font-family: var(--display); font-size: clamp(1.1rem, 2.4vw, 1.7rem); color: var(--ink); white-space: pre; }
+
+.hero-body { max-width: 760px; margin-inline: auto; padding: clamp(16px, 3vw, 32px) var(--pad-x) clamp(56px, 8vw, 88px); }
+.hero-lede { margin-bottom: 28px; font-size: 1.12rem; font-weight: 500; }
+.hero-ctas { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; }
+.hero .social-row { justify-content: center; margin-top: 28px; }
+
+/* INTRO */
+.intro { background: var(--mustard); color: var(--ink); }
+.intro .wrap { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(32px, 6vw, 72px); align-items: center; }
+.avatar-frame {
+  width: 100%; max-width: 440px; aspect-ratio: 1; justify-self: center;
+  border: 4px solid var(--ink); border-radius: var(--blob); overflow: hidden; background: var(--teal);
+}
+.avatar-frame img { width: 100%; height: 100%; object-fit: cover; object-position: center top; }
+.intro-body { display: flex; flex-direction: column; gap: 16px; }
+.intro-body h2 { font-size: clamp(2.4rem, 6vw, 4.25rem); }
+.pill-list { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+.pill-list li { padding: 8px 18px; background: var(--ink); color: #fff; border-radius: 999px; font-family: var(--display); font-size: .95rem; }
+
+/* FEATURED + CONTENT use plain indigo slabs */
+.featured, .content { background: var(--indigo); }
+
+/* HUB */
+.hub { background: var(--indigo-deep); }
+.hub-categories { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 48px; }
+.hub-cat { display: flex; flex-direction: column; gap: 14px; padding: 26px; background: #fff; color: var(--ink); border-radius: var(--card-radius); }
+.hub-cat-icon { width: 56px; height: 56px; display: grid; place-items: center; border-radius: var(--blob); border: var(--outline); }
+.hub-cat-icon svg { width: 26px; height: 26px; }
+.hub-cat-icon.c-healthcare { background: var(--berry); color: #fff; }
+.hub-cat-icon.c-medstudent { background: var(--teal); color: var(--ink); }
+.hub-cat-icon.c-neet       { background: var(--indigo); color: #fff; }
+.hub-cat-icon.c-useful     { background: var(--mustard); color: var(--ink); }
+.hub-cat h3 { font-size: 1.35rem; }
+.hub-cat p { color: var(--ink-soft); font-size: .98rem; margin-bottom: 8px; }
+.hub-cat .btn { margin-top: auto; align-self: flex-start; }
+
+.hub-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-bottom: 32px; }
+.search-box { position: relative; flex: 1 1 280px; max-width: 420px; }
+.search-box svg { position: absolute; left: 18px; top: 50%; width: 20px; height: 20px; transform: translateY(-50%); color: var(--ink); pointer-events: none; }
+.search-box input {
+  width: 100%; padding: 13px 20px 13px 48px;
+  background: #fff; color: var(--ink);
+  border: var(--outline); border-radius: 999px;
+}
+.filter-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.filter-chip {
+  padding: 9px 20px; cursor: pointer;
+  font-family: var(--display); font-size: .95rem; line-height: 1.1;
+  background: transparent; color: #fff;
+  border: 3px solid #fff; border-radius: 999px;
+}
+.filter-chip:hover { background: rgba(255,255,255,.14); }
+.filter-chip[aria-pressed="true"] { background: var(--mustard); color: var(--ink); border-color: var(--ink); }
+.empty-state { display: none; padding: 32px 0; font-size: 1.1rem; }
+.empty-state.show { display: block; }
+
+/* PLATFORMS */
+.platforms { background: var(--indigo); padding-block: 0; margin-block: 0; }
+.platforms .wrap { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gap); }
+.panel {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 14px;
+  padding: clamp(28px, 4vw, 44px);
+  border-radius: var(--slab-radius); color: var(--ink);
+}
+.panel h2 { font-size: clamp(2rem, 4.5vw, 3rem); }
+.panel p  { max-width: 40ch; margin-bottom: 10px; }
+.panel .btn { margin-top: auto; }
+.panel--yt { background: var(--mustard); }
+.panel--ig { background: var(--teal); }
+
+/* APP */
+.app { background: var(--periwinkle); color: var(--ink); }
+.app-card { display: grid; grid-template-columns: auto 1fr; gap: clamp(24px, 4vw, 48px); align-items: center; max-width: 900px; margin-inline: auto; }
+.app-logo { width: 120px; height: 120px; display: grid; place-items: center; background: #fff; border: var(--outline); border-radius: var(--blob); box-shadow: var(--pop); overflow: hidden; }
+.app-logo img { width: 72%; height: 72%; object-fit: contain; }
+.app-text { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
+.app-text h2 { font-size: clamp(2.2rem, 5vw, 3.5rem); }
+.app-text p { max-width: 52ch; }
+
+/* ABOUT */
+.about { background: var(--teal-deep); }
+.about .wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(32px, 6vw, 72px); align-items: start; }
+.about .section-head { margin-bottom: 0; }
+.about-copy { display: flex; flex-direction: column; gap: 18px; font-size: 1.1rem; max-width: 62ch; }
+
+/* MISSION */
+.mission { background: var(--berry); }
+.mission-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+.mission-card { padding: 28px; background: #fff; color: var(--ink); border-radius: var(--card-radius); display: flex; flex-direction: column; gap: 10px; }
+.mission-card h3 { font-size: 1.4rem; }
+.mission-card p { color: var(--ink-soft); font-size: 1rem; }
+.mission-card:nth-child(odd)  { transform: rotate(-1.4deg); }
+.mission-card:nth-child(even) { transform: rotate(1.4deg); }
+
+/* CONTACT */
+.contact { background: var(--periwinkle); color: var(--ink); }
+.contact-grid { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, .7fr); gap: clamp(32px, 6vw, 72px); align-items: start; }
+.contact form { display: flex; flex-direction: column; gap: 18px; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label { font-weight: 700; }
+.field input, .field textarea { width: 100%; padding: 13px 18px; background: #fff; color: var(--ink); border: var(--outline); border-radius: 20px; resize: vertical; }
+.contact form .btn { align-self: flex-start; }
+.form-note { min-height: 1.5em; font-weight: 700; }
+.contact-links { display: flex; flex-direction: column; gap: 12px; }
+.contact-link {
+  display: flex; align-items: center; gap: 14px; padding: 14px 20px;
+  background: #fff; border: var(--outline); border-radius: 999px; box-shadow: 3px 3px 0 var(--ink);
+  font-family: var(--display);
+  transition: transform .15s ease;
+}
+.contact-link:hover { transform: translate(2px, 2px); }
+.contact-link img, .contact-link svg { width: 22px; height: 22px; object-fit: contain; flex: none; }
+.disclaimer { margin-top: clamp(40px, 6vw, 64px); max-width: 70ch; font-size: .95rem; opacity: .85; }
+
+/* FOOTER */
+.footer { background: var(--ink); color: #fff; padding-block: clamp(48px, 7vw, 80px) 32px; }
+.footer-top { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 32px; padding-bottom: 36px; border-bottom: 2px solid rgba(255,255,255,.18); }
+.footer-brand { max-width: 380px; display: flex; flex-direction: column; gap: 10px; }
+.footer-brand h3 { font-size: 2rem; }
+.footer-brand p { opacity: .8; font-size: .98rem; }
+.footer-links { display: flex; flex-direction: column; gap: 8px; font-family: var(--display); }
+.footer-links a:hover { color: var(--mustard); }
+.footer-bottom { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px; padding-top: 28px; }
+.footer-bottom p { font-size: .92rem; opacity: .75; }
+.footer .social-icon { width: 42px; height: 42px; }
+
+/* ---------- MOTION ---------- */
+@keyframes spin   { to { transform: rotate(360deg); } }
+@keyframes scroll { to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .blob-wrap::before, .marquee-track { animation: none; }
+  .card:hover, .btn:hover { transform: none; }
+}
+
+/* ---------- 6. RESPONSIVE ---------- */
+@media (max-width: 900px) {
+  .nav-links { display: none; }
+  .hamburger { display: flex; }
+  .nav-bar { grid-template-columns: 1fr auto; }
+  .intro .wrap, .about .wrap, .contact-grid { grid-template-columns: 1fr; }
+  .platforms .wrap { grid-template-columns: 1fr; }
+}
+@media (max-width: 720px) {
+  :root { --gap: 10px; --slab-radius: 32px; }
+  .nav-bar { padding-left: 20px; }
+  .hero { padding-top: 120px; }
+  .hero-title { flex-direction: column; font-size: 19vw; row-gap: .05em; }
+  .blob-wrap { order: -1; width: min(60vw, 260px); margin-block: 0 .1em; }
+  .sticker--a { left: 4%; top: 0; }
+  .sticker--b { right: 4%; bottom: auto; top: 38%; }
+  .app-card { grid-template-columns: 1fr; justify-items: start; }
+}
+@media (max-width: 520px) {
+  .nav-actions .btn { display: none; }
+  .hero-ctas .btn { width: 100%; }
+}
+</style>
 </head>
+
 <body>
-  <a class="skip-link" href="#main">Skip to content</a>
+<a class="skip-link" href="#main">Skip to content</a>
 
-  <!-- ============ NAV ============ -->
-  <header class="nav">
-    <div class="wrap">
-      <a href="#home" class="brand">Anush Decodes</a>
+<!-- ============ NAV ============ -->
+<header class="nav">
+  <div class="nav-bar">
+    <a href="#home" class="brand">Anush Decodes</a>
 
-      <nav aria-label="Primary">
-        <ul class="nav-links">
-          <li><a href="#home">Home</a></li>
-          <li><a href="#about">About</a></li>
-          <li><a href="#resource-hub">Resources</a></li>
-          <li><a href="#content">Content</a></li>
-          <li><a href="#contact">Contact</a></li>
-        </ul>
-      </nav>
+    <nav aria-label="Primary">
+      <ul class="nav-links">
+        <li><a href="#home">Home</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#resource-hub">Resources</a></li>
+        <li><a href="#content">Content</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
 
-      <div class="nav-actions">
-        <a class="btn btn-primary" href="#follow" aria-label="Follow Anush Decodes on social platforms">Follow Me</a>
-        <button class="hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
-          <span></span><span></span><span></span>
-        </button>
-      </div>
+    <div class="nav-actions">
+      <a class="btn btn--mustard btn--sm" href="#follow" aria-label="Follow Anush Decodes on social platforms">Follow Me</a>
+      <button class="hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
+        <span></span><span></span><span></span>
+      </button>
     </div>
-  </header>
+  </div>
 
   <div class="mobile-menu" id="mobile-menu">
     <a href="#home">Home</a>
@@ -57,381 +433,516 @@
     <a href="#resource-hub">Resources</a>
     <a href="#content">Content</a>
     <a href="#contact">Contact</a>
-    <a class="btn btn-primary" href="#follow">Follow Me</a>
+    <a class="btn btn--mustard" href="#follow">Follow Me</a>
   </div>
+</header>
 
-  <main id="main">
+<main id="main">
 
-    <!-- ============ HERO ============ -->
-    <section class="hero" id="home">
-      <div class="wrap">
-        <p class="hero-tag">anushdecodes.com</p>
+  <!-- ============ HERO ============ -->
+  <section class="slab hero" id="home" style="padding-inline:0">
+    <div class="hero-stage">
+      <span class="sticker sticker--a" aria-hidden="true">Students<br>first</span>
+      <span class="sticker sticker--b" aria-hidden="true">Free for<br>everyone</span>
 
-        <span class="sticker sticker-a" aria-hidden="true">Students<br>first</span>
-        <span class="sticker sticker-b" aria-hidden="true">Free for<br>everyone</span>
+      <h1 class="hero-title">
+        <span>Anush</span>
+        <span class="blob-wrap" aria-hidden="true">
+          <img src="https://unknownxsuperman-prog.github.io/anushdecodes/Screenshot_20260418-234611.png" alt="" width="600" height="600" />
+        </span>
+        <span>Decodes</span>
+      </h1>
+    </div>
 
-        <h1 class="hero-title">
-          <span>Anush</span>
-          <span class="blob-wrap" aria-hidden="true">
-            <img src="https://unknownxsuperman-prog.github.io/anushdecodes/Screenshot_20260418-234611.png" alt="" width="600" height="600" />
-          </span>
-          <span>Decodes</span>
-        </h1>
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-track" id="marquee-track"
+           data-text="Study guides  *  Health, explained  *  Real experiences  *  Free resources for students  *  "></div>
+    </div>
+
+    <div class="hero-body">
+      <p class="hero-lede">
+        Helping students • Improving health • Personal experiences • Helping you at every point.
+        Educational content, useful resources, health information, and student guidance in one
+        place — built by one person, for anyone who finds it useful.
+      </p>
+      <div class="hero-ctas">
+        <a class="btn btn--ink" href="#resource-hub">Explore Resources</a>
+        <a class="btn btn--mustard" href="#youtube">Watch My Videos</a>
+        <a class="btn" href="#follow">Follow Me</a>
       </div>
-
-      <!-- curved marquee (letters are built by the script at the bottom) -->
-      <div class="marquee" aria-hidden="true">
-        <div class="marquee-track" id="marquee-track"
-             data-text="Study guides  *  Health, explained  *  Real experiences  *  Your favorite student resource hub  *  "></div>
-      </div>
-
-      <div class="wrap hero-body">
-        <p class="hero-lede">
-          Helping students • Improving health • Personal experiences • Helping you at every point.
-          This is where educational content, useful resources, health information, and student
-          guidance live in one place — built by one person, for anyone who finds it useful.
-        </p>
-
-        <div class="hero-ctas">
-          <a class="btn btn-primary" href="#resource-hub">Explore Resources</a>
-          <a class="btn btn-accent" href="#youtube">Watch My Videos</a>
-          <a class="btn btn-ghost" href="#follow">Follow Me</a>
-        </div>
-
-        <div class="social-row" id="follow" aria-label="Social links">
-          <a class="social-icon" href="#" aria-label="Instagram"><!-- [Instagram URL] -->
-            <img src="instagram.svg" alt="" width="20" height="20">
-          </a>
-          <a class="social-icon" href="#" aria-label="YouTube"><!-- [YouTube Channel URL] -->
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#FF0000" d="M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.51 3.55 12 3.55 12 3.55s-7.51 0-9.38.5A3.02 3.02 0 0 0 .5 6.19 31.6 31.6 0 0 0 0 12a31.6 31.6 0 0 0 .5 5.81 3.02 3.02 0 0 0 2.12 2.14c1.87.5 9.38.5 9.38.5s7.51 0 9.38-.5a3.02 3.02 0 0 0 2.12-2.14A31.6 31.6 0 0 0 24 12a31.6 31.6 0 0 0-.5-5.81z"/><path fill="#fff" d="M9.55 15.57V8.43L15.82 12z"/></svg>
-          </a>
-         <a class="social-icon" href="#" aria-label="xOs.link">
-    <img src="logo.svg" alt="xOs.link">
-</a>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============ CREATOR INTRO ============ -->
-    <section id="about-intro">
-      <div class="wrap split reveal">
-        <div class="avatar-frame">
-          <img src="https://unknownxsuperman-prog.github.io/anushdecodes/Screenshot_20260418-234611.png" alt="Portrait of Anush" width="600" height="600" loading="lazy" />
-        </div>
-        <div class="intro-body">
-          <h2>Hi, I'm Anush</h2>
-          <p>
-            Anush Decodes started as a simple idea: the things I was learning as a student and
-            figuring out about my own health didn't need to stay in my notes app. If a guide, a
-            study resource, or an experience could save someone else time or worry, it belonged
-            somewhere they could actually find it.
-          </p>
-          <p>
-            That's what this platform is — a running collection of study material, health
-            information shared responsibly, practical tools, and honest personal experience,
-            kept in one place and made easy to search.
-          </p>
-          <ul class="pill-list">
-            <li>Helping students</li>
-            <li>Useful resources</li>
-            <li>Health, explained responsibly</li>
-            <li>Personal experiences</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============ FEATURED RESOURCES ============ -->
-    <section id="featured">
-      <div class="wrap">
-        <div class="section-head reveal">
-          <h2>Featured Resources</h2>
-          <p>A few resources worth starting with — the rest live in the Resource Hub below.</p>
-        </div>
-        <div class="card-grid reveal" id="featured-grid" aria-live="polite"></div>
-      </div>
-    </section>
-
-    <!-- ============ RESOURCE HUB ============ -->
-    <section id="resource-hub">
-      <div class="wrap">
-        <div class="section-head reveal">
-          <h2>Resource Hub</h2>
-          <p>Useful resources, guides and materials — all in one place.</p>
-        </div>
-
-        <div class="hub-categories reveal">
-          <div class="hub-cat-card">
-            <span class="hub-cat-icon hub-cat-icon--healthcare">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2a2 2 0 0 0-2 2v5H4a2 2 0 0 0-2 2v2c0 1.1.9 2 2 2h5v5c0 1.1.9 2 2 2h2a2 2 0 0 0 2-2v-5h5a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-5V4a2 2 0 0 0-2-2h-2z"/></svg>
-            </span>
-            <div class="hub-cat-info">
-              <h3>Healthcare Resources</h3>
-              <p>Health-related information, tools, guides, and awareness resources.</p>
-            </div>
-            <button class="btn btn-ghost btn-sm filter-jump" data-category="healthcare">View Resources</button>
-          </div>
-          <div class="hub-cat-card">
-            <span class="hub-cat-icon hub-cat-icon--medstudent">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"/></svg>
-            </span>
-            <div class="hub-cat-info">
-              <h3>Medical Student Resources</h3>
-              <p>Notes, study materials, guides, and reference resources for medical students.</p>
-            </div>
-            <button class="btn btn-ghost btn-sm filter-jump" data-category="medstudent">View Resources</button>
-          </div>
-          <div class="hub-cat-card">
-            <span class="hub-cat-icon hub-cat-icon--neet">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4"/><path d="M12 16V8"/></svg>
-            </span>
-            <div class="hub-cat-info">
-              <h3>NEET Resources</h3>
-              <p>Preparation guides, study resources, and planning tools for NEET.</p>
-            </div>
-            <button class="btn btn-ghost btn-sm filter-jump" data-category="neet">View Resources</button>
-          </div>
-          <div class="hub-cat-card">
-            <span class="hub-cat-icon hub-cat-icon--useful">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
-            </span>
-            <div class="hub-cat-info">
-              <h3>Useful Resources</h3>
-              <p>Productivity tools, templates, and everyday resources for student life.</p>
-            </div>
-            <button class="btn btn-ghost btn-sm filter-jump" data-category="useful">View Resources</button>
-          </div>
-        </div>
-
-        <div class="hub-controls reveal">
-          <div class="search-box">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-            <input type="search" id="resource-search" placeholder="Search resources..." aria-label="Search resources" />
-          </div>
-          <div class="filter-row" role="group" aria-label="Filter by category">
-            <button class="filter-chip" data-category="all" aria-pressed="true">All</button>
-            <button class="filter-chip" data-category="healthcare" aria-pressed="false">Healthcare</button>
-            <button class="filter-chip" data-category="medstudent" aria-pressed="false">Medical Students</button>
-            <button class="filter-chip" data-category="neet" aria-pressed="false">NEET</button>
-            <button class="filter-chip" data-category="useful" aria-pressed="false">Useful</button>
-          </div>
-        </div>
-
-        <div class="card-grid" id="hub-grid" aria-live="polite"></div>
-        <p class="empty-state" id="empty-state">No resources found. Try another search.</p>
-      </div>
-    </section>
-
-    <!-- ============ LATEST CONTENT ============ -->
-    <section id="content">
-      <div class="wrap">
-        <div class="section-head reveal">
-          <h2>Latest Content</h2>
-          <p>Recent videos, posts, and short-form content from Instagram and YouTube.</p>
-        </div>
-        <div class="card-grid reveal" id="content-grid" aria-live="polite"></div>
-      </div>
-    </section>
-
-    <!-- ============ YOUTUBE ============ -->
-    <section id="youtube">
-      <div class="wrap">
-        <div class="platform-panel reveal">
-          <div class="platform-panel-text">
-            <h2>Watch on YouTube</h2>
-            <p>Educational videos, useful explanations, experiences, and practical guidance.</p>
-          </div>
-          <a class="btn btn-accent" href="#"><!-- [YouTube Channel URL] -->Visit YouTube</a>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============ INSTAGRAM ============ -->
-    <section id="instagram">
-      <div class="wrap">
-        <div class="platform-panel reveal">
-          <div class="platform-panel-text">
-            <h2>Follow on Instagram</h2>
-            <p>Shorter updates, day-to-day content, and behind-the-scenes of what's being worked on.</p>
-          </div>
-          <a class="btn btn-primary" href="#"><!-- [Instagram URL] -->Follow on Instagram</a>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============ APP SHOWCASE ============ -->
-    <section id="app">
-      <div class="wrap">
-        <div class="app-card reveal">
-          <div class="app-logo">
-            <img src="assets/logo.png" alt="App logo" width="96" height="96" loading="lazy" />
-          </div>
-          <div class="app-text">
-            <h2>My App</h2>
-            <p>[A short description of the app/project — what it does and who it's for. Replace this placeholder once the app is ready to introduce.]</p>
-            <a class="btn btn-ghost" href="#"><!-- [GitHub Repository URL] -->View on GitHub</a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============ ABOUT ============ -->
-    <section id="about">
-      <div class="wrap">
-        <div class="section-head reveal">
-          <h2>About Me</h2>
-          <p>Why Anush Decodes exists, and what it's trying to do.</p>
-        </div>
-        <div class="reveal" style="max-width: 68ch;">
-          <p style="color:#fff; font-size:1.02rem; margin-bottom:16px; line-height:1.7;">
-            Anush Decodes is built around a simple belief: useful information should be easy to
-            find, not locked behind confusing formats or scattered across a dozen places. It
-            brings together student resources, health information, practical tools, and personal
-            experience in one place that's meant to be revisited, not just visited once.
-          </p>
-          <p style="color:#fff; font-size:1.02rem; line-height:1.7;">
-            Free resources exist here because access shouldn't depend on who you know or what you
-            can afford. Education, health, and practical guidance are areas where good information
-            genuinely changes outcomes — that's the reason this keeps getting built out.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============ MISSION ============ -->
-    <section id="mission">
-      <div class="wrap">
-        <div class="section-head reveal">
-          <h2>My Mission</h2>
-        </div>
-        <div class="mission-grid reveal">
-          <div class="mission-card">
-            <h3>Helping Students</h3>
-            <p>Making useful educational information and resources easier to access.</p>
-          </div>
-          <div class="mission-card">
-            <h3>Improving Health</h3>
-            <p>Sharing responsible, educational health information and encouraging informed decisions.</p>
-          </div>
-          <div class="mission-card">
-            <h3>Personal Experiences</h3>
-            <p>Sharing experiences and lessons that may help others navigate similar situations.</p>
-          </div>
-          <div class="mission-card">
-            <h3>Helping You at Every Point</h3>
-            <p>Creating a platform people can return to whenever they need useful guidance or resources.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============ CONTACT ============ -->
-    <section id="contact">
-      <div class="wrap">
-        <div class="section-head reveal">
-          <h2>Let's Connect</h2>
-          <p>Have a question, suggestion, collaboration idea, or simply want to get in touch?</p>
-        </div>
-        <div class="contact-grid reveal">
-          <form id="contact-form" aria-label="Contact form">
-            <div class="field">
-              <label for="name">Name</label>
-              <input type="text" id="name" name="name" required autocomplete="name" />
-            </div>
-            <div class="field">
-              <label for="email">Email</label>
-              <input type="email" id="email" name="email" required autocomplete="email" />
-            </div>
-            <div class="field">
-              <label for="message">Message</label>
-              <textarea id="message" name="message" rows="5" required></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary">Send Message</button>
-            <p class="form-note"></p>
-          </form>
-
-          <div class="contact-links">
-            <a class="contact-link-row" href="#"><!-- [Instagram URL] -->
-              <img src="instagram.svg" alt="" width="20" height="20">
-              Instagram
-            </a>
-            <a class="contact-link-row" href="#"><!-- [YouTube Channel URL] -->
-              <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="#FF0000" d="M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.51 3.55 12 3.55 12 3.55s-7.51 0-9.38.5A3.02 3.02 0 0 0 .5 6.19 31.6 31.6 0 0 0 0 12a31.6 31.6 0 0 0 .5 5.81 3.02 3.02 0 0 0 2.12 2.14c1.87.5 9.38.5 9.38.5s7.51 0 9.38-.5a3.02 3.02 0 0 0 2.12-2.14A31.6 31.6 0 0 0 24 12a31.6 31.6 0 0 0-.5-5.81z"/><path fill="#fff" d="M9.55 15.57V8.43L15.82 12z"/></svg>
-              YouTube
-            </a>
-            <a class="contact-link-row" href="#"><!-- [GitHub Repository URL] -->
-              <img src="logo.svg" alt="xOs.link" width="20" height="20">
-              xOs.link
-            </a>
-          </div>
-        </div>
-
-        <p class="disclaimer" style="margin-top:56px;">
-          Health information on this website is provided for educational and informational
-          purposes only and should not be considered a substitute for professional medical
-          advice, diagnosis, or treatment.
-        </p>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- ============ FOOTER ============ -->
-  <footer>
-    <div class="wrap">
-      <div class="footer-top">
-        <div class="footer-brand">
-          <h3>Anush Decodes</h3>
-          <p>Helping students • Improving health • Personal experiences • Helping you at every point.</p>
-        </div>
-        <nav aria-label="Footer">
-          <ul class="footer-links">
-            <li><a href="#home">Home</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#resource-hub">Resources</a></li>
-            <li><a href="#content">Content</a></li>
-            <li><a href="#contact">Contact</a></li>
-          </ul>
-        </nav>
-      </div>
-      <div class="footer-bottom">
-        <div class="social-row" aria-label="Social links">
-          <a class="social-icon" href="#" aria-label="Instagram"><img src="instagram.svg" alt="" width="16" height="16"></a>
-          <a class="social-icon" href="#" aria-label="YouTube"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="#FF0000" d="M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.51 3.55 12 3.55 12 3.55s-7.51 0-9.38.5A3.02 3.02 0 0 0 .5 6.19 31.6 31.6 0 0 0 0 12a31.6 31.6 0 0 0 .5 5.81 3.02 3.02 0 0 0 2.12 2.14c1.87.5 9.38.5 9.38.5s7.51 0 9.38-.5a3.02 3.02 0 0 0 2.12-2.14A31.6 31.6 0 0 0 24 12a31.6 31.6 0 0 0-.5-5.81z"/><path fill="#fff" d="M9.55 15.57V8.43L15.82 12z"/></svg></a>
-          <a class="social-icon" href="#" aria-label="xOs.link"><img src="logo.svg" alt="xOs.link" width="16" height="16"></a>
-        </div>
-        <p>© 2026 Anush Decodes. All rights reserved.</p>
+      <div class="social-row" id="follow" aria-label="Social links">
+        <a class="social-icon" data-link="instagram" href="#" aria-label="Instagram"><img src="instagram.svg" alt=""></a>
+        <a class="social-icon" data-link="youtube" href="#" aria-label="YouTube">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#FF0000" d="M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.51 3.55 12 3.55 12 3.55s-7.51 0-9.38.5A3.02 3.02 0 0 0 .5 6.19 31.6 31.6 0 0 0 0 12a31.6 31.6 0 0 0 .5 5.81 3.02 3.02 0 0 0 2.12 2.14c1.87.5 9.38.5 9.38.5s7.51 0 9.38-.5a3.02 3.02 0 0 0 2.12-2.14A31.6 31.6 0 0 0 24 12a31.6 31.6 0 0 0-.5-5.81z"/><path fill="#fff" d="M9.55 15.57V8.43L15.82 12z"/></svg>
+        </a>
+        <a class="social-icon" data-link="xos" href="#" aria-label="xOs.link"><img src="logo.svg" alt=""></a>
       </div>
     </div>
-  </footer>
+  </section>
 
-  <script src="resources-data.js"></script>
-  <script src="videos-data.js"></script>
-  <script src="app.js"></script>
-  <script>
-    // "View Resources" buttons jump to the hub and apply the matching filter
-    document.querySelectorAll(".filter-jump").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const cat = btn.dataset.category;
-        document.querySelector(`.filter-chip[data-category="${cat}"]`)?.click();
-        document.getElementById("resource-hub").scrollIntoView({ behavior: "smooth", block: "start" });
-      });
+  <!-- ============ CREATOR INTRO ============ -->
+  <section class="slab intro" id="about-intro">
+    <div class="wrap">
+      <div class="avatar-frame">
+        <img src="https://unknownxsuperman-prog.github.io/anushdecodes/Screenshot_20260418-234611.png" alt="Portrait of Anush" width="600" height="600" loading="lazy" />
+      </div>
+      <div class="intro-body">
+        <h2>Hi, I'm Anush</h2>
+        <p>
+          Anush Decodes started as a simple idea: the things I was learning as a student and
+          figuring out about my own health didn't need to stay in my notes app. If a guide, a
+          study resource, or an experience could save someone else time or worry, it belonged
+          somewhere they could actually find it.
+        </p>
+        <p>
+          That's what this platform is — a running collection of study material, health
+          information shared responsibly, practical tools, and honest personal experience,
+          kept in one place and made easy to search.
+        </p>
+        <ul class="pill-list">
+          <li>Helping students</li>
+          <li>Useful resources</li>
+          <li>Health, explained responsibly</li>
+          <li>Personal experiences</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FEATURED ============ -->
+  <section class="slab featured" id="featured">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Featured Resources</h2>
+        <p>A few resources worth starting with — the rest live in the Resource Hub below.</p>
+      </div>
+      <div class="grid grid--cards" id="featured-grid" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <!-- ============ RESOURCE HUB ============ -->
+  <section class="slab hub" id="resource-hub">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Resource Hub</h2>
+        <p>Useful resources, guides and materials — all in one place.</p>
+      </div>
+
+      <div class="hub-categories">
+        <div class="hub-cat">
+          <span class="hub-cat-icon c-healthcare">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 2a2 2 0 0 0-2 2v5H4a2 2 0 0 0-2 2v2c0 1.1.9 2 2 2h5v5c0 1.1.9 2 2 2h2a2 2 0 0 0 2-2v-5h5a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-5V4a2 2 0 0 0-2-2h-2z"/></svg>
+          </span>
+          <h3>Healthcare Resources</h3>
+          <p>Health-related information, tools, guides, and awareness resources.</p>
+          <button class="btn btn--sm filter-jump" data-category="healthcare">View Resources</button>
+        </div>
+        <div class="hub-cat">
+          <span class="hub-cat-icon c-medstudent">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"/></svg>
+          </span>
+          <h3>Medical Student Resources</h3>
+          <p>Notes, study materials, guides, and reference resources for medical students.</p>
+          <button class="btn btn--sm filter-jump" data-category="medstudent">View Resources</button>
+        </div>
+        <div class="hub-cat">
+          <span class="hub-cat-icon c-neet">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4"/><path d="M12 16V8"/></svg>
+          </span>
+          <h3>NEET Resources</h3>
+          <p>Preparation guides, study resources, and planning tools for NEET.</p>
+          <button class="btn btn--sm filter-jump" data-category="neet">View Resources</button>
+        </div>
+        <div class="hub-cat">
+          <span class="hub-cat-icon c-useful">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
+          </span>
+          <h3>Useful Resources</h3>
+          <p>Productivity tools, templates, and everyday resources for student life.</p>
+          <button class="btn btn--sm filter-jump" data-category="useful">View Resources</button>
+        </div>
+      </div>
+
+      <div class="hub-controls">
+        <div class="search-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          <input type="search" id="resource-search" placeholder="Search resources..." aria-label="Search resources" />
+        </div>
+        <div class="filter-row" role="group" aria-label="Filter by category">
+          <button class="filter-chip" data-category="all" aria-pressed="true">All</button>
+          <button class="filter-chip" data-category="healthcare" aria-pressed="false">Healthcare</button>
+          <button class="filter-chip" data-category="medstudent" aria-pressed="false">Medical Students</button>
+          <button class="filter-chip" data-category="neet" aria-pressed="false">NEET</button>
+          <button class="filter-chip" data-category="useful" aria-pressed="false">Useful</button>
+        </div>
+      </div>
+
+      <div class="grid grid--cards" id="hub-grid" aria-live="polite"></div>
+      <p class="empty-state" id="empty-state">No resources found. Try another search.</p>
+    </div>
+  </section>
+
+  <!-- ============ LATEST CONTENT ============ -->
+  <section class="slab content" id="content">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Latest Content</h2>
+        <p>Recent videos, posts, and short-form content from Instagram and YouTube.</p>
+      </div>
+      <div class="grid grid--cards" id="content-grid" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <!-- ============ YOUTUBE + INSTAGRAM ============ -->
+  <section class="slab platforms" aria-label="Where to find me">
+    <div class="wrap">
+      <div class="panel panel--yt" id="youtube">
+        <h2>Watch on YouTube</h2>
+        <p>Educational videos, useful explanations, experiences, and practical guidance.</p>
+        <a class="btn btn--ink" data-link="youtube" href="#">Visit YouTube</a>
+      </div>
+      <div class="panel panel--ig" id="instagram">
+        <h2>Follow on Instagram</h2>
+        <p>Shorter updates, day-to-day content, and behind-the-scenes of what's being worked on.</p>
+        <a class="btn btn--ink" data-link="instagram" href="#">Follow on Instagram</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ APP ============ -->
+  <section class="slab app" id="app">
+    <div class="app-card">
+      <div class="app-logo">
+        <img src="assets/logo.png" alt="App logo" width="96" height="96" loading="lazy" />
+      </div>
+      <div class="app-text">
+        <h2>My App</h2>
+        <p>[A short description of the app/project — what it does and who it's for. Replace this placeholder once the app is ready to introduce.]</p>
+        <a class="btn btn--ink" data-link="github" href="#">View on GitHub</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ABOUT ============ -->
+  <section class="slab about" id="about">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>About Me</h2>
+        <p>Why Anush Decodes exists, and what it's trying to do.</p>
+      </div>
+      <div class="about-copy">
+        <p>
+          Anush Decodes is built around a simple belief: useful information should be easy to
+          find, not locked behind confusing formats or scattered across a dozen places. It
+          brings together student resources, health information, practical tools, and personal
+          experience in one place that's meant to be revisited, not just visited once.
+        </p>
+        <p>
+          Free resources exist here because access shouldn't depend on who you know or what you
+          can afford. Education, health, and practical guidance are areas where good information
+          genuinely changes outcomes — that's the reason this keeps getting built out.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MISSION ============ -->
+  <section class="slab mission" id="mission">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>My Mission</h2>
+      </div>
+      <div class="mission-grid">
+        <div class="mission-card">
+          <h3>Helping Students</h3>
+          <p>Making useful educational information and resources easier to access.</p>
+        </div>
+        <div class="mission-card">
+          <h3>Improving Health</h3>
+          <p>Sharing responsible, educational health information and encouraging informed decisions.</p>
+        </div>
+        <div class="mission-card">
+          <h3>Personal Experiences</h3>
+          <p>Sharing experiences and lessons that may help others navigate similar situations.</p>
+        </div>
+        <div class="mission-card">
+          <h3>Helping You at Every Point</h3>
+          <p>Creating a platform people can return to whenever they need useful guidance or resources.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CONTACT ============ -->
+  <section class="slab contact" id="contact">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Let's Connect</h2>
+        <p>Have a question, suggestion, collaboration idea, or simply want to get in touch?</p>
+      </div>
+      <div class="contact-grid">
+        <form id="contact-form" aria-label="Contact form" novalidate>
+          <div class="field">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" required autocomplete="name" />
+          </div>
+          <div class="field">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required autocomplete="email" />
+          </div>
+          <div class="field">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" rows="5" required></textarea>
+          </div>
+          <button type="submit" class="btn btn--ink">Send Message</button>
+          <p class="form-note" id="form-note" role="status"></p>
+        </form>
+
+        <div class="contact-links">
+          <a class="contact-link" data-link="instagram" href="#">
+            <img src="instagram.svg" alt="" width="22" height="22">
+            Instagram
+          </a>
+          <a class="contact-link" data-link="youtube" href="#">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#FF0000" d="M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.51 3.55 12 3.55 12 3.55s-7.51 0-9.38.5A3.02 3.02 0 0 0 .5 6.19 31.6 31.6 0 0 0 0 12a31.6 31.6 0 0 0 .5 5.81 3.02 3.02 0 0 0 2.12 2.14c1.87.5 9.38.5 9.38.5s7.51 0 9.38-.5a3.02 3.02 0 0 0 2.12-2.14A31.6 31.6 0 0 0 24 12a31.6 31.6 0 0 0-.5-5.81z"/><path fill="#fff" d="M9.55 15.57V8.43L15.82 12z"/></svg>
+            YouTube
+          </a>
+          <a class="contact-link" data-link="xos" href="#">
+            <img src="logo.svg" alt="" width="22" height="22">
+            xOs.link
+          </a>
+        </div>
+      </div>
+
+      <p class="disclaimer">
+        Health information on this website is provided for educational and informational
+        purposes only and should not be considered a substitute for professional medical
+        advice, diagnosis, or treatment.
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="slab footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <h3>Anush Decodes</h3>
+        <p>Helping students • Improving health • Personal experiences • Helping you at every point.</p>
+      </div>
+      <nav aria-label="Footer">
+        <ul class="footer-links">
+          <li><a href="#home">Home</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#resource-hub">Resources</a></li>
+          <li><a href="#content">Content</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+    <div class="footer-bottom">
+      <div class="social-row" aria-label="Social links">
+        <a class="social-icon" data-link="instagram" href="#" aria-label="Instagram"><img src="instagram.svg" alt=""></a>
+        <a class="social-icon" data-link="youtube" href="#" aria-label="YouTube">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#FF0000" d="M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.51 3.55 12 3.55 12 3.55s-7.51 0-9.38.5A3.02 3.02 0 0 0 .5 6.19 31.6 31.6 0 0 0 0 12a31.6 31.6 0 0 0 .5 5.81 3.02 3.02 0 0 0 2.12 2.14c1.87.5 9.38.5 9.38.5s7.51 0 9.38-.5a3.02 3.02 0 0 0 2.12-2.14A31.6 31.6 0 0 0 24 12a31.6 31.6 0 0 0-.5-5.81z"/><path fill="#fff" d="M9.55 15.57V8.43L15.82 12z"/></svg>
+        </a>
+        <a class="social-icon" data-link="xos" href="#" aria-label="xOs.link"><img src="logo.svg" alt=""></a>
+      </div>
+      <p>© 2026 Anush Decodes. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- Your existing data files (kept as they are) -->
+<script src="resources-data.js"></script>
+<script src="videos-data.js"></script>
+
+<script>
+/* =====================================================================
+   SETTINGS — edit these in one place
+   ===================================================================== */
+const LINKS = {
+  instagram: "",   // e.g. "https://instagram.com/yourhandle"
+  youtube:   "",   // e.g. "https://youtube.com/@yourchannel"
+  xos:       "",   // e.g. "https://x0s.link/yourprofile"
+  github:    ""    // e.g. "https://github.com/you/your-app"
+};
+const FORM_ENDPOINT = ""; // e.g. a Formspree URL: "https://formspree.io/f/xxxxxx"
+
+/* ---------- apply social links ---------- */
+document.querySelectorAll("[data-link]").forEach((a) => {
+  const url = LINKS[a.dataset.link];
+  if (url) { a.href = url; a.target = "_blank"; a.rel = "noopener"; }
+});
+
+/* ---------- mobile menu ---------- */
+(function () {
+  const btn = document.querySelector(".hamburger");
+  const menu = document.getElementById("mobile-menu");
+  const set = (open) => {
+    btn.setAttribute("aria-expanded", open);
+    btn.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+    menu.classList.toggle("open", open);
+  };
+  btn.addEventListener("click", () => set(btn.getAttribute("aria-expanded") !== "true"));
+  menu.querySelectorAll("a").forEach((a) => a.addEventListener("click", () => set(false)));
+})();
+
+/* ---------- wavy marquee ---------- */
+(function () {
+  const track = document.getElementById("marquee-track");
+  const text = track.dataset.text.replace(/\*/g, "✦");
+  const build = (t) => [...t].map((c, i) => {
+    const y = Math.sin(i * 0.55) * 9, r = Math.cos(i * 0.55) * 9;
+    return `<span class="ch" style="transform:translateY(${y.toFixed(1)}px) rotate(${r.toFixed(1)}deg)">${c === " " ? "&nbsp;" : c}</span>`;
+  }).join("");
+  track.innerHTML = build(text).repeat(4); // 4 copies; scrolling -50% loops seamlessly
+})();
+
+/* =====================================================================
+   DATA — reads your resources-data.js / videos-data.js, falls back to samples
+   ===================================================================== */
+const readGlobal = (names) => {
+  for (const n of names) {
+    try {
+      const v = new Function(`return typeof ${n} !== "undefined" ? ${n} : undefined`)();
+      if (Array.isArray(v) && v.length) return v;
+    } catch (e) { /* ignore */ }
+  }
+  return null;
+};
+
+const CATEGORY_LABELS = { healthcare: "Healthcare", medstudent: "Medical Students", neet: "NEET", useful: "Useful" };
+const normCategory = (raw) => {
+  const s = String(raw || "").toLowerCase().replace(/[\s_-]/g, "");
+  if (s.includes("health")) return "healthcare";
+  if (s.includes("med")) return "medstudent";
+  if (s.includes("neet")) return "neet";
+  return "useful";
+};
+
+const rawResources = readGlobal(["resources", "RESOURCES", "resourcesData", "resourceData", "RESOURCE_DATA", "RESOURCES_DATA"]) || [
+  { title: "Sample healthcare guide", description: "Replace with your own entries in resources-data.js.", category: "healthcare", featured: true, url: "#" },
+  { title: "Sample medical student notes", description: "Notes and reference material for medical students.", category: "medstudent", featured: true, url: "#" },
+  { title: "Sample NEET planner", description: "A planning tool for NEET preparation.", category: "neet", featured: true, url: "#" },
+  { title: "Sample student template", description: "Everyday productivity templates for student life.", category: "useful", url: "#" }
+];
+const rawVideos = readGlobal(["videos", "VIDEOS", "videosData", "videoData", "VIDEO_DATA", "VIDEOS_DATA", "content"]) || [];
+
+const resources = rawResources.map((r) => ({
+  title: r.title || r.name || "Untitled",
+  desc: r.description || r.desc || r.summary || "",
+  cat: normCategory(r.category || r.type),
+  url: r.url || r.link || r.href || "#",
+  featured: Boolean(r.featured || r.isFeatured)
+}));
+
+const videos = rawVideos.map((v) => {
+  const id = v.id || v.videoId;
+  return {
+    title: v.title || v.name || "Untitled",
+    platform: v.platform || v.type || (id ? "YouTube" : "Video"),
+    url: v.url || v.link || v.href || (id ? `https://www.youtube.com/watch?v=${id}` : "#"),
+    thumb: v.thumbnail || v.thumb || v.image || (id ? `https://i.ytimg.com/vi/${id}/hqdefault.jpg` : "")
+  };
+});
+
+/* =====================================================================
+   RENDER
+   ===================================================================== */
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const linkAttrs = (u) => (u && u !== "#" ? ` href="${esc(u)}" target="_blank" rel="noopener"` : ` href="#"`);
+
+const resourceCard = (r) => `
+  <article class="card">
+    <span class="tag c-${r.cat}">${CATEGORY_LABELS[r.cat]}</span>
+    <h3>${esc(r.title)}</h3>
+    ${r.desc ? `<p>${esc(r.desc)}</p>` : ""}
+    <a class="btn btn--sm"${linkAttrs(r.url)}>Open resource</a>
+  </article>`;
+
+const videoCard = (v) => `
+  <article class="card vcard">
+    <div class="vthumb"${v.thumb ? ` style="background-image:url('${esc(v.thumb)}')"` : ""}></div>
+    <div class="vbody">
+      <span class="tag">${esc(v.platform)}</span>
+      <h3>${esc(v.title)}</h3>
+      <a class="btn btn--sm"${linkAttrs(v.url)}>Watch now</a>
+    </div>
+  </article>`;
+
+/* featured */
+(function () {
+  let list = resources.filter((r) => r.featured);
+  if (!list.length) list = resources.slice(0, 3);
+  document.getElementById("featured-grid").innerHTML = list.map(resourceCard).join("");
+})();
+
+/* latest content */
+(function () {
+  const grid = document.getElementById("content-grid");
+  grid.innerHTML = videos.length
+    ? videos.map(videoCard).join("")
+    : `<p>New videos and posts are on the way.</p>`;
+})();
+
+/* hub: search + filters */
+(function () {
+  const grid = document.getElementById("hub-grid");
+  const empty = document.getElementById("empty-state");
+  const input = document.getElementById("resource-search");
+  const chips = [...document.querySelectorAll(".filter-chip")];
+  let category = "all";
+
+  const render = () => {
+    const q = input.value.trim().toLowerCase();
+    const list = resources.filter((r) =>
+      (category === "all" || r.cat === category) &&
+      (!q || `${r.title} ${r.desc} ${CATEGORY_LABELS[r.cat]}`.toLowerCase().includes(q)));
+    grid.innerHTML = list.map(resourceCard).join("");
+    empty.classList.toggle("show", list.length === 0);
+  };
+
+  const setCategory = (c) => {
+    category = c;
+    chips.forEach((ch) => ch.setAttribute("aria-pressed", ch.dataset.category === c));
+    render();
+  };
+
+  chips.forEach((ch) => ch.addEventListener("click", () => setCategory(ch.dataset.category)));
+  input.addEventListener("input", render);
+
+  document.querySelectorAll(".filter-jump").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      setCategory(btn.dataset.category);
+      document.getElementById("resource-hub").scrollIntoView({ behavior: "smooth", block: "start" });
     });
+  });
 
-    // Wavy marquee: split the text into letters and ride each one on a sine wave
-    (function () {
-      const track = document.getElementById("marquee-track");
-      if (!track) return;
-      const text = track.dataset.text.replace(/\*/g, "✦");
-      const html = (t) => [...t].map((c, i) => {
-        const y = Math.sin(i * 0.55) * 9;
-        const r = Math.cos(i * 0.55) * 9;
-        return `<span class="ch" style="transform:translateY(${y.toFixed(1)}px) rotate(${r.toFixed(1)}deg)">${c === " " ? "&nbsp;" : c}</span>`;
-      }).join("");
-      // duplicate so the -50% scroll loops seamlessly
-      track.innerHTML = html(text) + html(text) + html(text) + html(text);
-    })();
-  </script>
+  render();
+})();
 
+/* contact form */
+(function () {
+  const form = document.getElementById("contact-form");
+  const note = document.getElementById("form-note");
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!form.checkValidity()) { note.textContent = "Please fill in your name, a valid email, and a message."; return; }
+    if (!FORM_ENDPOINT) { note.textContent = "The form isn't connected yet — add your form endpoint in the settings at the top of the script."; return; }
+    note.textContent = "Sending…";
+    try {
+      const res = await fetch(FORM_ENDPOINT, { method: "POST", headers: { Accept: "application/json" }, body: new FormData(form) });
+      if (!res.ok) throw new Error();
+      form.reset();
+      note.textContent = "Message sent. Thank you!";
+    } catch (err) {
+      note.textContent = "Something went wrong. Please try again in a moment.";
+    }
+  });
+})();
+</script>
 </body>
 </html>
