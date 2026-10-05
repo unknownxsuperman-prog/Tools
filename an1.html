@@ -370,9 +370,9 @@ h1, h2, h3 { font-family: var(--display); font-weight: 400; line-height: 1; lett
 
 /* ---------- ENTRY ANIMATION (paper curtain) ---------- */
 html.js-anim:not(.is-ready) { overflow: hidden; }
-html:not(.js-anim) .intro { display: none; }
+html:not(.js-anim) .curtain { display: none; }
 
-.intro { position: fixed; inset: 0; z-index: 200; display: flex; pointer-events: none; }
+.curtain { position: fixed; inset: 0; z-index: 200; display: flex; pointer-events: none; }
 .sheet {
   flex: 1; height: calc(100% + 80px); margin-right: -1px;
   border-radius: 0 0 56px 56px;
@@ -499,7 +499,7 @@ html:not(.js-anim) .intro { display: none; }
 <body>
 
 <!-- ============ ENTRY: paper curtain ============ -->
-<div class="intro" id="intro" aria-hidden="true">
+<div class="curtain" id="intro" aria-hidden="true">
   <div class="sheet" style="--i:0;background:var(--periwinkle)"></div>
   <div class="sheet" style="--i:1;background:var(--mustard)"></div>
   <div class="sheet" style="--i:2;background:var(--berry)"></div>
